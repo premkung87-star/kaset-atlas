@@ -12,6 +12,10 @@
 **Stack:** Astro + Tailwind + MDX + Pagefind + Vercel
 **Operating Mode:** **Fully-Automated Content Production (Definition B)**
 **Policy Override Date:** 2026-04-29 (see `docs/AUDIT_LOG.md`)
+**Audience:** Thai-speaking general public + AI search engines (Perplexity, ChatGPT, Claude, Gemini, Google AI Overviews). The site is built to be machine-citable as well as human-readable.
+**Content License:** CC BY-SA 4.0 — free reuse with attribution and share-alike. AI engines may quote freely with attribution.
+**Code License:** MIT.
+**Funding:** Non-profit. No donations accepted except funded research collaborations.
 
 ## 2. Core Principles (Non-Negotiable)
 
@@ -79,6 +83,21 @@ Every auto-published crop MUST log:
 - Verifier pass/fail counts
 
 Log location: `docs/AUDIT_LOG.md` or `.claude/logs/`
+
+### Rule 10: Ask First on Ambiguity, 🟡, and 🔴
+
+Before any non-trivial change, restate the goal in one sentence and ask "Is this correct?" if any ambiguity remains.
+
+- 🟢 Low-risk auto-pipeline runs proceed silently when scope is clear.
+- 🟡 Medium changes proceed with a risk note in the response.
+- 🔴 High-risk changes (pipeline modification, agent prompt, build/deploy config, schema change) require:
+  - Explicit maintainer approval before execution
+  - Diff shown before committing
+  - Rollback plan stated
+- New tools, new external services, scope expansion: **ASK FIRST**.
+- Ambiguous instructions: **ASK FIRST**. One clarifying question is cheaper than three rollback commits.
+
+This rule reflects observed reality: most pipeline errors trace to ambiguous instructions, not agent execution.
 
 ## 5. Session-Opening Ritual
 
@@ -158,3 +177,26 @@ Every crop profile page MUST display:
 - Reviewer: agent that approved (e.g., "Content Verifier v1")
 
 This is non-negotiable for trust and traceability.
+
+## 12. Free-Tier Audit (per Rule 7)
+
+Before proposing any new tool or service, verify it is not already included in the existing paid stack.
+
+| Capability needed | Already provided by | Tier limit / status |
+|---|---|---|
+| Static hosting + edge runtime | **Vercel Pro** ($20/mo) | 1 TB bandwidth, 1000 build min/mo, edge functions |
+| Image optimization | **Vercel Pro** | Included |
+| Web analytics | **Vercel Pro — Analytics** | Free tier 2.5k events/mo |
+| Performance monitoring | **Vercel Pro — Speed Insights** | Free tier 10k pageviews/mo |
+| Source code + collaboration | **GitHub Pro** ($4/mo) | Public repo, advanced features |
+| CI / scheduled jobs | **GitHub Actions** (via GitHub Pro) | 2000 min/mo for public repos |
+| Database / auth / vector storage | **Supabase Pro** ($25/mo) | OFF for V1 per Static-First; revisit V2 |
+| AI orchestration / drafting / verification | **Claude Max 20x** | Heavy parallel subagent use intended |
+| In-page search | **Pagefind** (FOSS, $0) | Listed in stack, not yet wired |
+
+**Anti-pattern to reject:** "Let's add tool X to do Y" without first checking whether Y is already covered by the stack above.
+
+**Approval thresholds:**
+- New paid service: explicit maintainer approval (per Rule 7 + Forbidden Actions)
+- Free / open-source addition: 🟡 risk note, proceed with diff shown
+- Enabling features inside the existing paid stack (e.g., turning on Vercel Analytics): 🟢, just enable

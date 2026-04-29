@@ -4,6 +4,34 @@
 
 ---
 
+## 2026-04-29 — Workflow Constitution: AI-Citable Goal + Rule 10 + Pawee Workflow Kit
+
+**Type:** Architecture / Workflow
+
+**Decision/Event:**
+- Established **AI-citable** as a first-class goal alongside Thai readability. Site built for both Thai humans and AI search engines (Perplexity, ChatGPT, Claude, Gemini, Google AI Overviews).
+- Adopted **CC BY-SA 4.0** as content license. MIT for code.
+- Confirmed **non-profit** funding model: no donations except funded research collaborations.
+- Added CLAUDE.md **Rule 10** (Ask First on Ambiguity, 🟡, and 🔴) — reflects maintainer feedback that most pipeline errors trace to ambiguous instructions, not agent execution.
+- Added CLAUDE.md **§12 Free-Tier Audit** — explicit accounting of capabilities already in the paid stack (Vercel Pro, GitHub Pro, Supabase Pro, Claude Max 20x) to prevent reflexive new-tool additions.
+- Created **`docs/WORKFLOW_KIT.md`** — living document for A/B testing convention, Pattern Wins log, Discarded approaches log. The pawee-workflow-kit is evolving infrastructure, not a fixed install.
+
+**Rationale/Context:**
+- Maintainer goal: 90-95% automation; remaining 5-10% reserved for ambiguity-clarification.
+- Foundation-first principle (CLAUDE.md Rule 3): codify goals before producing more content.
+- Search increasingly happens via AI engines, not Google. Site must be machine-citable to remain relevant.
+
+**Action Taken:**
+- CLAUDE.md §1: added Audience, Content License, Code License, Funding lines.
+- CLAUDE.md §4: added Rule 10.
+- CLAUDE.md: added §12 Free-Tier Audit.
+- Created `docs/WORKFLOW_KIT.md` with A/B convention, bilingual structured-data convention, AI engine priority order, license language, initial Pattern Wins entries (drafter MDX-safety check, URL Verifier HEAD→GET fallback, fresh-context Content Verifier) and Discarded entry (HEAD-only URL verification).
+- This entry.
+
+**Reporter:** Maintainer 9-item vision (2026-04-29 conversation).
+
+---
+
 ## 2026-04-29 — Drafter Prompt Hardening: MDX Safety Check
 
 **Type:** Refactor / Pipeline (🔴 agent prompt change per CLAUDE.md §6)
