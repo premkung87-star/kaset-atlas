@@ -4,6 +4,40 @@
 
 ---
 
+## 2026-04-29 — Auto Pipeline: Added กะเพรา (Holy Basil)
+
+**Type:** Content Addition (auto)
+
+**Crop:** กะเพรา (Holy Basil) — `holy-basil`
+**Category:** culinary-herbs
+**Scientific:** *Ocimum tenuiflorum* (syn. *O. sanctum*)
+
+**Pipeline run:**
+- Researcher: 12 sources found (7 Thai + 5 international, 9 high-confidence)
+- Drafter: 13 sections written, contributor=`AI Pipeline (auto)`
+- URL Verifier (first run): 8/12 passed — halted, logged to `docs/PIPELINE_FAILURES.md` (HEAD-method false negatives)
+- URL Verifier (second run, after script patch): 12/12 passed
+- Content Verifier (fresh context): pass — 0 blockers, 0 medium issues, 1 minor (logged)
+- Auto-fixes applied: none
+- Verifier flagged issues: 1 minor, non-blocking
+
+**Sources cited:**
+- กรมวิชาการเกษตร (DOA) — production manual + spacing trial
+- มหาวิทยาลัยเกษตรศาสตร์ — herb resource (clgc) + post-harvest leaf blight (KUKR)
+- มหาวิทยาลัยมหิดล — botanical reference (medplant)
+- รักบ้านเกิด, บ้านและสวน (กะเพราแดง vs ขาว)
+- JIRCAS Thai Vegetable Database, NC State Extension, ICAR
+- PMC peer-reviewed: tulsi review (PMC4296439), downy mildew resistance genetics (PMC5914031)
+
+**Files changed:**
+- `src/content/crops/holy-basil.mdx` (new)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (first-run halt entry)
+
+**Notes:** First auto-pipeline run since 2026-04-29 policy override (Definition B / Fully-Automated). Surfaced a real bug in `scripts/verify-urls.sh` (HEAD-only verification produces false negatives on PMC, government PDFs, anti-bot-gated commercial sites). Script patched externally before second run. Halt-and-log-then-fix loop worked as designed.
+
+---
+
 ## 2026-04-29 — Project Initialization
 
 **Type:** Architecture / Foundation
