@@ -1,0 +1,197 @@
+---
+# ==========================================
+# Kaset Atlas — Crop Profile Template
+# Copy this file and rename to your crop slug
+# Example: copy to src/content/crops/sweet-basil.mdx
+# ==========================================
+
+# Identity
+title: "ชื่อพืชภาษาไทย"
+titleEn: "Common English name"
+scientificName: "Genus species"
+aliases: ["ชื่ออื่น 1", "ชื่อท้องถิ่น 2"]
+
+# Classification
+category: "culinary-herbs"  # one of: food-crops, fruit-trees, culinary-herbs, medicinal-plants, beverage-crops, industrial-crops, ornamental, forage-fodder, cover-crops, mushrooms
+family: "Lamiaceae"
+growthForm: "herb"          # herb, shrub, tree, vine, grass, succulent, aquatic, fungus
+lifeCycle: "annual"         # annual, biennial, perennial
+
+# Quick reference
+summary: "สรุป 1-2 ประโยคที่บอกว่าพืชนี้คืออะไร ใครควรปลูก เหมาะกับสภาพไหน"
+difficulty: "easy"          # easy, moderate, hard, expert
+timeToHarvest: "60-90 วัน"
+
+# Growing conditions
+suitableRegions: ["all"]    # north, northeast, central, east, west, south, highland, all
+waterNeed: "medium"         # low, medium, high
+sunNeed: "full"             # shade, partial, full
+soilTypes: ["ดินร่วน", "ดินร่วนปนทราย"]
+
+# Risk & guidance
+mainRisks: ["โรครากเน่าหากระบายน้ำไม่ดี"]
+bestFor: ["เกษตรกรรายย่อย", "ปลูกในกระถาง", "สวนครัว"]
+notSuitableFor: ["พื้นที่น้ำท่วมขัง"]
+
+# Metadata
+contributor: "Prem Pawee"
+reviewer: ""
+lastUpdated: 2026-04-29
+publishedAt: 2026-04-29
+confidenceOverall: "high"   # high, medium, low, uncertain
+
+# Display
+heroImage: ""
+heroImageAlt: ""
+draft: true                  # set to false when ready to publish
+
+# SEO
+seoTitle: ""
+seoDescription: ""
+---
+
+import SourceBox from '@components/SourceBox.astro';
+import ThailandBox from '@components/ThailandBox.astro';
+import WarningBox from '@components/WarningBox.astro';
+import ConfidenceBadge from '@components/ConfidenceBadge.astro';
+import FactorBadge from '@components/FactorBadge.astro';
+
+# {frontmatter.title} <span class="text-charcoal-light text-h3">({frontmatter.titleEn})</span>
+
+<p class="lead text-charcoal-light">{frontmatter.summary}</p>
+
+## ภาพรวมอย่างย่อ
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3 my-6">
+  <FactorBadge label="ภาคที่เหมาะ" value="ทุกภาค" />
+  <FactorBadge label="ความยาก" value="ง่าย" />
+  <FactorBadge label="ระยะเวลา" value="60-90 วัน" />
+  <FactorBadge label="น้ำ" value="ปานกลาง" />
+  <FactorBadge label="แดด" value="แดดเต็มวัน" />
+  <FactorBadge label="ดิน" value="ร่วน, ระบายน้ำดี" />
+</div>
+
+---
+
+## 1. ปลูกในไทยได้หรือไม่ <ConfidenceBadge level="high" />
+
+(สรุปสั้นๆ ว่าปลูกในไทยได้ที่ไหนบ้าง มีข้อจำกัดอะไรบ้าง)
+
+---
+
+## 2. ภูมิอากาศที่เหมาะสม <ConfidenceBadge level="high" />
+
+- **อุณหภูมิ:** ...
+- **ปริมาณน้ำฝน:** ...
+- **ความชื้น:** ...
+- **แสงแดด:** ...
+- **ระดับความสูงจากระดับน้ำทะเล:** ...
+- **ฤดูกาลปลูก:** ...
+
+---
+
+## 3. ดินและการเตรียมดิน <ConfidenceBadge level="high" />
+
+- **เนื้อดิน:** ...
+- **การระบายน้ำ:** ...
+- **ค่า pH:** ...
+- **อินทรียวัตถุ:** ...
+- **ความเค็มดิน:** ...
+- **การเตรียมดิน:** ...
+
+---
+
+## 4. การให้น้ำ <ConfidenceBadge level="high" />
+
+- **ความต้องการน้ำ:** ...
+- **ความถี่ในการรดน้ำ:** ...
+- **ความทนทานต่อความแล้ง:** ...
+- **ความเสี่ยงน้ำท่วมขัง:** ...
+
+---
+
+## 5. วิธีการปลูก <ConfidenceBadge level="high" />
+
+- **วิธีขยายพันธุ์:** เมล็ด / ปักชำ / ทาบกิ่ง / ต้นกล้า
+- **ระยะปลูก:** ...
+- **ฤดูปลูกที่เหมาะ:** ...
+- **การเพาะกล้า:** ...
+- **การย้ายปลูก:** ...
+
+---
+
+## 6. การดูแลรักษา <ConfidenceBadge level="medium" />
+
+- **ปุ๋ย:** (อธิบายหลักการทั่วไป — ไม่ระบุปริมาณเฉพาะผลิตภัณฑ์)
+- **การตัดแต่ง:** ...
+- **การคลุมดิน:** ...
+- **การกำจัดวัชพืช:** ...
+- **การป้องกันแดด/ลม:** ...
+
+---
+
+## 7. โรคและแมลงศัตรูพืช <ConfidenceBadge level="medium" />
+
+<WarningBox>
+ข้อมูลนี้เป็นแนวทางทั่วไป ควรตรวจสอบกับผู้เชี่ยวชาญในพื้นที่ก่อนใช้สารเคมี และปฏิบัติตามฉลากผลิตภัณฑ์เสมอ
+</WarningBox>
+
+- **อาการที่พบบ่อย:** ...
+- **การป้องกัน:** ...
+- **การจัดการแบบไม่ใช้สารเคมี:** ...
+- **การจัดการด้วยสารเคมี:** (อ้างอิงคำแนะนำของกรมวิชาการเกษตรและฉลากผลิตภัณฑ์)
+
+---
+
+## 8. การเก็บเกี่ยว <ConfidenceBadge level="high" />
+
+- **อายุเก็บเกี่ยว:** ...
+- **สัญญาณพร้อมเก็บเกี่ยว:** ...
+- **วิธีจัดการหลังเก็บเกี่ยว:** ...
+- **การเก็บรักษา:** ...
+
+---
+
+## 9. ต้นทุนและความเสี่ยงทางเศรษฐกิจ <ConfidenceBadge level="medium" />
+
+- **ต้นทุนโดยประมาณ:** (ระบุช่วง พร้อมแหล่งที่มาและปีที่อ้างอิง)
+- **ความผันผวนของราคาตลาด:** ...
+- **ความต้องการแรงงาน:** ...
+- **สาเหตุของความล้มเหลวที่พบบ่อย:** ...
+- **คำเตือนสำหรับมือใหม่:** ...
+
+---
+
+## 10. หมายเหตุเฉพาะประเทศไทย <ConfidenceBadge level="high" />
+
+<ThailandBox>
+- ข้อจำกัดในบริบทไทย
+- ความแตกต่างระหว่างภาค
+- ข้อค้นพบจากแหล่งข้อมูลในไทย
+</ThailandBox>
+
+---
+
+## 11. ความรู้จากต่างประเทศ <ConfidenceBadge level="medium" />
+
+- แหล่งต่างประเทศพูดอะไรบ้าง
+- ส่วนไหนน่าจะใช้ได้ในไทย
+- ส่วนไหนอาจไม่เหมาะกับสภาพไทย
+
+---
+
+## 12. แหล่งข้อมูล
+
+| ส่วน | แหล่งที่มา | ประเภท | วันที่ | ระดับความเชื่อถือ |
+|------|------------|--------|--------|------------------|
+| ภูมิอากาศ | [ชื่อแหล่ง](url) | กรมวิชาการเกษตร | 2024-03 | High |
+| ดิน | [ชื่อแหล่ง](url) | FAO | 2019 | High |
+
+---
+
+## ปรับปรุงล่าสุด
+
+- **วันที่:** {frontmatter.lastUpdated.toLocaleDateString('th-TH')}
+- **ผู้เขียน:** {frontmatter.contributor}
+- **ผู้รีวิว:** {frontmatter.reviewer || 'ยังไม่มี'}
+- **ระดับความเชื่อถือโดยรวม:** {frontmatter.confidenceOverall}

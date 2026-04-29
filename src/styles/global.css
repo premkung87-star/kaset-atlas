@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   Kaset Atlas — Global Styles
+   ============================================ */
+
+/* Font loading - LINE Seed Sans Thai (preferred) + Inter (English) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
+
+/* CSS Custom Properties — accessible from anywhere */
+:root {
+  /* Brand colors */
+  --color-kaset-green: #2F6B3F;
+  --color-kaset-green-dark: #1F4A2A;
+  --color-soil-brown: #8A5A33;
+  --color-sun-orange: #F59E42;
+  --color-water-blue: #3B82A0;
+  --color-rice-cream: #F7F1E3;
+  --color-charcoal: #26312A;
+
+  /* Typography */
+  --font-thai: 'LINE Seed Sans Thai', 'Noto Sans Thai', sans-serif;
+  --font-sans: 'Inter', 'IBM Plex Sans', system-ui, sans-serif;
+
+  /* Spacing scale */
+  --content-padding: 1rem;
+  --content-padding-md: 2rem;
+  --content-padding-lg: 3rem;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+@layer base {
+  html {
+    font-family: var(--font-thai), var(--font-sans);
+    background-color: var(--color-rice-cream);
+    color: var(--color-charcoal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    line-height: 1.75;
+    font-size: 1.0625rem; /* 17px - optimized for Thai */
+  }
+
+  /* Headings always use kaset-green-dark */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-kaset-green-dark);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  /* Links use water-blue */
+  a {
+    color: var(--color-water-blue);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 1px;
+    transition: color 0.15s ease;
+  }
+
+  a:hover {
+    color: var(--color-water-blue);
+    text-decoration-thickness: 2px;
+  }
+
+  /* Selection style */
+  ::selection {
+    background-color: var(--color-sun-orange);
+    color: white;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid var(--color-water-blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* ============================================
+   Component Layer
+   ============================================ */
+
+@layer components {
+  /* Container */
+  .container-reading {
+    @apply max-w-reading mx-auto px-4 md:px-0;
+  }
+
+  .container-page {
+    @apply max-w-wide mx-auto px-4 md:px-8 lg:px-12;
+  }
+
+  /* Index Card style — for crop cards */
+  .index-card {
+    @apply bg-white border border-charcoal/10 rounded-card shadow-card 
+           hover:shadow-card-hover transition-shadow duration-200
+           p-6;
+  }
+
+  /* Source Box — visible attribution block */
+  .source-box {
+    @apply bg-soil-brown/5 border-l-4 border-soil-brown 
+           rounded-r-card p-5 my-6
+           font-thai text-base;
+  }
+
+  /* Thailand Applicability Box */
+  .thailand-box {
+    @apply bg-sun-orange/8 border border-sun-orange/30
+           rounded-card p-5 my-6;
+  }
+
+  /* Warning Box — for safety-critical content */
+  .warning-box {
+    @apply bg-red-50 border-l-4 border-red-500
+           rounded-r-card p-5 my-6
+           text-red-900;
+  }
+
+  /* Info Box — for water/general info */
+  .info-box {
+    @apply bg-water-blue/8 border border-water-blue/30
+           rounded-card p-5 my-6;
+  }
+
+  /* Confidence Badges */
+  .badge-confidence {
+    @apply inline-flex items-center gap-1
+           px-2.5 py-1 rounded-badge
+           text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .badge-high {
+    @apply bg-kaset-green/15 text-kaset-green-dark;
+  }
+
+  .badge-medium {
+    @apply bg-sun-orange/20 text-sun-orange-dark;
+  }
+
+  .badge-low {
+    @apply bg-soil-brown/15 text-soil-brown-dark;
+  }
+
+  .badge-uncertain {
+    @apply bg-charcoal/10 text-charcoal-light;
+  }
+
+  /* Factor Badge — soil, water, light, etc. */
+  .badge-factor {
+    @apply inline-flex items-center gap-1.5
+           px-3 py-1.5 rounded-full
+           text-sm font-medium
+           bg-rice-cream-dark text-charcoal;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 rounded-badge
+           bg-kaset-green text-white font-semibold
+           hover:bg-kaset-green-dark
+           transition-colors duration-150;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 rounded-badge
+           border border-kaset-green text-kaset-green-dark font-semibold
+           hover:bg-kaset-green/10
+           transition-colors duration-150;
+  }
+
+  /* Map-line decoration — subtle horizontal divider */
+  .map-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-soil-brown/30 to-transparent
+           my-12;
+  }
+}
+
+/* ============================================
+   Utility Layer
+   ============================================ */
+
+@layer utilities {
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Pretty text wrap for paragraphs */
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
