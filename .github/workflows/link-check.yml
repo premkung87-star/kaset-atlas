@@ -1,0 +1,71 @@
+name: Weekly URL Verification
+
+on:
+  schedule:
+    # Every Sunday at 00:00 UTC (07:00 Bangkok)
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verify-urls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make verify-urls.sh executable
+        run: chmod +x scripts/verify-urls.sh
+
+      - name: Verify URLs in every crop
+        id: verify
+        run: |
+          set +e
+          FAILED=()
+          for f in src/content/crops/*.mdx; do
+            [ "$(basename "$f")" = "_template.mdx" ] && continue
+            echo ""
+            echo "=== $f ==="
+            OUT=$(./scripts/verify-urls.sh "$f" 2>&1)
+            EXIT=$?
+            echo "$OUT"
+            if [ "$EXIT" -ne 0 ]; then
+              FAILED+=("$f")
+            fi
+          done
+
+          if [ ${#FAILED[@]} -gt 0 ]; then
+            echo ""
+            echo "URL VERIFICATION FAILED for:"
+            printf ' - %s\n' "${FAILED[@]}"
+            {
+              echo "failed=true"
+              echo "failed_files<<EOF"
+              printf '%s\n' "${FAILED[@]}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 1
+          else
+            echo ""
+            echo "All URLs verified across all crops."
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open issue on failure
+        if: failure() && steps.verify.outputs.failed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failedFiles = `${{ steps.verify.outputs.failed_files }}`;
+            const today = new Date().toISOString().split('T')[0];
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Weekly link rot — ${today}: URL failures detected`,
+              body: `The weekly URL verification job found broken links.\n\n**Failed files:**\n\`\`\`\n${failedFiles}\n\`\`\`\n\nPlease review and either patch the URLs or replace the cited sources. Per docs/SOURCE_POLICY.md §6, source updates trigger a re-review of the affected crop's confidence levels.`,
+              labels: ['link-rot', 'pipeline', 'auto-opened'],
+            });

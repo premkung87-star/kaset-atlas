@@ -1,0 +1,62 @@
+name: Build Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site (Astro + Pagefind)
+        run: npm run build
+
+      - name: Verify Pagefind index exists
+        run: |
+          test -d dist/pagefind || (echo "Pagefind index missing" && exit 1)
+          echo "Pagefind index present: $(find dist/pagefind -type f | wc -l) files"
+
+      - name: Verify sitemap exists
+        run: |
+          test -f dist/sitemap-index.xml || (echo "Sitemap missing" && exit 1)
+          echo "Sitemap-index present"
+
+      - name: Verify robots.txt and llms.txt deployed
+        run: |
+          test -f dist/robots.txt || (echo "robots.txt missing" && exit 1)
+          test -f dist/llms.txt || (echo "llms.txt missing" && exit 1)
+          echo "AI-citable surfaces deployed"
+
+      - name: MDX safety scan on all crop files
+        run: |
+          set -e
+          chmod +x scripts/check-mdx-safety.sh
+          for f in src/content/crops/*.mdx; do
+            [ "$(basename "$f")" = "_template.mdx" ] && continue
+            echo "Checking $f..."
+            ./scripts/check-mdx-safety.sh "$f" || (echo "MDX safety FAIL on $f" && exit 1)
+          done
+          echo "All crop files passed MDX safety check"
