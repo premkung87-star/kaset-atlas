@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-04-29 — กะเพรา (Holy Basil) — push step
+
+**Stage:** push
+**Reason:** No `origin` remote configured. `git push origin main` exits 128 with `fatal: 'origin' does not appear to be a git repository`.
+
+**Details:**
+- `git remote` returns empty
+- `.git/config` has no `[remote "origin"]` section
+- Repository is local-only since the initial scaffold commit
+
+**Action taken:** halted at push only — content is locally committed at `8b16012` (`content(culinary-herbs): add holy basil [auto]`). Working tree is clean.
+
+**Resolution:** pending — maintainer needs to configure origin (e.g., `git remote add origin git@github.com:<owner>/kaset-atlas.git`) and run `git push -u origin main`. No content fix required. After remote is set, this pending crop and any future commits will reach Vercel.
+
+---
+
 ## 2026-04-29 — กะเพรา (Holy Basil)
 
 **Stage:** url-verifier
