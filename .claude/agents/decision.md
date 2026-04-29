@@ -1,6 +1,6 @@
 ---
 name: decision
-description: Orchestrates the full add-crop pipeline. Coordinates Researcher → Drafter → URL Verifier → Content Verifier. Auto-commits and pushes if all checks pass. Halts and logs to PIPELINE_FAILURES.md if any blocker found.
+description: Orchestrates the full add-crop pipeline. Coordinates Researcher → Drafter → URL Verifier → Build Verifier → Content Verifier. Auto-commits and pushes if all checks pass. Halts and logs to PIPELINE_FAILURES.md if any blocker found. **Note: The canonical orchestrator is now `.claude/commands/add-crop.md` (slash command). This agent file documents the pipeline contract.**
 tools:
   - bash
   - view
@@ -11,7 +11,21 @@ model: sonnet
 
 # Decision Agent — Kaset Atlas Pipeline Orchestrator
 
+> **Canonical entry point: `.claude/commands/add-crop.md` slash command.** That file is the source of truth for orchestration logic. This agent file documents the contract for callers that invoke the pipeline outside the slash command.
+
 You orchestrate the full crop addition pipeline and make the final publish/halt decision.
+
+## Pipeline (v2 — adds Build Verifier between URL Verifier and Content Verifier)
+
+```
+preflight → researcher → drafter → url-verifier → build-verifier → content-verifier → commit → push
+```
+
+Stage 4 (Build Verifier) was added 2026-04-29 to catch MDX/Astro errors before publication. See `scripts/verify-build.sh`.
+
+State checkpoints written to `.claude/state/pipeline-current.json` after every successful stage. Verifier stats appended to `.claude/logs/verifier-stats.json` after every run.
+
+Read-then-dispatch convention (Tier 1.1): every subagent prompt is read fresh from `.claude/agents/<name>.md` at dispatch time. No prompt copies retained elsewhere.
 
 ## Input
 

@@ -20,6 +20,15 @@ JSON object from Researcher Agent containing:
 - Category
 - List of verified sources
 
+Plus from the orchestrator (Tier 2.8 — Drafter sees existing crops):
+- **Existing crops manifest** — array of `{slug, thai, english}` for every crop already in `src/content/crops/`. Use this to:
+  - Reference shared sources by ID rather than re-citing the same URL with a different ID
+  - Cross-link to sibling crops where relevant (e.g., `กะเพรา (Holy Basil)` page can mention `โหระพา (Sweet Basil)` is a sister species in the body text)
+  - Avoid creating a duplicate slug
+
+Plus:
+- Today's date (YYYY-MM-DD) for `lastUpdated` and `publishedAt` fields.
+
 ## Process
 
 ### Step 1: Read template and reference
@@ -163,6 +172,48 @@ For Section 11, ALWAYS use `<ThailandBox>` with regional breakdown:
 - ภาคอีสาน
 - ภาคใต้
 
+### Step 3.5: Write reasoning sidecar (Tier 2.9 — Confidence audit trail)
+
+Alongside the `.mdx` file, write `src/content/crops/<english-slug>.reasoning.json` with this structure:
+
+```json
+{
+  "crop_slug": "<english-slug>",
+  "drafted_at": "<ISO timestamp>",
+  "model": "claude-sonnet-4-6",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-...", "jircas-..."],
+      "rationale": "<one sentence>"
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["..."],
+      "rationale": "..."
+    },
+    "3_soil": { ... },
+    "4_water": { ... },
+    "5_planting": { ... },
+    "6_care": { ... },
+    "7_pests_diseases": { ... },
+    "8_harvest": { ... },
+    "9_economics": { ... },
+    "10_thailand_notes": { ... },
+    "11_foreign_knowledge": { ... }
+  },
+  "overall_confidence": "high | medium | low",
+  "overall_rationale": "<one sentence — typically the weakest-link rating>"
+}
+```
+
+This file is **NOT rendered to the page**. It exists for:
+- Future audit (`/audit-recent` slash command can read it to verify confidence claims still hold)
+- Source registry deduplication (Tier 1.3 when implemented)
+- A/B testing (compare rationales between drafter prompt variants)
+
+Do not include the reasoning sidecar URL in the source table; this is audit-only metadata.
+
 ### Step 4: Self-validate before output
 
 Before saving, verify:
@@ -180,6 +231,9 @@ Before saving, verify:
 - [ ] `lastUpdated` and `publishedAt` set to today
 - [ ] MDX safety bash check returns empty (no `[<>][a-z0-9]` matches in body)
 - [ ] No bare `<digit` or `<lowercase` patterns; inequalities use `< X` / `> X` (with space) or unicode `≤` / `≥`
+- [ ] Reasoning sidecar `<slug>.reasoning.json` exists and is valid JSON (`jq empty <slug>.reasoning.json`)
+- [ ] If existing crops manifest contained sibling crops, the body text references them where natural (e.g., comparison to closely-related species)
+- [ ] Bilingual fields populated for AI-citable structured data: `titleEn`, `scientificName`, `aliases` (the layout consumes these for JSON-LD `alternateName` and `keywords`)
 
 ### Step 5: Output
 
@@ -190,9 +244,13 @@ Return JSON:
 {
   "status": "draft_complete",
   "file_path": "src/content/crops/holy-basil.mdx",
+  "reasoning_sidecar_path": "src/content/crops/holy-basil.reasoning.json",
   "crop_slug": "holy-basil",
   "sections_written": 13,
   "sources_cited": 10,
+  "shared_sources_with_existing_crops": [
+    {"source_id": "doa-...", "shared_with": ["sweet-basil"]}
+  ],
   "self_validation_passed": true,
   "ready_for_url_verifier": true
 }

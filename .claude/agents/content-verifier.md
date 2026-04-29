@@ -189,6 +189,30 @@ Return JSON:
 
 If `ready_for_publish: false`, the Decision Agent will halt and log to `docs/PIPELINE_FAILURES.md`.
 
+### Step 10: Log verifier statistics (Tier 2.6 — drift signal)
+
+After producing the JSON above, append a single JSON line to `.claude/logs/verifier-stats.json`:
+
+```bash
+cat >> .claude/logs/verifier-stats.json <<EOF
+{"date":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","crop_slug":"<slug>","blockers":<N>,"medium_issues":<N>,"minor_issues":<N>,"urls_total":<N>,"urls_failed":<N>,"sources_cited":<N>,"decision":"pass|fail|fixed","auto_fixes_applied":<N>}
+EOF
+```
+
+This is JSON-lines (NDJSON), not a single JSON object. The file is append-only. After 10+ runs, the orchestrator can read this file and surface drift patterns (e.g., rising blocker rate, falling URL pass rate).
+
+Do NOT skip this step. The stats file is the only signal that lets us tune verifier strictness over time.
+
+### Step 11: Read reasoning sidecar (cross-check)
+
+The drafter writes `src/content/crops/<slug>.reasoning.json` with which sources back each section's confidence rating. Read this file and spot-check:
+
+- Does each "high" rating have ≥2 high-confidence supporting source IDs listed?
+- Are any source IDs listed as supporting that don't actually exist in the source table?
+- Are any sections rated "high" with only 1 medium-confidence source listed?
+
+Flag any mismatches as MEDIUM (auto-fix: lower the confidence rating to match the actual source set).
+
 ## Forbidden
 
 - ❌ Approving content with any 🔴 BLOCKER
