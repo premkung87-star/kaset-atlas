@@ -4,6 +4,59 @@
 
 ---
 
+## 2026-04-29 (overnight) — Foundation Sprint + First Auto-Pipeline Production Attempt
+
+**Type:** Architecture / Workflow / Content (mixed)
+
+**Decision/Event:** Maintainer authorized a sleep-mode full Tier 1+2 foundation push plus crop-production loop until 00:00. Scope: build gate + slash command + AI-citable infrastructure + verifier statistics + state checkpoint + drafter awareness improvements + reasoning sidecar policy + GitHub Actions CI + first auto-pipeline production runs (Cassava + Durian).
+
+**Pipeline runs:**
+- **Researcher × 2** (parallel): Cassava 12 sources (8 Thai + 4 international, 8 high-confidence), Durian 12 sources (10 Thai + 2 international, 8 high-confidence — international source floor below the standard ≥3, accepted with note).
+- **Drafter × 2** (parallel): both produced 13-section MDX with reasoning sidecars. Cassava self-validated clean; Durian initially had a copied-from-template `{frontmatter.X.method()}` footer that broke the build.
+- **URL Verifier × 2:** v2 passed both crops 12/12.
+- **Build Verifier × 1:** caught durian's broken `frontmatter.lastUpdated.toLocaleDateString()` runtime failure. Fixed durian + retroactively fixed `_template.mdx` so future drafters don't repeat. Build then passed (17 pages).
+- **Content Verifier × 2** (fresh contexts, parallel):
+  - **Cassava: FAIL — 1 blocker, 2 medium issues.** FAO y5548e was misattributed as "Cassava Processing and Utilization" — actual document is "A cassava industrial revolution in Nigeria". Auto-fix retry applied (Rule 8 budget). Re-verification in fresh context found 1 new blocker (opsmoac-rayong-cassava soft-404 that URL Verifier v3 missed) + 2 residual medium issues. Auto-fix budget exhausted. **HALTED** — uncommitted in working tree pending second-pass corrections.
+  - **Durian: FAIL — 4 blockers (soft-200 dead URLs).** 4 of 12 cited URLs returned HTTP 200 but body was a Thai error page ("ไม่พบกระทู้ที่ระบุ", "ไม่พบ File นี้") or FAO redirect to homepage. URL Verifier v2 missed these — caught only by Content Verifier's content-fidelity check. **HALTED** — uncommitted in working tree pending researcher re-run for live alternative URLs.
+
+**Pattern Wins extracted (logged in WORKFLOW_KIT.md §4):**
+1. **URL Verifier v3 (soft-200 body inspection)** — fetches first 4KB of body and matches against tightened error-phrase regex (`ไม่พบกระทู้ที่ระบุ`, `ไม่พบ File นี้`, `ไม่พบหน้านี้ในระบบ`, `<title>...404...</title>`, etc.). v3.1 broadened the regex after cassava re-verification. Future runs will catch what would have slipped past v2.
+2. **Drafter: no `{frontmatter.X.method()}` in MDX body** — the crop layout already renders frontmatter metadata using `crop.data.X` (Zod-coerced types). MDX body access returns raw strings, so method calls throw. Template footer block removed; drafter prompt Forbidden list updated.
+3. **Drafter: never cite a source for claims the source doesn't substantiate** — citation by topic-keyword without document fetch is FORBIDDEN. Cassava lesson. Drafter prompt updated.
+
+**Discarded approaches (logged in WORKFLOW_KIT.md §5):**
+1. URL Verifier v2 (HTTP-status-only) — soft-200 responses slipped past
+2. Drafter citation by topic-keyword — produces misattributions
+3. `_template.mdx` `{frontmatter.X.toLocaleDateString()}` footer — broken at runtime
+
+**Foundation work shipped (Phase A + Phase B):**
+- 6 commits early evening + 4 commits late evening (Phase A foundation + Phase B post-pipeline learnings)
+- New: `scripts/verify-build.sh`, `scripts/check-mdx-safety.sh`, `scripts/verify-urls.sh` (v3.1)
+- New: `.claude/commands/add-crop.md` (v2 with Read-then-dispatch + build gate + state checkpoint)
+- New: `.claude/state/`, `.claude/logs/` directories with READMEs
+- New: `public/robots.txt` (open AI crawler posture), `public/llms.txt` (AI-friendly site map)
+- New: `src/components/JsonLd.astro` + JSON-LD on every crop page + WebSite/Organization on homepage
+- New: `.github/workflows/build.yml` (CI build verification on push) + `.github/workflows/link-check.yml` (weekly link-rot)
+- Updated: `docs/WORKFLOW_KIT.md` (§10 Kaset Atlas-specific patterns, §11 Foundation Completeness Map, plus 6 Pattern Wins + 4 Discarded entries)
+- Updated: `docs/CONTENT_LICENSE.md` aligned to CC BY-SA 4.0 (was CC BY 4.0)
+- Updated: `BaseLayout.astro` (jsonLd prop + license meta), `src/pages/crops/[...slug].astro` + `src/pages/index.astro` (bilingual structured data)
+- Updated: `.claude/agents/drafter.md` (existing-crops manifest awareness + reasoning sidecar requirement + 3 new Forbidden items)
+- Updated: `.claude/agents/content-verifier.md` (verifier-stats logging + reasoning sidecar cross-check)
+- Updated: `.claude/agents/decision.md` (delegated to slash command as canonical orchestrator)
+- Created: `src/content/crops/sweet-basil.reasoning.json` + `holy-basil.reasoning.json` (retroactive sidecars)
+
+**Uncommitted in working tree (pending maintainer review):**
+- `src/content/crops/cassava.mdx` + `.reasoning.json` — auto-fix applied, 1 blocker + 2 medium remain
+- `src/content/crops/durian.mdx` + `.reasoning.json` — 4 dead URLs need researcher re-run
+
+**Verifier statistics log:** `.claude/logs/verifier-stats.json` populated with 4 entries (durian-fail-pass1, cassava-fail-pass1, cassava-fail-pass2). Real drift signal data starts here.
+
+**Result:** **Foundation strengthened significantly. Zero new content shipped tonight** — pipeline correctly halted on real verification failures rather than pushing flawed content. The halt-and-log loop produced 3 Pattern Wins + 4 Discarded entries that materially improve future pipeline reliability.
+
+**Reporter:** Maintainer "do all this with automation 100%, loop until 00:00" directive. AI Pipeline (Claude Opus 4.7 1M).
+
+---
+
 ## 2026-04-29 — Workflow Constitution: AI-Citable Goal + Rule 10 + Pawee Workflow Kit
 
 **Type:** Architecture / Workflow

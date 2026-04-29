@@ -85,6 +85,24 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 **Replaced:** N/A — net new with the auto-pipeline.
 **Source:** `docs/AUTOMATION_PIPELINE.md` design.
 
+### 2026-04-29 (late) — URL Verifier v3: soft-200 body inspection
+**Pattern:** `scripts/verify-urls.sh` v3 fetches the first 4KB of every URL's body in addition to HTTP status check. If body matches one of a small set of known soft-error markers (`ไม่พบกระทู้ที่ระบุ`, `ไม่พบ File นี้`, `ไม่พบหน้านี้ในระบบ`, `<title>... 404 ...</title>`, etc.), the URL is reported as `status: "soft-200"` regardless of actual HTTP code. Patterns are deliberately specific to error pages — broad matches like bare `ไม่พบ` are avoided because that phrase appears in legitimate content.
+**Why it works:** Thai government CMS (DOA Share forum, opsmoac file system, etc.) commonly returns HTTP 200 with an error-page body when a thread/file/article goes missing. HTTP-only verification misses this; body inspection catches it. Caught durian's 3 dead-thread URLs and cassava's 1 dead-province URL — failures that would have shipped silently under v2.
+**Replaced:** v2 HEAD+GET-status-only verification (see §5 discarded).
+**Source:** `scripts/verify-urls.sh` v3 + v3.1 (soft-error pattern broadening) — landed 2026-04-29 (late). PIPELINE_FAILURES.md 2026-04-29 cassava+durian content-verifier halts surfaced this gap.
+
+### 2026-04-29 (late) — Drafter: no `{frontmatter.X.method()}` in MDX body
+**Pattern:** The crop layout (`src/pages/crops/[...slug].astro`) handles ALL frontmatter rendering using `crop.data.X` — Astro's Zod schema coerces these values to their proper types (e.g., `lastUpdated` becomes a `Date`). MDX body must NOT call `{frontmatter.X.toLocaleDateString()}` or any other method on a frontmatter value because at MDX render time `frontmatter.X` is a raw string, not the parsed type. The method call throws and breaks the build.
+**Why it works:** The broken pattern lived in `_template.mdx` line 194 since project init; the durian drafter copied it. Build Verifier (Tier 1.2) caught the runtime failure. The fix: remove the broken footer block from `_template.mdx`, add a comment in its place explaining why, and add a new Forbidden item to drafter prompt.
+**Replaced:** Implicit assumption that `frontmatter.X` works the same as `crop.data.X` (it doesn't — `crop.data.X` is the parsed object, `frontmatter.X` is the raw string).
+**Source:** Durian initial build failure (2026-04-29 22:34). PIPELINE_FAILURES.md entry.
+
+### 2026-04-29 (late) — Drafter: never cite a source for claims the source doesn't substantiate
+**Pattern:** Before citing a source for any claim, the Drafter MUST actually fetch and read the document to confirm it covers that specific claim. Citation by topic-keyword (URL contains "processing" → cite for HCN-processing claims) is FORBIDDEN because URL slugs and document titles can lie. FAO y5548e is at `/3/y5548e/...` — slug gives no signal — and the document at that URL is "A cassava industrial revolution in Nigeria" (a country case study under the Global Cassava Development Strategy initiative), NOT the more generic "Cassava Processing and Utilization" the URL slug or surrounding navigation might suggest.
+**Why it works:** Forces actual document inspection at draft time. Catches title/content mismatches before the Content Verifier has to. Saves a full pipeline halt.
+**Replaced:** Citation by topic-keyword without document fetch.
+**Source:** Cassava blocker (FAO y5548e misattribution, 2026-04-29 23:00 content-verifier first pass). PIPELINE_FAILURES.md cassava entry. Drafter prompt updated.
+
 ### 2026-04-29 — Atomic commit policy: separate agent vs content vs docs
 **Pattern:** Agent prompt changes, content additions/fixes, and docs changes go in **separate commits**, each with the right conventional-commit prefix:
 - `chore(agents): ...` — `.claude/agents/*.md` changes
@@ -103,6 +121,21 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 **Approach:** `curl --head` only, no fallback. Any non-2xx/3xx HEAD response treated as URL failure.
 **Why discarded:** False-negative rate too high. PMC blocks HEAD by policy (returns 405). Some Thai government PDF servers have broken HEAD handlers (return 404 to HEAD but 200 to GET). Anti-bot-gated commercial sites return concatenated status codes through redirect chains. First holy-basil pipeline run halted on 4 false-negatives across these classes.
 **Replaced by:** Pattern Win 2026-04-29 (HEAD→GET fallback).
+
+### 2026-04-29 (late) — URL Verifier v2 (HTTP-status-only after HEAD→GET fallback)
+**Approach:** v2 checked only HTTP status (with HEAD→GET fallback for sites that don't support HEAD). Any 200/206/301/302/304 = pass, anything else = fail.
+**Why discarded:** Thai government and other CMS commonly return HTTP 200 with an error-page body when the underlying content is missing. v2 marked these "soft-200" responses as PASS, letting them slip past URL verification. Caught only at the much more expensive Content Verifier stage. Durian's 3 dead-thread URLs and cassava's 1 dead-province URL all passed v2 but failed Content Verifier — wasting ~25 minutes of pipeline time per crop.
+**Replaced by:** Pattern Win 2026-04-29 (late) — URL Verifier v3/v3.1 with soft-200 body inspection.
+
+### 2026-04-29 (late) — Drafter: citation by topic-keyword
+**Approach:** Drafter cites URL X for claims about topic Y if X's URL slug, breadcrumb, or visible page title contains Y, without actually fetching and reading the document.
+**Why discarded:** URL slugs lie. FAO y5548e is hosted at `/3/y5548e/y5548e00.htm` — opaque slug. The document at that URL is "A cassava industrial revolution in Nigeria" — a country case study under the Global Cassava Development Strategy initiative — not a generic processing manual. Drafter cited it for HCN cyanogenic-glucoside processing claims it does not cover. Cassava blocker resulted.
+**Replaced by:** Pattern Win 2026-04-29 (late) — Drafter must fetch and read each cited source before citation.
+
+### 2026-04-29 (late) — `_template.mdx` footer with `{frontmatter.X.toLocaleDateString()}`
+**Approach:** `_template.mdx` had a "ปรับปรุงล่าสุด" footer block calling `{frontmatter.lastUpdated.toLocaleDateString('th-TH')}` directly in MDX body.
+**Why discarded:** At MDX render time `frontmatter.X` is the raw YAML string, not the Zod-coerced Date object that `crop.data.X` exposes via the page layout. Calling `.toLocaleDateString()` on a string throws and breaks the Astro build. Durian drafter copied this from the template; cassava drafter happened not to. Build Verifier (Tier 1.2) caught the runtime failure.
+**Replaced by:** Pattern Win 2026-04-29 (late) — never call `{frontmatter.X.method()}` in MDX body. Crop layout already renders metadata using `crop.data.X`. Template footer block deleted; replaced with a comment explaining why.
 
 ---
 
