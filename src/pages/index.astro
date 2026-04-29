@@ -26,11 +26,51 @@ const lastUpdated = today.toLocaleDateString('th-TH', {
   month: 'long',
   day: 'numeric',
 });
+
+// AI-citable structured data (WORKFLOW_KIT §6)
+const siteUrl = Astro.site?.toString() || 'https://kasetatlas.com';
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Kaset Atlas — เกษตรแอตลาส',
+    alternateName: ['เกษตรแอตลาส', 'Kaset Atlas'],
+    url: siteUrl,
+    description:
+      'Open-source, source-traceable, AI-citable Thai agricultural reference. Bridging global agricultural knowledge into Thai, for Thai farmers and the general public.',
+    inLanguage: 'th',
+    license: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    isAccessibleForFree: true,
+    keywords: 'Thai agriculture, การเกษตร, ปลูกพืช, agricultural knowledge, สารานุกรมเกษตร, agricultural dictionary',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteUrl}?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Kaset Atlas',
+    alternateName: 'เกษตรแอตลาส',
+    url: siteUrl,
+    logo: `${siteUrl}favicon.svg`,
+    description:
+      'Open-source, source-traceable, AI-citable Thai agricultural reference. Non-profit project — content licensed CC BY-SA 4.0.',
+    sameAs: ['https://github.com/premkung87-star/kaset-atlas'],
+    foundingDate: '2026-04-29',
+    knowsLanguage: ['th', 'en'],
+  },
+];
 ---
 
 <BaseLayout
   title="Kaset Atlas"
   description="แพลตฟอร์มความรู้เกษตรแบบเปิด — ความรู้เกษตรของโลก เพื่อเกษตรกรไทย ตรวจสอบแหล่งที่มาได้ทุกข้อมูล"
+  jsonLd={jsonLd}
 >
   <!-- Hero Section -->
   <section class="container-page py-16 md:py-24 text-center">

@@ -26,11 +26,76 @@ const difficultyMap = {
 
 const waterMap = { low: 'น้อย', medium: 'ปานกลาง', high: 'มาก' };
 const sunMap = { shade: 'ร่ม', partial: 'รำไร', full: 'แดดเต็มวัน' };
+
+// Bilingual structured data (AI-citable goal — see docs/WORKFLOW_KIT.md §6)
+const cropUrl = new URL(`/crops/${crop.slug}`, Astro.site).toString();
+const allNames = [
+  crop.data.titleEn,
+  crop.data.scientificName,
+  ...crop.data.aliases,
+].filter(Boolean);
+
+const keywordList = [
+  crop.data.title,
+  crop.data.titleEn,
+  crop.data.scientificName,
+  ...crop.data.aliases,
+  category?.data.title,
+  category?.data.titleEn,
+  crop.data.family,
+  'Thai agriculture',
+  'การเกษตร',
+  'ปลูกพืช',
+  'Kaset Atlas',
+].filter(Boolean);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: crop.data.title,
+  alternativeHeadline: allNames,
+  name: crop.data.title,
+  alternateName: allNames,
+  description: crop.data.summary,
+  inLanguage: 'th',
+  url: cropUrl,
+  datePublished: crop.data.publishedAt.toISOString(),
+  dateModified: crop.data.lastUpdated.toISOString(),
+  author: {
+    '@type': 'Organization',
+    name: crop.data.contributor,
+    url: 'https://kasetatlas.com',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Kaset Atlas',
+    alternateName: 'เกษตรแอตลาส',
+    url: 'https://kasetatlas.com',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://kasetatlas.com/favicon.svg',
+    },
+  },
+  license: 'https://creativecommons.org/licenses/by-sa/4.0/',
+  isAccessibleForFree: true,
+  keywords: keywordList.join(', '),
+  about: {
+    '@type': 'Thing',
+    name: crop.data.scientificName || crop.data.titleEn,
+    alternateName: [crop.data.title, ...allNames].filter(Boolean),
+  },
+  articleSection: category?.data.title || crop.data.category,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': cropUrl,
+  },
+};
 ---
 
 <BaseLayout
   title={crop.data.title}
   description={crop.data.summary}
+  jsonLd={jsonLd}
 >
   <article class="container-page py-8">
     <!-- Breadcrumb -->

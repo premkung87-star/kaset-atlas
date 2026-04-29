@@ -1,16 +1,19 @@
 ---
 import '../styles/global.css';
+import JsonLd from '../components/JsonLd.astro';
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
+  jsonLd?: Record<string, any> | Record<string, any>[];
 }
 
 const {
   title,
   description = 'แพลตฟอร์มความรู้เกษตรแบบเปิด — ความรู้เกษตรของโลก เพื่อเกษตรกรไทย',
   image = '/og-image.png',
+  jsonLd,
 } = Astro.props;
 
 const fullTitle = title === 'Kaset Atlas' ? title : `${title} | Kaset Atlas`;
@@ -43,6 +46,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content={fullTitle} />
     <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+    <!-- License + AI-citable signals -->
+    <meta name="license" content="https://creativecommons.org/licenses/by-sa/4.0/" />
+    <meta property="article:tag" content="agriculture,Thailand,เกษตร,การปลูกพืช,Thai farming" />
+    <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+    <!-- Structured data (Schema.org JSON-LD) -->
+    {jsonLd && <JsonLd data={jsonLd} />}
 
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -147,7 +160,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
               © 2026 Kaset Atlas — โดย <a href="https://prempawee.com" class="text-kaset-green-dark no-underline hover:underline">Prem Pawee</a>
             </p>
             <p class="mt-1">
-              เนื้อหาเผยแพร่ภายใต้ <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" class="text-kaset-green-dark no-underline hover:underline">CC BY 4.0</a>
+              เนื้อหาเผยแพร่ภายใต้ <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" class="text-kaset-green-dark no-underline hover:underline">CC BY-SA 4.0</a>
               · โค้ดเผยแพร่ภายใต้ <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" class="text-kaset-green-dark no-underline hover:underline">MIT License</a>
             </p>
           </div>
