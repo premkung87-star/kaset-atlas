@@ -1,0 +1,66 @@
+{
+  "crop_slug": "holy-basil",
+  "drafted_at": "2026-04-29T00:00:00Z",
+  "model": "claude-sonnet-4-6",
+  "retroactive": true,
+  "retroactive_note": "Retroactive sidecar created 2026-04-29 to satisfy the new Tier 2.9 reasoning-sidecar policy. Crop itself was auto-drafted (commit 8b16012, fixed in badca21 + 3f37c80). Source-to-section confidence mapping reconstructed from the source table since the original drafter run pre-dated the sidecar requirement.",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-holy-basil-production-nakhonpathom", "jircas-thaivege-ocimum-tenuiflorum", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "DOA production manual + JIRCAS Thai vegetable database + รักบ้านเกิด confirm cultivation across Thai regions"
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["ncstate-ocimum-tenuiflorum", "jircas-thaivege-ocimum-tenuiflorum"],
+      "rationale": "NC State Extension provides general climate envelope; JIRCAS confirms Thailand-specific applicability"
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["ncstate-ocimum-tenuiflorum", "doa-holy-basil-production-nakhonpathom"],
+      "rationale": "pH range from NC State + Thai soil context from DOA"
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-holy-basil-production-nakhonpathom", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "Multiple Thai practical sources"
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-holy-basil-spacing-2021", "doa-holy-basil-production-nakhonpathom", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "DOA spacing trial + DOA production manual + Thai practical guide"
+    },
+    "6_care": {
+      "rating": "medium",
+      "supporting_source_ids": ["doa-holy-basil-production-nakhonpathom", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "General principles only; chemical fertilizer specifics omitted per SAFETY_POLICY"
+    },
+    "7_pests_diseases": {
+      "rating": "medium",
+      "supporting_source_ids": ["doa-holy-basil-production-nakhonpathom", "ku-kukr-postharvest-leafblight", "pmc-ocimum-downy-mildew-resistance"],
+      "rationale": "Pest/disease data from DOA + KUKR (post-harvest leaf blight); downy mildew resistance from peer-reviewed PMC; chemical control specifics intentionally omitted"
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-holy-basil-production-nakhonpathom", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "Thai sources agree on harvest timing and method"
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["icar-maps-degraded-lands", "rakbankerd-holy-basil-cultivation"],
+      "rationale": "General market context; ICAR Indian intercropping data explicitly flagged as not directly transferable to Thai market"
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["jircas-thaivege-ocimum-tenuiflorum", "baanlaesuan-red-vs-white-holybasil", "ku-clgc-ocimum"],
+      "rationale": "JIRCAS Thai context + บ้านและสวน red/white cultivar comparison + KU clgc botanical reference"
+    },
+    "11_foreign_knowledge": {
+      "rating": "medium",
+      "supporting_source_ids": ["ncstate-ocimum-tenuiflorum", "pmc-tulsi-herb-for-all-reasons", "icar-maps-degraded-lands"],
+      "rationale": "NC State Extension + PMC tulsi review + ICAR; foreign cultural/economic context flagged as not directly applicable"
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "Per the original Content Verifier run (2026-04-29), 9 high-confidence sources backed the core sections; 2 medium-confidence sources covered economics and foreign-knowledge framing. Verifier blockers: 0; medium issues: 0; minor issues: 1 (non-blocking). See docs/AUDIT_LOG.md 2026-04-29 holy-basil entry for the full pipeline run record."
+}

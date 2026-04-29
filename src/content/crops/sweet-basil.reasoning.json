@@ -1,0 +1,66 @@
+{
+  "crop_slug": "sweet-basil",
+  "drafted_at": "2026-04-29T00:00:00Z",
+  "model": "manual-pre-pipeline",
+  "retroactive": true,
+  "retroactive_note": "Retroactive sidecar created 2026-04-29 to satisfy the new Tier 2.9 reasoning-sidecar policy. The crop itself was drafted manually before the auto-pipeline existed (commit 5831ef8). Source-to-section confidence mapping is reconstructed at section level only; per-claim mapping is not available for pre-pipeline crops.",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "DOA seed-production manual + multiple Thai ag-media sources confirm cultivation across all Thai regions"
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "university-extension"],
+      "rationale": "Cross-validated by DOA + UMN Extension + Old Farmer's Almanac"
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_types": ["university-extension", "wikifarmer"],
+      "rationale": "pH range and texture preferences from UMN Extension + commercial cultivation reference; Thailand-applicability note added"
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "university-extension"],
+      "rationale": "Multiple high-confidence sources agree"
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "DOA seed-production guide + Thai farmer practice (รักบ้านเกิด, บ้านและสวน)"
+    },
+    "6_care": {
+      "rating": "medium",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "General principles only; chemical fertilizer specifics intentionally omitted per SAFETY_POLICY"
+    },
+    "7_pests_diseases": {
+      "rating": "medium",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "DOA disease-data PDF + Tab Innovation reference; chemical control specifics intentionally omitted"
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "Multiple Thai practical sources agree on timing and method"
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_types": ["reputable-thai-media"],
+      "rationale": "General market context only; no specific income figures (per SAFETY_POLICY)"
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_types": ["thai-government", "reputable-thai-media"],
+      "rationale": "Direct Thai-source authoritative content"
+    },
+    "11_foreign_knowledge": {
+      "rating": "medium",
+      "supporting_source_types": ["peer-reviewed", "international-org"],
+      "rationale": "Nature Scientific Reports + NCBI/PMC for hydroponic and chemotype data; explicitly flagged as NOT directly applicable to Thai context"
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "Multiple Thai government + university extension + peer-reviewed sources cover all critical sections. See the source table in src/content/crops/sweet-basil.mdx §12 for the full citation list."
+}

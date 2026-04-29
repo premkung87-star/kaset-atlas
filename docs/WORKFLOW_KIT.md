@@ -187,18 +187,135 @@ Every entry in §4 / §5 follows a strict schema so future-me (and you) can scan
 
 ---
 
-## 10. Open questions (revisit as we go)
+## 10. Kaset Atlas-specific patterns (the "operational" layer below the principles)
 
-- **Pagefind activation:** schedule = after first 3 categories have content.
-- **Supabase Pro on this project:** schedule = V2, when corpus reaches ~30+ crops and we want a queryable source registry / RAG index.
-- **Image strategy:** hero image generation/sourcing pipeline. Defer to V1.1 (after first 9-crop launch).
-- **`/add-crop` slash command:** currently invoked via natural language to Claude Code; consider a real `.claude/commands/add-crop.md` slash-command file.
-- **Public LEARNINGS.md vs internal WORKFLOW_KIT.md:** keep this internal-only for V1; consider a public version at V2.
-- **Translation of WORKFLOW_KIT into Thai:** internal — stays English per Rule 1 (English-only prompts to Claude Code).
+These patterns are specific to the actual sources and content we deal with on this project. Generic ag knowledge sites would diverge; this is what works for Thai-language, Thai-government-anchored, AI-citable agricultural reference.
+
+### KA-1. Thai government source HEAD-handler instability
+Thai gov sites (`doa.go.th`, `kukr.lib.ku.ac.th`, `ldd.go.th`) frequently return 404 or non-2xx codes to HTTP HEAD even when GET works fine. Some endpoints have no HEAD handler at all. **`scripts/verify-urls.sh` always falls back to GET-with-1-byte-range** when HEAD fails. This is non-negotiable; reverting to HEAD-only would re-introduce the false-negatives we resolved in commit `07d4f3d`.
+
+### KA-2. PMC anti-scrape behavior
+PMC (`pmc.ncbi.nlm.nih.gov`) blocks HEAD by site policy (returns 405). It also rate-limits headless GETs without a real browser User-Agent — sometimes returning a reCAPTCHA challenge page even on the second access. **Always use a Mozilla User-Agent string for PMC URLs.** If still blocked, the URL Verifier accepts 200 from the bot challenge page as "URL exists" without parsing content; the Content Verifier may mark `verifier-unable-to-fetch` for content-fidelity check rather than blocking.
+
+### KA-3. Thai cultivar nomenclature requires bilingual `aliases`
+Many Thai herbs have multiple cultivars (กะเพราแดง vs กะเพราขาว, โหระพา vs โหระพาฝรั่ง). The drafter must:
+- Cover both cultivars in the body where applicable
+- List all common Thai names + English transliterations + scientific name in `aliases` frontmatter
+- Mention specifically in §11 (foreign knowledge) if the foreign sources don't distinguish
+
+This feeds into the AI-citable JSON-LD `alternateName` so non-Thai AI queries can find Thai cultivar info.
+
+### KA-4. Temperate-source applicability mismatch
+US extension sources (UC Davis, NC State, Cornell, UMN, Penn State) describe temperate-climate practices. Thailand is tropical/subtropical. **Always include §11 disclaimer** about applicability differences when citing them. Common mismatches:
+- "Plant in spring" → "ปลูกได้ตลอดปีในไทย"
+- Specific frost-date references → ignore for Thai context
+- Specific lime/dolomite rates → adapt to Thai soil pH (often more acidic)
+- Specific NPK ratios → defer to Thai stations
+
+### KA-5. Royal projects (โครงการหลวง / RSPG) are 🟢 high confidence
+The Royal Project Foundation and Plant Genetic Conservation Project (Royal Initiative) at `rspg.or.th` provide curated reference material for many Thai crops, especially highland and indigenous species. These are 🟢 high confidence and **should be checked before defaulting to international sources**.
+
+### KA-6. SOURCE_POLICY §3 mapping for AI-citable JSON-LD
+When we eventually wire the source registry (Tier 1.3, deferred), the registry's metadata fields map directly to AI-citable structured data:
+- `source.title` → JSON-LD `Citation.name`
+- `source.url` → JSON-LD `Citation.url`
+- `source.publicationDate` → JSON-LD `Citation.datePublished`
+- `source.organization` → JSON-LD `Citation.author.name`
+- `source.confidence` → not exposed publicly; audit-internal
+
+Until the registry is wired, sources stay inline in each crop's source table (rendered as Markdown).
+
+### KA-7. Thai locale conventions
+- Numerals: prefer Arabic (1, 2, 3) over Thai (๑, ๒, ๓) for SEO and AI-citation. Maintain Thai numerals only when quoting traditional sources.
+- Dates: Buddhist Era (พ.ศ.) is acceptable in body prose but `lastUpdated` / `publishedAt` frontmatter MUST use ISO 8601 (CE / Gregorian) for content collection schema validation.
+- Plant naming convention: Thai name first, English in parentheses on first use, scientific in italics. E.g., `กะเพรา (Holy Basil, *Ocimum tenuiflorum*)`.
+
+### KA-8. Build-gate teaches us about MDX edge cases
+Patterns observed that the MDX-safety regex catches (added to drafter prompt 2026-04-29):
+- `<6.0`, `<5.5` (pH ranges) — broke build until escaped to `< 6.0`
+- `<30°C` (temperature thresholds) — would break similarly; required `< 30°C`
+- `>1,000 ม.` (elevation) — cosmetic but caught for symmetry
+
+**Drafter is now hardened against this** via `scripts/check-mdx-safety.sh` mandatory check.
 
 ---
 
-## 11. How to update this file
+## 11. Foundation Completeness Map
+
+What's done, what's pending, what's deferred. Updated 2026-04-29 (post-tonight's foundation work).
+
+### 🟢 Foundation in place
+
+| Item | Where | Status |
+|---|---|---|
+| Constitutional doc | `CLAUDE.md` | 12 sections, 10 rules, AI-citable goal codified |
+| Methodology | `docs/METHODOLOGY.md` | Full per-crop workflow |
+| Source policy | `docs/SOURCE_POLICY.md` | Confidence levels + citation rules |
+| Safety policy | `docs/SAFETY_POLICY.md` | Refusal categories codified |
+| Pipeline spec | `docs/AUTOMATION_PIPELINE.md` | 4-agent + script orchestrator |
+| Pawee Workflow Kit | `docs/WORKFLOW_KIT.md` | This file. A/B convention + Pattern Wins log |
+| Audit trail | `docs/AUDIT_LOG.md` | Append-only architectural decisions |
+| Failure log | `docs/PIPELINE_FAILURES.md` | Append-only halt incidents |
+| Researcher agent | `.claude/agents/researcher.md` | HTTP-verifies all URLs |
+| Drafter agent | `.claude/agents/drafter.md` | MDX-safe, sees existing crops, writes reasoning sidecar |
+| Content verifier agent | `.claude/agents/content-verifier.md` | Fresh-context, logs stats, cross-checks reasoning |
+| Decision orchestrator | `.claude/commands/add-crop.md` (slash command) | v2 with build gate, state checkpoint, Read-then-dispatch |
+| URL verifier script | `scripts/verify-urls.sh` | HEAD→GET fallback |
+| Build verifier script | `scripts/verify-build.sh` | Wraps `npm run build`, JSON output |
+| MDX safety script | `scripts/check-mdx-safety.sh` | Catches `[<>][a-z0-9]` patterns |
+| AI-citable: robots | `public/robots.txt` | Open posture, all major AI crawlers allowed |
+| AI-citable: llms.txt | `public/llms.txt` | Site map for AI digestion |
+| AI-citable: JSON-LD | `src/components/JsonLd.astro` + `src/layouts/BaseLayout.astro` | Per-page structured data |
+| AI-citable: Article schema | `src/pages/crops/[...slug].astro` | Bilingual alternateName, keywords, dateModified |
+| AI-citable: WebSite + Org | `src/pages/index.astro` | Homepage structured data |
+| AI-citable: sitemap | `astro.config.mjs` (default `@astrojs/sitemap`) | Auto-generated |
+| AI-citable: license | `CONTENT_LICENSE.md` (CC BY-SA 4.0), footer, JSON-LD | Aligned across all surfaces |
+| State checkpoint | `.claude/state/pipeline-current.json` (transient) | gitignored |
+| Verifier stats log | `.claude/logs/verifier-stats.json` (committed NDJSON) | Drift signal |
+| Reasoning sidecar | `src/content/crops/<slug>.reasoning.json` | Audit trail per crop |
+| Build CI | `.github/workflows/build.yml` | Runs on push/PR |
+| Weekly link-rot CI | `.github/workflows/link-check.yml` | Cron Sunday 00:00 UTC |
+| Search | Pagefind in `npm run build` | Auto-indexed; 1367 words at 2 crops |
+| Conventional commits | `CLAUDE.md §8` | `[auto]` suffix for pipeline; `[retro]` for retroactive |
+
+### 🟡 Foundation pending (visible gaps)
+
+| Item | Why pending | When |
+|---|---|---|
+| Vercel deploy | Requires maintainer auth; cannot be done by AI alone | When maintainer connects repo to Vercel project |
+| Source registry (Tier 1.3) | High effort, lower urgency at 2 crops | When corpus reaches ~10+ crops |
+| Hero images per crop | No image-generation pipeline yet | V1.1 |
+| Category landing page descriptions (curated) | Currently auto-generated lists | When 3+ crops per category |
+| `og-image.png` default at site root | Currently 404 (favicon.svg used as fallback in JSON-LD) | When hero image strategy lands |
+| Public LEARNINGS.md (vs internal WORKFLOW_KIT) | Internal-only suffices for V1 | V2 |
+| WORKFLOW_KIT in Thai | Internal — English per Rule 1 | Permanent (won't translate) |
+| Branch protection on `main` | Documented in CLAUDE.md §9, not enforced on GitHub | When maintainer enables |
+| Rate limit enforcement | Documented (5/hr, 50/day), no programmatic enforcement | When/if pipeline runs autonomously |
+
+### 🔴 Foundation deferred (not in V1 scope)
+
+| Item | Why deferred |
+|---|---|
+| Supabase Pro integration | Static-First V1; revisit V2 when corpus needs RAG |
+| Real `/add-crop` execution from Claude Code's slash-command engine | The markdown file exists; whether Claude Code's harness picks it up depends on user environment |
+| Image generation pipeline | V1.1 |
+| Translation of foreign sources beyond English (e.g., Chinese, Japanese ag refs) | V2 |
+
+---
+
+## 12. Open questions (revisit as we go)
+
+- **Pagefind activation:** ✅ already in stack (`npm run build` invokes it). 1367 words indexed at 2 crops. Search bar component exists; needs end-to-end test.
+- **Drafter model selection:** A/B test Opus vs Sonnet on next crop pair (Tier 3 optimization).
+- **Source registry implementation:** schedule = when corpus reaches ~10 crops or first cross-citation conflict surfaces, whichever first.
+- **`og-image.png` strategy:** decide between (a) one shared brand OG image, (b) per-category OG image, (c) per-crop hero. Defer until image generation pipeline lands.
+- **Branch protection rules:** maintainer to enable on GitHub when ready (auto-pipeline pushes via PR rather than direct commit).
+- **Rate-limit enforcement:** add a `.claude/state/rate-limit-counters.json` if/when autonomous pipeline runs become routine. Not needed today (manual `/add-crop` only).
+- **Vercel deploy auto-promotion:** when maintainer connects repo, decide whether to auto-promote on `main` push or require manual promote for content commits.
+
+---
+
+## 13. How to update this file
 
 When a Pattern Win or Discarded entry is added:
 1. Append to §4 or §5 with the schema in §9.
@@ -212,4 +329,6 @@ Do **not** rewrite past entries. The log is append-only for traceability. If a p
 
 ## Last Updated
 
-2026-04-29 — Initial version. Phase A of post-launch workflow consolidation. Captures the holy-basil pipeline run learnings, AI-citable goal, free-tier audit convention.
+2026-04-29 (late session) — Phase B added: §10 Kaset Atlas-specific patterns, §11 Foundation Completeness Map, §12 updated open questions. Foundation work pushed in commits `96cf6a4` (workflow tooling), `a4d757b` (AI-citable infra), `399c301` (license alignment), `2870ef6` (agent prompt upgrades).
+
+2026-04-29 (initial) — Phase A: A/B convention, Pattern Wins (3 entries), Discarded (1 entry), bilingual structured-data convention, AI engine priority order, license language, memory schema, open questions.
