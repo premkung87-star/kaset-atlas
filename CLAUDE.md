@@ -10,21 +10,40 @@
 **Maintainer:** Prem (solo)
 **Domain:** kasetatlas.com
 **Stack:** Astro + Tailwind + MDX + Pagefind + Vercel
+**Operating Mode:** **Fully-Automated Content Production (Definition B)**
+**Policy Override Date:** 2026-04-29 (see `docs/AUDIT_LOG.md`)
 
 ## 2. Core Principles (Non-Negotiable)
 
-1. **Content First, Infrastructure Last** — Never build a feature before it has content that needs it.
-2. **No source, no merge** — Every important agricultural claim must have a verifiable source or be labeled as uncertain.
-3. **Confidence labels mandatory** — High / Medium / Low / Uncertain for every claim.
-4. **Localize, don't just translate** — Every foreign source needs a "Thailand applicability note".
-5. **Safety over completeness** — Refuse to publish risky chemical/dosage/identification advice.
-6. **Static-first** — No database, no AI chat, no user accounts in V1.
-7. **Pause-friendly** — This project must be pauseable. Never depend on daily updates.
+1. **Source-Traceable Always** — Every important agricultural claim MUST have a verifiable source. URLs must be HTTP-verified before publication.
+2. **Confidence Labels Mandatory** — High / Medium / Low / Uncertain for every section.
+3. **Localize, don't just translate** — Every foreign source needs a "Thailand applicability note".
+4. **Safety over completeness** — Auto-refuse to publish risky chemical/dosage/identification advice.
+5. **Static-first** — No database, no AI chat, no user accounts in V1.
+6. **Auto Pipeline Integrity** — Every Drafter output MUST pass URL Verifier + Content Verifier before commit.
+7. **Public Transparency** — README discloses content is AI-generated. Errors are logged in AUDIT_LOG.
 
-## 3. Operating Rules for Claude Code
+## 3. Content Production Mode (UPDATED 2026-04-29)
+
+**Operating mode: Fully Automated**
+
+- AI agents handle research, drafting, verification, and publication
+- No human-in-the-loop verification step per crop
+- Multi-agent pipeline ensures quality:
+  - **Researcher** — finds sources
+  - **Drafter** — writes MDX
+  - **URL Verifier** (script) — HTTP checks all URLs
+  - **Content Verifier** (Sonnet, separate context) — checks claims vs sources, SOURCE_POLICY, SAFETY_POLICY
+  - **Decision Agent** — auto-commit if all checks pass
+
+See `docs/AUTOMATION_PIPELINE.md` for full pipeline spec.
+
+**This overrides previous Section 7 (Forbidden Actions) restriction on AI-generated content.**
+
+## 4. Operating Rules for Claude Code
 
 ### Rule 1: English-Only Prompts
-All prompts to Claude Code are written in English regardless of conversation language with maintainer.
+All prompts to Claude Code agents are written in English regardless of conversation language with maintainer.
 
 ### Rule 2: Architect Mode
 Deliver decisions, not A/B/C option lists. When asked "should we do X or Y", choose one and explain why. Maintainer can override.
@@ -46,84 +65,96 @@ Do not advise the maintainer on pace, scheduling, motivation, or burnout. The ma
 ### Rule 7: Always Use Paid Stack When Applicable
 Vercel Pro, GitHub Pro, Claude Max 20x are already paid. Use them. No free substitutes.
 
-## 4. Session-Opening Ritual
+### Rule 8: Pipeline Failures Halt Publication
+If URL Verifier or Content Verifier flags issues:
+- Auto-fix attempt: 1 retry
+- If retry fails: log to `docs/PIPELINE_FAILURES.md` and halt
+- Do NOT publish content that fails verification
+
+### Rule 9: Audit Trail Mandatory
+Every auto-published crop MUST log:
+- Sources used (with HTTP-verified status)
+- Confidence levels assigned
+- Any auto-fixes applied
+- Verifier pass/fail counts
+
+Log location: `docs/AUDIT_LOG.md` or `.claude/logs/`
+
+## 5. Session-Opening Ritual
 
 Before any action in a new session:
 
 1. Read this `CLAUDE.md`
 2. Read `docs/METHODOLOGY.md`
 3. Read `docs/SOURCE_POLICY.md`
-4. Check current branch: must be `main` or feature branch with PR
-5. Check `git status` — clean working tree
-6. State the session goal in one sentence before touching code
+4. Read `docs/SAFETY_POLICY.md`
+5. Read `docs/AUTOMATION_PIPELINE.md`
+6. Check current branch: must be `main` or feature branch with PR
+7. Check `git status` — clean working tree
+8. State the session goal in one sentence before touching code
 
-## 5. Risk Classification
+## 6. Risk Classification
 
 Before any change, classify:
 
-- **🟢 Low Risk** — Typo fix, content addition with sources, doc update
+- **🟢 Low Risk** — Adding crop content via auto pipeline
 - **🟡 Medium Risk** — Component refactor, schema change, layout change
-- **🔴 High Risk** — Build config change, dependency upgrade, deployment config
+- **🔴 High Risk** — Pipeline modification, agent prompt change, build config, deploy config
 
-🔴 changes require explicit approval and a rollback plan.
+🔴 changes require explicit maintainer approval and rollback plan.
 
-## 6. Content Workflow (per crop profile)
+## 7. Forbidden Actions (REVISED 2026-04-29)
 
-```
-1. Pick crop from queue
-2. Find Thai sources (DOA, universities, FAO Thailand)
-3. Find international sources (FAO, university extension, peer-reviewed)
-4. Categorize facts: climate / soil / water / planting / care / pests / harvest / economics
-5. Translate + summarize foreign sources in Thai (no copy-paste)
-6. Add Thailand applicability notes for foreign claims
-7. Add confidence label to every section
-8. Add safety warnings where required (see SAFETY_POLICY.md)
-9. Fill source table at bottom
-10. Set "lastUpdated" frontmatter
-11. Commit with conventional commit message
-```
-
-## 7. Forbidden Actions
-
-- ❌ Publishing without sources
+- ❌ Publishing content with HTTP-failed URLs
+- ❌ Publishing content that fails Content Verifier
 - ❌ Translating full copyrighted articles
-- ❌ AI-generated content without human review
 - ❌ Pesticide dosage recommendations
 - ❌ Edible/poisonous plant identification claims
 - ❌ Medical or health claims about plants
 - ❌ Yield/profit/income guarantees
 - ❌ Adding paid tools without explicit maintainer approval
+- ❌ Modifying SAFETY_POLICY without maintainer approval
+
+**REMOVED from this list (per 2026-04-29 policy override):**
+- ~~AI-generated content without human review~~ — now standard operating mode
 
 ## 8. Conventional Commits
 
+Auto-generated by Decision Agent:
+
 ```
-feat(crops): add basil profile
-fix(layout): correct mobile nav overflow
-docs(methodology): clarify source confidence rules
-content(culinary-herbs): add holy basil
+feat(crops): add basil profile [auto]
+content(culinary-herbs): add holy basil [auto]
+fix(crops): correct source URL in basil [auto]
 chore(deps): bump astro to 5.x
 ```
 
+Commits from auto pipeline get `[auto]` suffix for traceability.
+
 ## 9. Branch Protection
 
-- `main` is protected
-- All changes via PR
-- Single approver: maintainer
-- Tests pass before merge (when tests exist)
+- `main` is protected for human direct push
+- Auto pipeline commits via PR with auto-merge if all checks pass
+- Failures escalate to maintainer review
 
-## 10. Audit Log
+## 10. Emergency Stop
 
-Maintain `docs/AUDIT_LOG.md` for:
-- Architectural decisions
-- Source policy changes
-- Content removal/correction events
-- Major refactors
+To halt auto pipeline:
+```bash
+touch .claude/HALT
+```
+Pipeline checks for this file before each run. If present, exits immediately.
+
+To resume:
+```bash
+rm .claude/HALT
+```
 
 ## 11. Last Updated Footer
 
 Every crop profile page MUST display:
 - Last updated date
-- Contributor (default: Prem)
-- Reviewer (if applicable)
+- Contributor: "AI Pipeline (auto)" if generated by pipeline
+- Reviewer: agent that approved (e.g., "Content Verifier v1")
 
-This is non-negotiable for trust.
+This is non-negotiable for trust and traceability.

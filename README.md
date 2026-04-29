@@ -6,10 +6,39 @@
 
 แพลตฟอร์มความรู้เกษตรแบบเปิด (open-source) ที่ช่วยให้เกษตรกรไทย นักเรียน นักศึกษา และผู้ที่สนใจปลูกพืช เข้าถึงความรู้เกษตรจากแหล่งที่เชื่อถือได้ทั้งในไทยและทั่วโลก แปล สรุป และปรับให้เข้ากับบริบทไทย
 
+---
+
+## 📢 ประกาศเรื่องการสร้างเนื้อหา (Content Generation Notice)
+
+**ภาษาไทย:**
+
+เนื้อหาใน Kaset Atlas สร้างและตรวจสอบโดย AI agents โดยไม่มีการรีวิวจากมนุษย์รายชิ้น เราใช้ระบบ multi-agent pipeline (Researcher → Drafter → URL Verifier → Content Verifier → Decision) ที่ตรวจสอบแหล่งที่มาและความสอดคล้องกับนโยบายของเว็บไซต์โดยอัตโนมัติ
+
+**ผู้อ่านควรทราบ:**
+
+- ทุกข้อมูลในเว็บไซต์เป็นจุดเริ่มต้น ไม่ใช่คำแนะนำสุดท้าย
+- ก่อนตัดสินใจลงทุนหรือเปลี่ยนวิธีปลูกพืช ควรปรึกษาเจ้าหน้าที่กรมส่งเสริมการเกษตรในพื้นที่
+- หากพบข้อผิดพลาด กรุณารายงานผ่าน [GitHub Issues](https://github.com/premkung87-star/kaset-atlas/issues)
+- ข้อผิดพลาดที่ตรวจสอบแล้วจะถูกแก้ไขและบันทึกใน `docs/AUDIT_LOG.md`
+
+**English:**
+
+Kaset Atlas content is generated and verified by AI agents without per-piece human review. We use a multi-agent pipeline (Researcher → Drafter → URL Verifier → Content Verifier → Decision) with automatic source-traceability and policy compliance checks.
+
+**Readers should:**
+
+- Treat all information as a starting point, not final advice
+- Consult local agricultural extension officers (กรมส่งเสริมการเกษตร) before making significant farming decisions
+- Report errors via [GitHub Issues](https://github.com/premkung87-star/kaset-atlas/issues)
+
+This approach prioritizes content velocity over per-piece human review. See `docs/AUDIT_LOG.md` (entry: 2026-04-29 — Policy Override) for full risk acceptance documentation.
+
+---
+
 ## หลักการ (Non-Negotiables)
 
 1. **เปิดและฟรี** — เนื้อหาเข้าถึงได้ฟรีสำหรับทุกคน
-2. **ตรวจสอบแหล่งที่มาได้** — ทุก claim สำคัญต้องมี source
+2. **ตรวจสอบแหล่งที่มาได้** — ทุก claim สำคัญต้องมี source (auto-verified)
 3. **เป็นภาษาไทย** — แปลและสรุปจากแหล่งทั่วโลก
 4. **Localize ไม่ใช่แค่แปล** — ต้องมี Thailand applicability note
 5. **Open source** — โค้ดและเนื้อหาเปิดให้ตรวจสอบและแก้ไข
@@ -30,7 +59,7 @@
 | Cover Crops / Green Manure | พืชคลุมดินและปุ๋ยพืชสด | 50 |
 | Mushrooms | เห็ด | 50 |
 
-**Long-term vision: 500 entries** — เริ่มจาก 9 ชิ้นแรก (1 จากแต่ละหมวดพืช)
+**Long-term vision: 500 entries**
 
 ## เริ่มใช้งาน (Development)
 
@@ -48,32 +77,57 @@ npm run build
 npm run preview
 ```
 
+## เพิ่ม Crop ใหม่ผ่าน Claude Code
+
+```bash
+# เปิด Claude Code ใน project root
+claude
+
+# ใช้ slash command
+/add-crop กะเพรา
+
+# Pipeline จะ:
+# 1. Research แหล่งข้อมูล
+# 2. Draft MDX
+# 3. Verify URLs
+# 4. Verify content vs sources
+# 5. Auto-commit + push
+```
+
+ดู `docs/AUTOMATION_PIPELINE.md` สำหรับรายละเอียด
+
 ## โครงสร้างโปรเจกต์
 
 ```
 kaset-atlas/
+├── .claude/
+│   ├── agents/             # Agent definitions
+│   └── commands/           # Slash commands
 ├── src/
 │   ├── content/
 │   │   ├── crops/          # crop profiles (MDX)
 │   │   ├── categories/     # category metadata
 │   │   └── sources/        # source registry
-│   ├── components/         # Astro/React components
-│   ├── layouts/            # page layouts
-│   ├── pages/              # routes
-│   └── styles/             # global CSS + design tokens
-├── public/                 # static assets
+│   ├── components/
+│   ├── layouts/
+│   ├── pages/
+│   └── styles/
+├── scripts/
+│   └── verify-urls.sh      # Pre-publish URL HTTP check
+├── public/
 ├── docs/
-│   ├── METHODOLOGY.md      # how content is researched
-│   ├── SOURCE_POLICY.md    # source reliability rules
-│   ├── SAFETY_POLICY.md    # what we don't publish
-│   └── CONTRIBUTING.md     # how to contribute
+│   ├── METHODOLOGY.md
+│   ├── SOURCE_POLICY.md
+│   ├── SAFETY_POLICY.md
+│   ├── AUTOMATION_PIPELINE.md
+│   └── AUDIT_LOG.md
 └── README.md
 ```
 
 ## License
 
 - **Code:** MIT License (see `LICENSE`)
-- **Content:** Creative Commons Attribution 4.0 International (see `CONTENT_LICENSE`)
+- **Content:** Creative Commons Attribution 4.0 International (see `CONTENT_LICENSE.md`)
 
 ## Contributing
 
