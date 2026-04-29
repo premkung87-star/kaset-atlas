@@ -4,6 +4,60 @@
 
 ---
 
+## 2026-04-30 — Auto Pipeline: Added มันสำปะหลัง (Cassava) + Pass-3 Content Verifier Hallucination Incident
+
+**Type:** Content Addition (auto, manually-corrected) + Pipeline Anomaly
+
+**Crop:** มันสำปะหลัง (Cassava) — `cassava`
+**Category:** food-crops
+**Scientific:** *Manihot esculenta*
+
+**Pipeline run (cumulative across 3 passes):**
+- **Pass 1** (2026-04-29 ~22:30): Researcher 12 sources, Drafter 13 sections, URL Verifier v3 12/12, Build Verifier pass, Content Verifier 1 blocker (FAO y5548e misattribution) + 2 medium issues. Auto-fix retry applied.
+- **Pass 2** (2026-04-29 ~23:00): URL Verifier v3.1 caught opsmoac-rayong-cassava soft-404 (v3 had missed it); Content Verifier in fresh context found 1 new blocker + 2 residual medium + 1 minor. Auto-fix budget exhausted per Rule 8.
+- **Pass 3** (2026-04-30, manual corrections this session): Maintainer authorized bounded manual fix (4 edits): drop opsmoac row, correct y5548e title to actual document name "A cassava industrial revolution in Nigeria — IFAD/FAO 2004", trim §7 IITA biocontrol claim to Africa-only + "cassava mealybug" phrasing, update reasoning sidecar source IDs.
+
+**Pass-3 verification anomaly (logged as Pattern Discarded):**
+
+After manual correction, dispatched Content Verifier subagent in fresh context for verification pass-3. **The subagent produced a hallucinated report** claiming three blockers that were objectively false:
+
+1. Claim: "file contains 0 Thai Unicode characters." Reality: file is 73.9% Thai (15,053 of 20,383 chars).
+2. Claim: "4 cited URLs (kasetkaoklai.com, agri.nstda.or.th, dld.go.th, tapiocathai.org) fail body-content verification." Reality: zero of those URLs appear in the file. The actual 11 cited URLs are doa.go.th, oae.go.th (×2), esc.doae.go.th, arda.or.th, thaitapiocastarch.org, fao.org (×2), iita.org, hort.purdue.edu — none of which the verifier flagged.
+3. Claim: "IITA 95% biocontrol figure is not on the cited cropsnew/cassava page." Reality: direct WebFetch retrieval confirmed the IITA page literally states "IITA's biological control program resulted in a 95% reduction in cassava mealybug damage and a 50% reduction in damage caused by the cassava green mite."
+
+**Resolution:** Maintainer + main session rejected the hallucinated report after direct sanity-check (Thai char count, URL grep, IITA page WebFetch). Cassava SHIPPED with verification status "pass-with-direct-spot-check" recorded in `cassava.reasoning.json`. The hard gates (URL Verifier v3.1: 11/11, MDX Safety: pass, Build Verifier: 17 pages) all passed; the only spot-checkable substantive verifier finding (IITA 95%) was confirmed substantiated by direct source fetch.
+
+**Sources cited (all 11 verified live + on-topic):**
+- กรมวิชาการเกษตร (DOA) — ศูนย์วิจัยพืชไร่ระยอง (×2)
+- สำนักงานเศรษฐกิจการเกษตร (สศก./OAE) — สถานการณ์สินค้ามันสำปะหลัง + Outlook 2566 (×2)
+- กรมส่งเสริมการเกษตร (DOAE) — ระบบเกษตรอัจฉริยะมันสำปะหลัง
+- สำนักงานพัฒนาการวิจัยการเกษตร (สวก./ARDA)
+- สมาคมแป้งมันสำปะหลังไทย (TTSA)
+- FAO — Strategic Environmental Assessment (y2413e) + IFAD/FAO Nigeria case study (y5548e)
+- IITA — Cassava program page
+- Purdue NewCROP — Cassava fact sheet
+
+**Files changed:**
+- `src/content/crops/cassava.mdx` (new — 13 sections, full Thai)
+- `src/content/crops/cassava.reasoning.json` (new — confidence sidecar with full correction history)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (pass-3 hallucination logged)
+- `docs/WORKFLOW_KIT.md` (Discarded Pattern entry — content-verifier subagent hallucination on retry)
+- `.claude/logs/verifier-stats.json` (4 entries cumulative for cassava: pass-1 fail, pass-2 fail, pass-3 hallucination, pass-3-direct pass)
+
+**Pattern Wins surfaced (during this 3-pass run, logged in WORKFLOW_KIT.md §4):**
+1. **URL Verifier v3.1** caught a soft-404 (opsmoac-rayong-cassava) that v3 missed — soft-error regex broadened.
+2. **Two-pass verifier discipline** correctly halted publication when real issues existed across 2 passes; manual corrections were bounded and ship-ready.
+
+**Pattern Discarded (logged in WORKFLOW_KIT.md §5):**
+1. **Pass-3 Content Verifier subagent dispatch (post-manual-correction) produced hallucinated report.** The subagent's tool-use trace appeared to invoke Python scripts and curl checks, but its findings were inconsistent with the actual file content (claimed file was English when it is 74% Thai; claimed 4 URLs were failing when those URLs are not in the file; claimed IITA page lacked the 95% figure when the page literally contains that exact figure). Mitigation: **post-manual-correction verification should always be sanity-checked by main session via grep/wc/WebFetch on the 1-3 most-cited claims** before accepting a verifier report. Future pipeline iterations should add a "verifier evidence quote" requirement where the subagent must include verbatim quotes from the actual file/source URL it claims to have inspected.
+
+**Result:** Cassava is the **3rd live crop** on Kaset Atlas. Foundation now battle-tested across 3 verification passes including 1 verifier failure mode discovered (subagent hallucination on retry). 4 V1 categories remain: food crops (now ✅ via cassava), fruit trees (durian pending), culinary herbs ✅×2 (sweet basil + holy basil), and 6 more categories.
+
+**Reporter:** Maintainer manual approval of bounded fix; Main Session direct verification.
+
+---
+
 ## 2026-04-29 (overnight) — Foundation Sprint + First Auto-Pipeline Production Attempt
 
 **Type:** Architecture / Workflow / Content (mixed)
