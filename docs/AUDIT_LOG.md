@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-04-29 — Drafter Prompt Hardening: MDX Safety Check
+
+**Type:** Refactor / Pipeline (🔴 agent prompt change per CLAUDE.md §6)
+
+**Decision/Event:** Added an MDX safety subsection to `.claude/agents/drafter.md` after the holy-basil first-run surfaced a near-miss bug: the drafter emitted `(<6.0)` and `(>8.0)` in the soil-pH section, which `badca21` patched manually for the `<` half. The drafter prompt itself had no rule against bare `<digit` / `>digit` patterns, so the same bug could recur on the next 8 categories' worth of crops.
+
+**Rationale/Context:**
+- MDX 3 / Astro MDX integration treats `<` followed by a non-PascalCase character as a JSX tag opener — bare `<6.0` can break the build.
+- Reduce weaknesses before features (CLAUDE.md Rule 3) — harden the agent prompt before producing more content.
+- Maintainer approved this change explicitly when picking option B over A and C.
+
+**Action Taken:**
+- Added new "MDX safety rules (CRITICAL — prevents build breakage)" subsection to drafter.md inside Step 3 (Write MDX following template structure), with a substitution table and a mandatory pre-save bash check (`grep -nE '[<>][a-z0-9]'`).
+- Added 2 items to drafter.md Step 4 self-validation checklist.
+- Added 2 items to drafter.md Forbidden list.
+- Validated the new check against existing files: `sweet-basil.mdx` clean, `holy-basil.mdx` flagged the leftover `>8.0` (now fixed retroactively in a separate `fix(content)` commit).
+
+**Reporter:** Maintainer noticed the original `<6.0` issue manually; this prompt update is the systemic fix.
+
+---
+
 ## 2026-04-29 — Auto Pipeline: Added กะเพรา (Holy Basil)
 
 **Type:** Content Addition (auto)

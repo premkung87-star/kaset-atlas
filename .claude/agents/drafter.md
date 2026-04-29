@@ -99,6 +99,44 @@ All required fields per `src/content/config.ts` schema:
 - Source table at bottom MUST list every source used
 - Use confidence emoji: 🟢 🟡 🟠 ⚪
 
+#### MDX safety rules (CRITICAL — prevents build breakage)
+
+The body text must be safe for the MDX 3 / Astro MDX integration. JSX component tag names always start with a **capital letter** (e.g., `<ThailandBox>`, `<WarningBox>`, `<SourceBox />`). The parser treats `<` followed by a lowercase letter or digit as a JSX opening too — and fails the build when it can't parse it as a tag.
+
+**Forbidden in body text:**
+
+- Bare `<` followed by a digit — e.g., `<6.0`, `<30°C`, `<5.5` (parses as broken JSX → build fails)
+- Bare `<` followed by a lowercase letter — e.g., `<some`, `<a `, `<div` (we never author raw HTML; everything is JSX components)
+- Bare `>` followed by a digit — e.g., `>8.0`, `>1,000` (cosmetically inconsistent; harmless but tighten anyway)
+
+**Required substitutions for inequalities and ranges:**
+
+| Wrong (bare) | Right (with space) | Right (Unicode preferred for true ≤ / ≥) | Right (Thai prose) |
+|---|---|---|---|
+| `<6.0` | `< 6.0` | `≤ 6.0` | `น้อยกว่า 6.0` |
+| `>30°C` | `> 30°C` | `≥ 30°C` | `มากกว่า 30°C` |
+| `pH<5.5` | `pH < 5.5` | `pH ≤ 5.5` | `pH น้อยกว่า 5.5` |
+| `>1,000 ม.` | `> 1,000 ม.` | — | `สูงกว่า 1,000 ม.` |
+
+Use unicode `≤` / `≥` when the meaning is truly less-than-or-equal / greater-than-or-equal. Use `< X` / `> X` (with space) for strict less-than / greater-than. Prefer Thai prose (`น้อยกว่า` / `มากกว่า` / `สูงกว่า`) inside narrative paragraphs — Kaset Atlas is Thai-first and prose reads better than symbols there.
+
+**Allowed `<` and `>` patterns:**
+
+- JSX components in PascalCase: `<ThailandBox>`, `</WarningBox>`, `<SourceBox />`, `<ConfidenceBadge level="high" />`. The first letter after `<` or `</` is always uppercase.
+- Markdown table delimiters: `|---|---|`.
+- We do **not** author raw HTML (`<div>`, `<span>`, `<br>`, `<a href>`) — everything is MDX + JSX components.
+
+**Mandatory pre-save bash check.** Before returning `draft_complete`, run this on the file you wrote:
+
+```bash
+grep -nE '[<>][a-z0-9]' src/content/crops/<english-slug>.mdx
+```
+
+- Empty output → MDX safety PASS, proceed to save and return.
+- Any output → MDX safety FAIL. Each matching line is a bare-comparison or accidental raw HTML. Fix it (add a space, use unicode `≤`/`≥`, or rewrite as Thai prose), then re-run the grep. Do not return `self_validation_passed: true` until the grep is empty.
+
+Edge case: if the slug or any frontmatter line legitimately contains `>0` (it should not — frontmatter values shouldn't have inequality strings), inspect the false positive and decide. The body text is what matters; in well-authored profiles this grep returns zero matches.
+
 #### Required components
 
 ```mdx
@@ -140,6 +178,8 @@ Before saving, verify:
 - [ ] ThailandBox present in Section 11
 - [ ] `contributor: "AI Pipeline (auto)"` set
 - [ ] `lastUpdated` and `publishedAt` set to today
+- [ ] MDX safety bash check returns empty (no `[<>][a-z0-9]` matches in body)
+- [ ] No bare `<digit` or `<lowercase` patterns; inequalities use `< X` / `> X` (with space) or unicode `≤` / `≥`
 
 ### Step 5: Output
 
@@ -168,6 +208,8 @@ Return JSON:
 - ❌ Yield/profit guarantees
 - ❌ Skipping the WarningBox in Section 7
 - ❌ Using `contributor: "Prem Pawee"` — must be "AI Pipeline (auto)"
+- ❌ Bare `<digit` patterns in body (e.g., `<6.0`) — breaks the MDX parser; use `< 6.0` (with space) or `≤ 6.0` (unicode)
+- ❌ Returning `self_validation_passed: true` while the MDX safety bash check has any output
 
 ## Failure Mode
 
