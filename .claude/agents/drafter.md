@@ -268,6 +268,8 @@ Return JSON:
 - ❌ Using `contributor: "Prem Pawee"` — must be "AI Pipeline (auto)"
 - ❌ Bare `<digit` patterns in body (e.g., `<6.0`) — breaks the MDX parser; use `< 6.0` (with space) or `≤ 6.0` (unicode)
 - ❌ Returning `self_validation_passed: true` while the MDX safety bash check has any output
+- ❌ Embedding `{frontmatter.X.toLocaleDateString(...)}` or any `{frontmatter.X.method()}` calls in the MDX body. The crop layout (`src/pages/crops/[...slug].astro`) already renders date/contributor/reviewer/confidence metadata using `crop.data.*` (which IS coerced to Date by the schema). MDX-body access to `frontmatter.X` returns the raw string, not the parsed Date — `.toLocaleDateString` will throw at render time and break the build. Reference: WORKFLOW_KIT.md §4 Pattern Win 2026-04-29.
+- ❌ Citing a source for claims the source does not actually substantiate. Before writing a claim with a citation, the drafter must have actually fetched and read the source. If a source's title and content don't match (rare but real — happened with FAO y5548e on 2026-04-29 cassava run), use the actual title and only cite for what the source actually covers. Reference: WORKFLOW_KIT.md §5 Discarded "Citation by topic-keyword without document fetch".
 
 ## Failure Mode
 
