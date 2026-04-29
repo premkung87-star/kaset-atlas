@@ -1,0 +1,41 @@
+---
+interface Props {
+  title?: string;
+  organization?: string;
+  url?: string;
+  date?: string;
+  type?: string;
+}
+
+const { title, organization, url, date, type } = Astro.props;
+---
+
+<aside class="source-box">
+  <div class="flex items-start gap-3">
+    <span class="text-soil-brown text-xl mt-0.5" aria-hidden="true">📖</span>
+    <div class="flex-1">
+      <p class="text-xs uppercase tracking-wide text-soil-brown-dark font-semibold mb-1">
+        แหล่งที่มา
+      </p>
+      <slot>
+        {title && (
+          <p class="font-semibold text-charcoal mb-1">
+            {url ? (
+              <a href={url} target="_blank" rel="noopener noreferrer" class="text-soil-brown-dark hover:text-soil-brown">
+                {title}
+              </a>
+            ) : title}
+          </p>
+        )}
+        {organization && (
+          <p class="text-sm text-charcoal-light">{organization}</p>
+        )}
+        {(type || date) && (
+          <p class="text-xs text-charcoal-light mt-1">
+            {[type, date].filter(Boolean).join(' · ')}
+          </p>
+        )}
+      </slot>
+    </div>
+  </div>
+</aside>

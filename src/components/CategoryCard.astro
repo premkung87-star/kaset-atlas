@@ -1,0 +1,45 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  titleEn: string;
+  description: string;
+  icon: string;
+  currentCount: number;
+  targetCount: number;
+}
+
+const { slug, title, titleEn, description, icon, currentCount, targetCount } = Astro.props;
+const percentage = Math.round((currentCount / targetCount) * 100);
+---
+
+<a href={`/categories/${slug}`} class="index-card block no-underline group h-full hover:no-underline">
+  <div class="flex items-start gap-3 mb-3">
+    <span class="text-3xl flex-shrink-0" aria-hidden="true">{icon}</span>
+    <div class="flex-1 min-w-0">
+      <h3 class="text-h4 text-kaset-green-dark group-hover:text-kaset-green transition-colors leading-tight mb-1">
+        {title}
+      </h3>
+      <p class="text-xs text-charcoal-light">{titleEn}</p>
+    </div>
+  </div>
+
+  <p class="text-sm text-charcoal mb-4 line-clamp-2">
+    {description}
+  </p>
+
+  <div class="space-y-1.5">
+    <div class="flex justify-between items-center text-xs">
+      <span class="text-charcoal-light">เนื้อหา</span>
+      <span class="font-semibold text-kaset-green-dark">
+        {currentCount} / {targetCount}
+      </span>
+    </div>
+    <div class="h-1.5 bg-rice-cream-dark rounded-full overflow-hidden">
+      <div
+        class="h-full bg-kaset-green rounded-full transition-all"
+        style={`width: ${Math.max(percentage, 2)}%`}
+      ></div>
+    </div>
+  </div>
+</a>

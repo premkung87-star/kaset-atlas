@@ -1,0 +1,159 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+
+const categories = await getCollection('categories');
+const sortedCategories = categories.sort((a, b) => a.data.order - b.data.order);
+
+// Get crop counts per category
+const allCrops = await getCollection('crops', ({ data }) => !data.draft);
+const cropCountByCategory = allCrops.reduce((acc, crop) => {
+  acc[crop.data.category] = (acc[crop.data.category] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+// Statistics
+const totalCrops = allCrops.length;
+const totalTarget = sortedCategories.reduce((sum, cat) => sum + cat.data.targetCount, 0);
+const progressPercent = totalTarget > 0 ? Math.round((totalCrops / totalTarget) * 100) : 0;
+
+// Last updated date
+const today = new Date();
+const lastUpdated = today.toLocaleDateString('th-TH', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title="Kaset Atlas"
+  description="แพลตฟอร์มความรู้เกษตรแบบเปิด — ความรู้เกษตรของโลก เพื่อเกษตรกรไทย ตรวจสอบแหล่งที่มาได้ทุกข้อมูล"
+>
+  <!-- Hero Section -->
+  <section class="container-page py-16 md:py-24 text-center">
+    <div class="max-w-3xl mx-auto">
+      <span class="inline-block text-5xl mb-6" aria-hidden="true">🌱</span>
+      <h1 class="text-display text-balance text-kaset-green-dark mb-6 leading-tight">
+        เกษตรแอตลาส
+      </h1>
+      <p class="text-lead text-charcoal mb-3 max-w-2xl mx-auto text-balance">
+        ความรู้เกษตรของโลก เพื่อเกษตรกรไทย
+      </p>
+      <p class="text-sm text-charcoal-light italic mb-10 max-w-2xl mx-auto">
+        Bridging global agricultural knowledge into Thai, for Thai farmers.
+      </p>
+
+      <!-- Search Bar -->
+      <SearchBar size="large" />
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto mt-12 pt-8 border-t border-charcoal/10">
+        <div>
+          <p class="text-h2 text-kaset-green-dark font-bold leading-none">
+            {totalCrops}
+          </p>
+          <p class="text-xs text-charcoal-light mt-1">พืชในระบบ</p>
+        </div>
+        <div>
+          <p class="text-h2 text-kaset-green-dark font-bold leading-none">
+            {sortedCategories.length}
+          </p>
+          <p class="text-xs text-charcoal-light mt-1">หมวดพืช</p>
+        </div>
+        <div>
+          <p class="text-h2 text-kaset-green-dark font-bold leading-none">
+            {totalTarget}
+          </p>
+          <p class="text-xs text-charcoal-light mt-1">เป้าหมายระยะยาว</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="container-page py-16 bg-rice-cream-light/40 -mx-4 md:-mx-8 lg:-mx-12 px-4 md:px-8 lg:px-12">
+    <div class="text-center mb-12">
+      <h2 class="text-h2 text-kaset-green-dark mb-3">หมวดพืช 10 หมวด</h2>
+      <p class="text-charcoal-light max-w-xl mx-auto">
+        จัดหมวดตาม "การใช้งาน" — เลนส์ที่เกษตรกรและผู้สนใจปลูกพืชคิดถึงมากที่สุด
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+      {sortedCategories.map((category) => (
+        <CategoryCard
+          slug={category.slug}
+          title={category.data.title}
+          titleEn={category.data.titleEn}
+          description={category.data.description}
+          icon={category.data.icon || '🌿'}
+          currentCount={cropCountByCategory[category.slug] || 0}
+          targetCount={category.data.targetCount}
+        />
+      ))}
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="container-page py-16">
+    <div class="max-w-reading mx-auto">
+      <h2 class="text-h2 text-kaset-green-dark mb-6 text-center">หลักการของเรา</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+        <div class="index-card">
+          <span class="text-3xl mb-3 block" aria-hidden="true">📖</span>
+          <h3 class="text-h4 text-kaset-green-dark mb-2">ตรวจสอบแหล่งที่มาได้</h3>
+          <p class="text-sm text-charcoal-light">
+            ทุกข้อมูลสำคัญต้องมีแหล่งที่มา ระบุระดับความน่าเชื่อถือ และเปิดให้ตรวจสอบ
+          </p>
+        </div>
+
+        <div class="index-card">
+          <span class="text-3xl mb-3 block" aria-hidden="true">🌏</span>
+          <h3 class="text-h4 text-kaset-green-dark mb-2">จากทั่วโลกสู่ไทย</h3>
+          <p class="text-sm text-charcoal-light">
+            แปลและสรุปความรู้จากแหล่งที่เชื่อถือได้ทั่วโลก พร้อมระบุว่าใช้ในบริบทไทยได้แค่ไหน
+          </p>
+        </div>
+
+        <div class="index-card">
+          <span class="text-3xl mb-3 block" aria-hidden="true">🤝</span>
+          <h3 class="text-h4 text-kaset-green-dark mb-2">เปิดและฟรี</h3>
+          <p class="text-sm text-charcoal-light">
+            เนื้อหาทั้งหมดเข้าถึงได้ฟรี โค้ดเปิดบน GitHub พร้อมเปิดรับการแก้ไขจากทุกคน
+          </p>
+        </div>
+
+        <div class="index-card">
+          <span class="text-3xl mb-3 block" aria-hidden="true">🛡️</span>
+          <h3 class="text-h4 text-kaset-green-dark mb-2">ไม่อวดรู้ ไม่ขายฝัน</h3>
+          <p class="text-sm text-charcoal-light">
+            ไม่มีคำแนะนำเฉพาะเรื่องสารเคมี ไม่รับรองรายได้ ไม่อ้างสรรพคุณรักษาโรค
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status Section -->
+  <section class="container-page py-12 mb-12">
+    <div class="max-w-reading mx-auto bg-kaset-green/5 border border-kaset-green/20 rounded-card p-8 text-center">
+      <p class="text-xs uppercase tracking-wide text-kaset-green-dark font-semibold mb-3">
+        สถานะโครงการ
+      </p>
+      <p class="text-lead text-charcoal mb-2">
+        เริ่มต้นด้วย <strong class="text-kaset-green-dark">{totalCrops} พืช</strong>
+        จากเป้าหมายระยะยาว <strong>{totalTarget} เนื้อหา</strong>
+      </p>
+      <p class="text-sm text-charcoal-light mb-4">
+        ความก้าวหน้า {progressPercent}% — ค่อยๆ เติบโต ทำเพื่อสาธารณะ
+      </p>
+      <p class="text-xs text-charcoal-light">
+        ปรับปรุงล่าสุด: {lastUpdated}
+      </p>
+    </div>
+  </section>
+</BaseLayout>

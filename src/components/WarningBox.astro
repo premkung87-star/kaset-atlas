@@ -1,0 +1,46 @@
+---
+interface Props {
+  severity?: 'info' | 'warning' | 'danger';
+  title?: string;
+}
+
+const { severity = 'warning', title } = Astro.props;
+
+const config = {
+  info: {
+    icon: 'ℹ️',
+    bg: 'bg-water-blue/10 border-water-blue',
+    titleCls: 'text-water-blue-dark',
+    defaultTitle: 'ข้อมูล',
+  },
+  warning: {
+    icon: '⚠️',
+    bg: 'bg-sun-orange/10 border-sun-orange',
+    titleCls: 'text-sun-orange-dark',
+    defaultTitle: 'ข้อควรระวัง',
+  },
+  danger: {
+    icon: '🚨',
+    bg: 'bg-red-50 border-red-500',
+    titleCls: 'text-red-900',
+    defaultTitle: 'อันตราย',
+  },
+};
+
+const { icon, bg, titleCls, defaultTitle } = config[severity];
+const displayTitle = title ?? defaultTitle;
+---
+
+<aside class={`border-l-4 rounded-r-card p-5 my-6 ${bg}`} role="note">
+  <div class="flex items-start gap-3">
+    <span class="text-xl flex-shrink-0" aria-hidden="true">{icon}</span>
+    <div class="flex-1">
+      <p class={`text-xs uppercase tracking-wide font-semibold mb-2 ${titleCls}`}>
+        {displayTitle}
+      </p>
+      <div class="text-charcoal">
+        <slot />
+      </div>
+    </div>
+  </div>
+</aside>

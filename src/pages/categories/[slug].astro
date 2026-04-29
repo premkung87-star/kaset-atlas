@@ -1,0 +1,102 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CropCard from '../../components/CropCard.astro';
+
+export async function getStaticPaths() {
+  const categories = await getCollection('categories');
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+const { Content } = await category.render();
+
+// Get crops in this category
+const allCrops = await getCollection('crops', ({ data }) =>
+  !data.draft && data.category === category.slug
+);
+
+const sortedCrops = allCrops.sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, 'th')
+);
+---
+
+<BaseLayout
+  title={category.data.title}
+  description={category.data.description}
+>
+  <article class="container-page py-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-charcoal-light mb-6" aria-label="breadcrumb">
+      <a href="/" class="hover:text-kaset-green-dark">หน้าแรก</a>
+      <span class="mx-2">/</span>
+      <a href="/categories" class="hover:text-kaset-green-dark">หมวดพืช</a>
+      <span class="mx-2">/</span>
+      <span class="text-charcoal">{category.data.title}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="max-w-reading mx-auto text-center mb-12">
+      <span class="text-6xl block mb-4" aria-hidden="true">{category.data.icon || '🌿'}</span>
+      <h1 class="text-h1 text-kaset-green-dark mb-2">{category.data.title}</h1>
+      <p class="text-sm text-charcoal-light italic mb-4">{category.data.titleEn}</p>
+      <p class="text-lead text-charcoal text-balance">
+        {category.data.description}
+      </p>
+
+      <div class="inline-flex items-center gap-2 mt-6 text-sm text-charcoal-light bg-rice-cream-dark/40 px-4 py-2 rounded-full">
+        <span class="font-semibold text-kaset-green-dark">{sortedCrops.length}</span>
+        <span>/</span>
+        <span>{category.data.targetCount}</span>
+        <span>เนื้อหา</span>
+      </div>
+    </header>
+
+    <!-- Category description (markdown content) -->
+    <div class="max-w-reading mx-auto prose mb-12">
+      <Content />
+    </div>
+
+    <!-- Crops list -->
+    {sortedCrops.length > 0 ? (
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-h3 text-kaset-green-dark mb-6">เนื้อหาในหมวดนี้</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {sortedCrops.map((crop) => (
+            <CropCard
+              title={crop.data.title}
+              titleEn={crop.data.titleEn}
+              scientificName={crop.data.scientificName}
+              summary={crop.data.summary}
+              difficulty={crop.data.difficulty}
+              timeToHarvest={crop.data.timeToHarvest}
+              href={`/crops/${crop.slug}`}
+              confidence={crop.data.confidenceOverall}
+              category={crop.data.category}
+              heroImage={crop.data.heroImage}
+            />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div class="max-w-reading mx-auto text-center py-12 bg-rice-cream-dark/30 rounded-card">
+        <p class="text-2xl mb-3" aria-hidden="true">🌱</p>
+        <p class="text-charcoal-light mb-2">ยังไม่มีเนื้อหาในหมวดนี้</p>
+        <p class="text-sm text-charcoal-light">
+          กำลังเริ่มต้น — เนื้อหาแรกของหมวดนี้กำลังจะตามมา
+        </p>
+        <a
+          href="https://github.com/premkung87-star/kaset-atlas/issues/new"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary mt-6"
+        >
+          เสนอพืชที่อยากให้เขียน
+        </a>
+      </div>
+    )}
+  </article>
+</BaseLayout>

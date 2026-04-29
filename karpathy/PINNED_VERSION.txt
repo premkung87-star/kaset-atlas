@@ -1,0 +1,11 @@
+source_repo: forrestchang/andrej-karpathy-skills
+source_url: https://github.com/forrestchang/andrej-karpathy-skills
+source_branch: main
+pinned_commit_sha: fb7a22c8fda2c445197fe300bbc979045e1bca1c
+pinned_files:
+  - CLAUDE.md
+fetched_at: 2026-04-20
+fetched_by: pawee-workflow-kit Phase 1.3
+SPDX-License-Identifier: MIT
+license_declaration: Upstream declares MIT license in README.md (## License section). No standalone LICENSE file exists in upstream repo at pinned SHA. This mirror inherits MIT via SPDX identifier above and upstream README declaration.
+attribution: Andrej Karpathy (original observations) + forrestchang (CLAUDE.md compilation)

@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+
+const categories = await getCollection('categories');
+const sortedCategories = categories.sort((a, b) => a.data.order - b.data.order);
+
+const allCrops = await getCollection('crops', ({ data }) => !data.draft);
+const cropCountByCategory = allCrops.reduce((acc, crop) => {
+  acc[crop.data.category] = (acc[crop.data.category] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+---
+
+<BaseLayout
+  title="หมวดพืชทั้งหมด"
+  description="10 หมวดพืชใน Kaset Atlas — พืชอาหาร ไม้ผล สมุนไพร พืชสมุนไพร เครื่องดื่ม อุตสาหกรรม ประดับ อาหารสัตว์ คลุมดิน เห็ด"
+>
+  <section class="container-page py-12">
+    <div class="max-w-3xl mx-auto text-center mb-12">
+      <h1 class="text-h1 text-kaset-green-dark mb-4">หมวดพืชทั้งหมด</h1>
+      <p class="text-lead text-charcoal-light">
+        จัดหมวดตามการใช้งาน — เลือกหมวดที่สนใจเพื่อเริ่มต้น
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+      {sortedCategories.map((category) => (
+        <CategoryCard
+          slug={category.slug}
+          title={category.data.title}
+          titleEn={category.data.titleEn}
+          description={category.data.description}
+          icon={category.data.icon || '🌿'}
+          currentCount={cropCountByCategory[category.slug] || 0}
+          targetCount={category.data.targetCount}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

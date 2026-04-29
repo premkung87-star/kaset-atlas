@@ -117,7 +117,7 @@
 
   /* Thailand Applicability Box */
   .thailand-box {
-    @apply bg-sun-orange/8 border border-sun-orange/30
+    @apply bg-sun-orange/10 border border-sun-orange/30
            rounded-card p-5 my-6;
   }
 
@@ -130,7 +130,7 @@
 
   /* Info Box — for water/general info */
   .info-box {
-    @apply bg-water-blue/8 border border-water-blue/30
+    @apply bg-water-blue/10 border border-water-blue/30
            rounded-card p-5 my-6;
   }
 

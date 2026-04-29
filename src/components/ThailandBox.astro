@@ -1,0 +1,30 @@
+---
+interface Props {
+  applicability?: 'directly' | 'partially' | 'with-caveats' | 'unclear';
+}
+
+const { applicability = 'partially' } = Astro.props;
+
+const config = {
+  directly: { icon: '🇹🇭', text: 'ใช้ในไทยได้โดยตรง' },
+  partially: { icon: '🇹🇭', text: 'ใช้ในไทยได้บางส่วน' },
+  'with-caveats': { icon: '🇹🇭', text: 'ใช้ในไทยได้พร้อมข้อควรระวัง' },
+  unclear: { icon: '🇹🇭', text: 'ยังไม่ชัดเจนว่าใช้ในไทยได้แค่ไหน' },
+};
+
+const { icon, text } = config[applicability];
+---
+
+<aside class="thailand-box">
+  <div class="flex items-start gap-3">
+    <span class="text-2xl" aria-hidden="true">{icon}</span>
+    <div class="flex-1">
+      <p class="text-xs uppercase tracking-wide text-sun-orange-dark font-semibold mb-2">
+        บริบทประเทศไทย — {text}
+      </p>
+      <div class="text-charcoal">
+        <slot />
+      </div>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,43 @@
+---
+interface Props {
+  level: 'high' | 'medium' | 'low' | 'uncertain';
+  label?: string;
+}
+
+const { level, label } = Astro.props;
+
+const config = {
+  high: {
+    icon: '🟢',
+    text: 'ความน่าเชื่อถือสูง',
+    cls: 'badge-high',
+  },
+  medium: {
+    icon: '🟡',
+    text: 'ความน่าเชื่อถือปานกลาง',
+    cls: 'badge-medium',
+  },
+  low: {
+    icon: '🟠',
+    text: 'ความน่าเชื่อถือต่ำ',
+    cls: 'badge-low',
+  },
+  uncertain: {
+    icon: '⚪',
+    text: 'ยังไม่ตรวจสอบ',
+    cls: 'badge-uncertain',
+  },
+} as const;
+
+const { icon, text, cls } = config[level];
+const displayLabel = label ?? text;
+---
+
+<span
+  class={`badge-confidence ${cls}`}
+  title={displayLabel}
+  aria-label={`ระดับความน่าเชื่อถือ: ${displayLabel}`}
+>
+  <span aria-hidden="true">{icon}</span>
+  <span>{displayLabel}</span>
+</span>

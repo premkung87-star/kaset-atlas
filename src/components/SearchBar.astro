@@ -1,0 +1,44 @@
+---
+interface Props {
+  placeholder?: string;
+  size?: 'large' | 'small';
+}
+
+const {
+  placeholder = 'ค้นหาพืช เช่น โหระพา, ทุเรียน, ดินร่วน...',
+  size = 'large',
+} = Astro.props;
+
+const isLarge = size === 'large';
+---
+
+<div class={isLarge ? 'w-full max-w-2xl mx-auto' : 'w-full'}>
+  <form action="/search" method="get" class="relative">
+    <label for="search-input" class="sr-only">ค้นหา</label>
+    <input
+      id="search-input"
+      type="search"
+      name="q"
+      placeholder={placeholder}
+      class={`w-full ${isLarge ? 'py-4 px-6 text-lead' : 'py-2.5 px-4 text-sm'}
+        pl-12 rounded-card
+        bg-white border border-charcoal/15
+        focus:border-kaset-green focus:ring-2 focus:ring-kaset-green/20
+        focus:outline-none transition-all
+        placeholder:text-charcoal-light/60`}
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <span
+      class={`absolute ${isLarge ? 'left-4 top-1/2 -translate-y-1/2 text-2xl' : 'left-3 top-1/2 -translate-y-1/2 text-lg'}`}
+      aria-hidden="true"
+    >
+      🔍
+    </span>
+  </form>
+  {isLarge && (
+    <p class="text-xs text-charcoal-light mt-2 text-center">
+      ค้นหาในเนื้อหาทั้งหมด — ระบบค้นหาพร้อมใช้งานเมื่อ deploy production
+    </p>
+  )}
+</div>

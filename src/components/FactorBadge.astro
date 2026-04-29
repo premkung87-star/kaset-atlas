@@ -1,0 +1,34 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  icon?: string;
+}
+
+const { label, value, icon } = Astro.props;
+
+// Default icons by label
+const defaultIcons: Record<string, string> = {
+  'ดิน': '🟫',
+  'น้ำ': '💧',
+  'แดด': '☀️',
+  'แสง': '☀️',
+  'อุณหภูมิ': '🌡️',
+  'ความชื้น': '💨',
+  'ภาค': '🗺️',
+  'ภาคที่เหมาะ': '🗺️',
+  'ความยาก': '📊',
+  'ระยะเวลา': '⏱️',
+  'ปุ๋ย': '🌱',
+  'โรค': '🦠',
+  'ตลาด': '💰',
+};
+
+const displayIcon = icon ?? defaultIcons[label] ?? '🌿';
+---
+
+<div class="badge-factor">
+  <span aria-hidden="true">{displayIcon}</span>
+  <span class="text-xs text-charcoal-light">{label}:</span>
+  <span class="font-semibold">{value}</span>
+</div>

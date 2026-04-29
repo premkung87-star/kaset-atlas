@@ -63,7 +63,7 @@ const crops = defineCollection({
     titleEn: z.string(),                  // English/common name
     scientificName: z.string(),           // Genus species
     aliases: z.array(z.string()).default([]), // ชื่อท้องถิ่น/ชื่ออื่น
-    
+
     // Classification
     category: CategorySlug,
     family: z.string().optional(),        // Botanical family
@@ -72,35 +72,35 @@ const crops = defineCollection({
       'grass', 'succulent', 'aquatic', 'fungus'
     ]).optional(),
     lifeCycle: z.enum(['annual', 'biennial', 'perennial']).optional(),
-    
+
     // Quick reference
     summary: z.string().max(280),         // 1-2 sentence summary
     difficulty: DifficultyLevel,
     timeToHarvest: z.string(),            // "60-90 days" / "3-5 years"
-    
+
     // Growing conditions (quick view)
     suitableRegions: z.array(ThaiRegion),
     waterNeed: z.enum(['low', 'medium', 'high']),
     sunNeed: z.enum(['shade', 'partial', 'full']),
     soilTypes: z.array(z.string()).default([]),
-    
+
     // Risk & safety
     mainRisks: z.array(z.string()).default([]),
     bestFor: z.array(z.string()).default([]),
     notSuitableFor: z.array(z.string()).default([]),
-    
+
     // Metadata
     contributor: z.string().default('Prem Pawee'),
     reviewer: z.string().optional(),
     lastUpdated: z.coerce.date(),
     publishedAt: z.coerce.date(),
     confidenceOverall: ConfidenceLevel,
-    
+
     // Display
     heroImage: z.string().optional(),
     heroImageAlt: z.string().optional(),
     draft: z.boolean().default(false),
-    
+
     // SEO
     seoTitle: z.string().optional(),
     seoDescription: z.string().max(160).optional(),
@@ -109,12 +109,14 @@ const crops = defineCollection({
 
 /* ============================================
    Categories Collection
+   NOTE: 'slug' is reserved by Astro for type:'content' collections
+   and is auto-derived from the filename. Do NOT include slug in schema.
+   Access via: category.slug (auto) or category.id
    ============================================ */
 
 const categories = defineCollection({
   type: 'content',
   schema: z.object({
-    slug: CategorySlug,
     title: z.string(),                    // ภาษาไทย
     titleEn: z.string(),
     description: z.string(),
@@ -142,11 +144,11 @@ const sources = defineCollection({
     accessDate: z.coerce.date(),
     publicationDate: z.coerce.date().optional(),
     language: z.enum(['th', 'en', 'zh', 'ja', 'other']).default('th'),
-    
+
     // Thailand applicability
     appliesToThailand: z.enum(['directly', 'partially', 'with-caveats', 'unclear']),
     thailandNote: z.string().optional(),
-    
+
     // Quality flags
     peerReviewed: z.boolean().default(false),
     openAccess: z.boolean().default(true),

@@ -1,0 +1,162 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = 'แพลตฟอร์มความรู้เกษตรแบบเปิด — ความรู้เกษตรของโลก เพื่อเกษตรกรไทย',
+  image = '/og-image.png',
+} = Astro.props;
+
+const fullTitle = title === 'Kaset Atlas' ? title : `${title} | Kaset Atlas`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta -->
+    <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:locale" content="th_TH" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body class="min-h-screen flex flex-col bg-rice-cream text-charcoal">
+    <!-- Header -->
+    <header class="border-b border-charcoal/10 bg-rice-cream-light/80 backdrop-blur sticky top-0 z-50">
+      <div class="container-page py-4 flex items-center justify-between gap-4">
+        <a
+          href="/"
+          class="flex items-center gap-2 no-underline group"
+          aria-label="Kaset Atlas - หน้าแรก"
+        >
+          <span class="text-2xl" aria-hidden="true">🌱</span>
+          <div class="flex flex-col">
+            <span class="font-bold text-lg text-kaset-green-dark leading-tight tracking-tight">
+              เกษตรแอตลาส
+            </span>
+            <span class="text-xs text-charcoal-light leading-tight">
+              Kaset Atlas
+            </span>
+          </div>
+        </a>
+
+        <nav class="flex items-center gap-1 md:gap-2 text-sm">
+          <a href="/categories" class="px-3 py-2 rounded-badge hover:bg-kaset-green/10 transition-colors no-underline text-charcoal hover:text-kaset-green-dark">
+            หมวดพืช
+          </a>
+          <a href="/about" class="hidden md:inline px-3 py-2 rounded-badge hover:bg-kaset-green/10 transition-colors no-underline text-charcoal hover:text-kaset-green-dark">
+            เกี่ยวกับ
+          </a>
+          <a
+            href="https://github.com/premkung87-star/kaset-atlas"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-3 py-2 rounded-badge hover:bg-kaset-green/10 transition-colors no-underline text-charcoal hover:text-kaset-green-dark"
+            aria-label="GitHub repository"
+          >
+            GitHub
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-charcoal/10 bg-rice-cream-dark/30 mt-16">
+      <div class="container-page py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xl" aria-hidden="true">🌱</span>
+              <span class="font-bold text-kaset-green-dark">เกษตรแอตลาส</span>
+            </div>
+            <p class="text-sm text-charcoal-light leading-relaxed">
+              ความรู้เกษตรของโลก เพื่อเกษตรกรไทย<br />
+              <span class="text-xs">Bridging global agricultural knowledge into Thai, for Thai farmers.</span>
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-charcoal mb-3 text-sm uppercase tracking-wide">โครงการ</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/about" class="text-charcoal-light hover:text-kaset-green-dark no-underline">เกี่ยวกับเรา</a></li>
+              <li><a href="/methodology" class="text-charcoal-light hover:text-kaset-green-dark no-underline">วิธีการทำงาน</a></li>
+              <li><a href="/sources" class="text-charcoal-light hover:text-kaset-green-dark no-underline">นโยบายแหล่งข้อมูล</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-charcoal mb-3 text-sm uppercase tracking-wide">ร่วมพัฒนา</h4>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a href="https://github.com/premkung87-star/kaset-atlas" target="_blank" rel="noopener noreferrer" class="text-charcoal-light hover:text-kaset-green-dark no-underline">
+                  GitHub Repository
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/premkung87-star/kaset-atlas/issues" target="_blank" rel="noopener noreferrer" class="text-charcoal-light hover:text-kaset-green-dark no-underline">
+                  รายงานข้อผิดพลาด
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/premkung87-star/kaset-atlas/issues/new" target="_blank" rel="noopener noreferrer" class="text-charcoal-light hover:text-kaset-green-dark no-underline">
+                  ขอให้เขียนพืชนี้
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="map-divider"></div>
+
+        <div class="flex flex-col md:flex-row justify-between gap-4 text-xs text-charcoal-light">
+          <div>
+            <p>
+              © 2026 Kaset Atlas — โดย <a href="https://prempawee.com" class="text-kaset-green-dark no-underline hover:underline">Prem Pawee</a>
+            </p>
+            <p class="mt-1">
+              เนื้อหาเผยแพร่ภายใต้ <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" class="text-kaset-green-dark no-underline hover:underline">CC BY 4.0</a>
+              · โค้ดเผยแพร่ภายใต้ <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" class="text-kaset-green-dark no-underline hover:underline">MIT License</a>
+            </p>
+          </div>
+          <div class="text-right">
+            <p>โครงการเพื่อสาธารณะ · ไม่แสวงหากำไร</p>
+            <p class="mt-1">No source, no merge.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
