@@ -189,9 +189,23 @@ import FactorBadge from '@components/FactorBadge.astro';
 
 ---
 
-## ปรับปรุงล่าสุด
+<!--
+  IMPORTANT: Do NOT add a "ปรับปรุงล่าสุด" footer block here.
+  The crop layout (src/pages/crops/[...slug].astro) already renders this
+  metadata (lastUpdated, contributor, reviewer, confidence) automatically
+  from frontmatter using crop.data.* (which is the parsed Date object).
 
-- **วันที่:** {frontmatter.lastUpdated.toLocaleDateString('th-TH')}
-- **ผู้เขียน:** {frontmatter.contributor}
-- **ผู้รีวิว:** {frontmatter.reviewer || 'ยังไม่มี'}
-- **ระดับความเชื่อถือโดยรวม:** {frontmatter.confidenceOverall}
+  Embedding {frontmatter.lastUpdated.toLocaleDateString('th-TH')} in MDX body
+  fails at runtime because MDX receives the raw frontmatter where lastUpdated
+  is a string, not a Date. The layout's getStaticPaths uses crop.data which
+  IS coerced to Date. So leave this metadata to the layout.
+
+  Pattern Win: WORKFLOW_KIT.md §4 (2026-04-29 second entry).
+-->
+
+## หมายเหตุ
+
+- ข้อมูลในหน้านี้รวบรวมจากแหล่งที่ตรวจสอบได้
+- เนื้อหาเป็นแนวทางทั่วไป **ไม่ใช่คำแนะนำเฉพาะแปลง** สภาพดินและภูมิอากาศแต่ละพื้นที่อาจต่างกัน
+- ไม่มีการแนะนำสารเคมีหรือปริมาณยาปราบศัตรูพืช — โปรดปรึกษาเจ้าหน้าที่กรมส่งเสริมการเกษตรในพื้นที่
+- หากพบข้อผิดพลาดหรือมีแหล่งข้อมูลที่ดีกว่า สามารถแจ้งได้ผ่าน GitHub Issues
