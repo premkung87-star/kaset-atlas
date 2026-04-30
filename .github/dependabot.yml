@@ -1,0 +1,77 @@
+# Dependabot configuration — auto-updates dependencies on a calm cadence.
+# Free with GitHub Pro. Keeps the project secure without burning maintainer attention.
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # npm dependencies (Astro, Tailwind, Pagefind, Vercel SDKs, etc.)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Bangkok"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "auto"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # Astro core + integrations move together
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      # Tailwind ecosystem
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      # Vercel SDKs
+      vercel:
+        patterns:
+          - "@vercel/*"
+      # React ecosystem
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Dev tooling (TypeScript, etc.) — minor/patch only, group together
+      dev-tooling:
+        patterns:
+          - "typescript"
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Skip major version bumps for these — they need manual migration review
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Bangkok"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "auto"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"

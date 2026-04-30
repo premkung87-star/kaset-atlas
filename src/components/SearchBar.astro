@@ -2,43 +2,134 @@
 interface Props {
   placeholder?: string;
   size?: 'large' | 'small';
+  variant?: 'inline' | 'modal';
 }
 
 const {
   placeholder = 'ค้นหาพืช เช่น โหระพา, ทุเรียน, ดินร่วน...',
   size = 'large',
+  variant = 'inline',
 } = Astro.props;
 
 const isLarge = size === 'large';
+const elementId = variant === 'modal' ? 'search-modal' : 'search-inline';
 ---
 
 <div class={isLarge ? 'w-full max-w-2xl mx-auto' : 'w-full'}>
-  <form action="/search" method="get" class="relative">
-    <label for="search-input" class="sr-only">ค้นหา</label>
-    <input
-      id="search-input"
-      type="search"
-      name="q"
-      placeholder={placeholder}
-      class={`w-full ${isLarge ? 'py-4 px-6 text-lead' : 'py-2.5 px-4 text-sm'}
-        pl-12 rounded-card
-        bg-white border border-charcoal/15
-        focus:border-kaset-green focus:ring-2 focus:ring-kaset-green/20
-        focus:outline-none transition-all
-        placeholder:text-charcoal-light/60`}
-      autocomplete="off"
-      spellcheck="false"
-    />
-    <span
-      class={`absolute ${isLarge ? 'left-4 top-1/2 -translate-y-1/2 text-2xl' : 'left-3 top-1/2 -translate-y-1/2 text-lg'}`}
-      aria-hidden="true"
-    >
-      🔍
-    </span>
-  </form>
+  <!-- Pagefind UI mount point (Pagefind injects input + results dropdown here) -->
+  <div id={elementId} data-pagefind-ui-mount data-placeholder={placeholder} data-size={size}></div>
+
+  <!-- Fallback for JS-disabled clients: server-side submit to /search page -->
+  <noscript>
+    <form action="/search" method="get" class="relative">
+      <label for="search-input-fallback" class="sr-only">ค้นหา</label>
+      <input
+        id="search-input-fallback"
+        type="search"
+        name="q"
+        placeholder={placeholder}
+        class={`w-full ${isLarge ? 'py-4 px-6 text-lead' : 'py-2.5 px-4 text-sm'}
+          pl-12 rounded-card
+          bg-white border border-charcoal/15
+          focus:border-kaset-green focus:ring-2 focus:ring-kaset-green/20
+          focus:outline-none transition-all
+          placeholder:text-charcoal-light/60`}
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <span
+        class={`absolute ${isLarge ? 'left-4 top-1/2 -translate-y-1/2 text-2xl' : 'left-3 top-1/2 -translate-y-1/2 text-lg'}`}
+        aria-hidden="true"
+      >
+        🔍
+      </span>
+    </form>
+  </noscript>
+
   {isLarge && (
     <p class="text-xs text-charcoal-light mt-2 text-center">
-      ค้นหาในเนื้อหาทั้งหมด — ระบบค้นหาพร้อมใช้งานเมื่อ deploy production
+      ค้นหาในเนื้อหาทั้งหมด — ขับเคลื่อนด้วย Pagefind (ไม่มี server, ไม่ track ผู้ใช้)
     </p>
   )}
 </div>
+
+<!-- Pagefind UI styles (loaded once per page; idempotent) -->
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+
+<!--
+  is:inline + type="module" — bypasses Astro/Vite build pipeline so Vite doesn't try to
+  resolve /pagefind/pagefind-ui.js at compile time (the file is generated post-build by
+  `pagefind --site dist`). This script is shipped as-is to the browser.
+-->
+<script is:inline type="module">
+  document.addEventListener('DOMContentLoaded', async () => {
+    const mounts = document.querySelectorAll('[data-pagefind-ui-mount]');
+    if (mounts.length === 0) return;
+
+    try {
+      const { PagefindUI } = await import('/pagefind/pagefind-ui.js');
+
+      mounts.forEach((mount) => {
+        const placeholder = mount.getAttribute('data-placeholder') || 'ค้นหา...';
+        new PagefindUI({
+          element: mount,
+          showSubResults: true,
+          showImages: false,
+          resetStyles: false,
+          translations: {
+            placeholder,
+            clear_search: 'ล้าง',
+            load_more: 'โหลดผลลัพธ์เพิ่ม',
+            search_label: 'ค้นหา Kaset Atlas',
+            filters_label: 'ตัวกรอง',
+            zero_results: 'ไม่พบผลลัพธ์สำหรับ [SEARCH_TERM]',
+            many_results: 'พบ [COUNT] ผลลัพธ์สำหรับ [SEARCH_TERM]',
+            one_result: 'พบ 1 ผลลัพธ์สำหรับ [SEARCH_TERM]',
+            alt_search: 'ไม่พบผลลัพธ์สำหรับ [SEARCH_TERM]. แสดงผลลัพธ์สำหรับ [DIFFERENT_TERM] แทน',
+            search_suggestion: 'ไม่พบผลลัพธ์สำหรับ [SEARCH_TERM]. ลองค้นหาคำอื่น',
+            searching: 'กำลังค้นหา [SEARCH_TERM]...',
+          },
+        });
+      });
+    } catch (err) {
+      // Expected in dev mode (no /pagefind/ output yet). The <noscript> fallback handles JS-disabled clients.
+      console.warn('[Kaset Atlas] Pagefind UI not loaded — run `npm run build` to generate /pagefind/.', err);
+    }
+  });
+</script>
+
+<style is:global>
+  /* Pagefind UI brand customization to match Kaset Atlas earth tones */
+  :root {
+    --pagefind-ui-scale: 0.95;
+    --pagefind-ui-primary: #2F6B3F;       /* kaset-green */
+    --pagefind-ui-text: #26312A;          /* charcoal */
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: rgba(38, 49, 42, 0.15);
+    --pagefind-ui-tag: #F7F1E3;           /* rice-cream */
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 12px;
+    --pagefind-ui-image-border-radius: 8px;
+    --pagefind-ui-image-box-ratio: 3 / 2;
+    --pagefind-ui-font: 'Sarabun', system-ui, -apple-system, sans-serif;
+  }
+
+  .pagefind-ui__search-input {
+    border-color: var(--pagefind-ui-border) !important;
+    transition: all 0.2s;
+  }
+
+  .pagefind-ui__search-input:focus {
+    border-color: var(--pagefind-ui-primary) !important;
+    box-shadow: 0 0 0 3px rgba(47, 107, 63, 0.15) !important;
+  }
+
+  .pagefind-ui__result-link {
+    color: var(--pagefind-ui-primary) !important;
+    text-decoration: none !important;
+  }
+
+  .pagefind-ui__result-link:hover {
+    text-decoration: underline !important;
+  }
+</style>

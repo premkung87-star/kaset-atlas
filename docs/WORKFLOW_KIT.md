@@ -67,6 +67,24 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 
 ## 4. Pattern Wins (chronological, append-only)
 
+### 2026-04-30 — Content Verifier evidence-discipline (post-hallucination incident)
+**Pattern:** Content Verifier prompt now mandates: (1) Step 0 deterministic file-stats preamble (Thai char count, URL list, section heading list) at top of every report; (2) verbatim quotes on every blocker (file evidence with line number + ≥10-word source excerpt + discrepancy statement); (3) Step 9.5 self-consistency check that auto-rejects findings referencing URLs/sections/content not in own preamble.
+**Why it works:** A subagent that produces a hallucinated finding will simultaneously print a deterministic preamble showing the actual data, making the contradiction self-evident. Verbatim quote requirement makes hallucination impossible — a quote either exists in the file or it doesn't. Self-consistency check catches the verifier's own drift before the report is submitted.
+**Replaced:** Trust-based verifier dispatch where the subagent's report was accepted at face value.
+**Source:** Cassava pass-3 verifier hallucination 2026-04-30 (logged in `docs/PIPELINE_FAILURES.md`). `.claude/agents/content-verifier.md` updated in commit `4864314`.
+
+### 2026-04-30 — Manual override path for verifier hallucination (direct spot-check)
+**Pattern:** When the Content Verifier subagent produces findings that contradict deterministic data the main session can verify (file char counts, URL grep, WebFetch), the maintainer + main session may reject the verifier report and ship with `verification_status: "pass-with-direct-spot-check"` recorded in the reasoning sidecar.
+**Why it works:** Subagent dispatch has a non-zero hallucination rate. Hard gates (URL Verifier v3.1, MDX Safety, Build Verifier) plus 1-3 direct spot-checks via WebFetch can substitute for verifier when verifier itself fails. The override is logged for audit and contributes to verifier-stats drift signal.
+**Replaced:** Strict "verifier blocks publication unconditionally" rule.
+**Source:** Cassava pass-3 (commit `d33e709`). The override is exceptional — Pattern Win 2026-04-30 (evidence-discipline) is the durable fix; this entry documents the escape valve when hallucination still slips through.
+
+### 2026-04-30 — Phase 1 polish: Pagefind UI, Vercel Analytics, RSS feed (parallel to design)
+**Pattern:** Site infrastructure (Pagefind UI integration, Vercel Analytics + Speed Insights enable, `@astrojs/rss` feed, Dependabot config) shipped in parallel with handing the design brief to Claude Design. Each component is independent: Pagefind UI consumes the existing build-time index; Vercel Analytics and Speed Insights are paid features already included in Vercel Pro just needing toggle; RSS reads the same content collection as sitemap.
+**Why it works:** Phase 1 work is content-independent (it improves the production system) and design-independent (no visual treatment until Claude Design ships). Doing it now removes a backlog item without blocking either parallel track. Cost: $0 — all in the existing paid stack or FOSS.
+**Replaced:** N/A — net new infrastructure.
+**Source:** BACKEND_PLAN.md §2 + commits in this session.
+
 ### 2026-04-29 — Drafter MDX-safety bash check
 **Pattern:** Drafter runs `grep -nE '[<>][a-z0-9]' src/content/crops/<slug>.mdx` before returning `draft_complete`. Empty output = pass; any output = halt and fix.
 **Why it works:** JSX components in MDX are always PascalCase. A `<` immediately followed by lowercase or digit is therefore either (a) a bare comparison (`<6.0`) that breaks the parser, or (b) accidental raw HTML. The check catches both.
@@ -116,6 +134,11 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 ---
 
 ## 5. Discarded approaches (chronological)
+
+### 2026-04-30 — Trust-based content-verifier subagent dispatch (no evidence preamble)
+**Approach:** Dispatch Content Verifier subagent in fresh context, accept its JSON report at face value, halt publication on any blocker without independently checking the verifier's claims.
+**Why discarded:** Subagent hallucination rate on retry passes is non-zero. Cassava pass-3 produced a confident report with three blockers, all of which were objectively false on deterministic check (claimed 0 Thai chars when file is 74% Thai; cited 4 URLs as failing that don't appear in the file; claimed IITA page lacked "95%" figure when the page literally states it verbatim). Trusting the report would have wasted hours of false-positive remediation OR — worse mode — accepted false-negatives that let real issues ship.
+**Replaced by:** Pattern Win 2026-04-30 — Content Verifier evidence-discipline (Step 0 preamble + verbatim quotes + Step 9.5 self-consistency).
 
 ### 2026-04-29 — HEAD-only URL verification
 **Approach:** `curl --head` only, no fallback. Any non-2xx/3xx HEAD response treated as URL failure.
@@ -361,6 +384,8 @@ Do **not** rewrite past entries. The log is append-only for traceability. If a p
 ---
 
 ## Last Updated
+
+2026-04-30 — Phase 1 polish session: Pagefind UI wired, Vercel Analytics + Speed Insights enabled, `@astrojs/rss` feed shipped, Dependabot config added, `pipeline-monitor` agent recruited (Phase 2 readiness). Pattern Win + Discarded entries logged for the Content Verifier hallucination incident. Live site at https://kasetatlas.com/ with 3 crops + custom-domain SSL.
 
 2026-04-29 (late session) — Phase B added: §10 Kaset Atlas-specific patterns, §11 Foundation Completeness Map, §12 updated open questions. Foundation work pushed in commits `96cf6a4` (workflow tooling), `a4d757b` (AI-citable infra), `399c301` (license alignment), `2870ef6` (agent prompt upgrades).
 
