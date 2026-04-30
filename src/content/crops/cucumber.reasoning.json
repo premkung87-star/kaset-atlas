@@ -1,0 +1,64 @@
+{
+  "crop_slug": "cucumber",
+  "drafted_at": "2026-04-30T00:00:00Z",
+  "model": "claude-opus-4-7",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["rakbankerd-cucumber-overview", "opsmoac-loei-cucumber-techniques", "tcithaijo-thai-forest-bulletin-cucumis-hardwickii", "umn-growing-cucumbers"],
+      "rationale": "Multiple Thai sources (rakbankerd farming guide, OPSMOAC Loei provincial extension report, Thai Forest Bulletin documenting wild cucumber in NW Thailand) confirm cucumber is grown across Thailand; UMN Extension anchors the temperature threshold for soil/seed establishment."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["umn-growing-cucumbers", "rakbankerd-cucumber-overview", "ufifas-tr007-miami-dade-cucumber"],
+      "rationale": "UMN provides 70F soil-temperature threshold and standard climate guidance; rakbankerd anchors Thai short-day flowering biology; UF/IFAS Miami-Dade gives the closest tropical analogue to Thai conditions and an October-February main season."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["rakbankerd-cucumber-overview", "umn-growing-cucumbers", "opsmoac-loei-cucumber-techniques"],
+      "rationale": "rakbankerd gives Thai pH 5.5-6.5 and 7-10 day field-prep practice; UMN gives international 6.0-6.5 range; OPSMOAC Loei adds field practice (mulch choice by season, Trichoderma seed treatment) tied to Thai soil reality."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["umn-growing-cucumbers", "opsmoac-loei-cucumber-techniques", "kukr-trichoderma-cucumber-root-rot", "rakbankerd-cucumber-overview"],
+      "rationale": "UMN gives 1-inch/week water rule and drip-irrigation foliage-dry rationale; OPSMOAC Loei documents nightly 30-minute drip practice; KU root-rot research (Pythium aphanidermatum / Trichoderma T-50) documents flooding-related disease risk; rakbankerd gives furrow-irrigation and 2-3 day frequency."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["rakbankerd-cucumber-overview", "opsmoac-loei-cucumber-techniques", "umn-growing-cucumbers", "tcithaijo-japanese-cucumber-hydroponic"],
+      "rationale": "rakbankerd provides Thai direct-sow and short-day flowering practice; OPSMOAC Loei provides 25 cm spacing and seed Trichoderma coating; UMN provides international half-inch sowing depth and vining/bush spacing; Thaksin University hydroponic study supports the soilless/Japanese-cucumber section."
+    },
+    "6_care": {
+      "rating": "high",
+      "supporting_source_ids": ["opsmoac-loei-cucumber-techniques", "ufifas-tr007-miami-dade-cucumber", "opsmoac-chiangrai-powdery-mildew-cucurbits", "tcithaijo-japanese-cucumber-hydroponic"],
+      "rationale": "OPSMOAC Loei provides Thai farmer practice for fertilization timing and seasonal mulching; UF/IFAS provides fertigation framework; OPSMOAC Chiang Rai documents the air-circulation/weed-control rationale; Thaksin hydroponic study supports the fruit-shape early-wrap technique. Explicit deferral to กรมพัฒนาที่ดิน/กรมวิชาการเกษตร for site-specific rates."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["ucipm-cucurbits-pest-management", "opsmoac-chiangrai-powdery-mildew-cucurbits", "kukr-trichoderma-cucumber-root-rot", "ufifas-tr007-miami-dade-cucumber", "pmc-cucurbit-genetic-resources-2021"],
+      "rationale": "UC IPM provides comprehensive pest/disease taxonomy and Year-Round IPM 8-stage framework; OPSMOAC Chiang Rai anchors powdery-mildew Thai relevance; KU Trichoderma research anchors Pythium root-rot Thai relevance; UF/IFAS adds tropical-specific pests (melon thrips, melonworm, pickleworm); Genes 2021 review adds the 2004 downy-mildew resistance breakdown context. WarningBox in place; no specific chemical doses given."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["rakbankerd-cucumber-overview", "opsmoac-loei-cucumber-techniques", "umn-growing-cucumbers"],
+      "rationale": "rakbankerd gives 30-45 day harvest age; OPSMOAC Loei documents 30 harvest rounds vs 20-22 typical; UMN reinforces uniform-size pickling harvest and 'don't leave oversized fruit on vine' guidance."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["opsmoac-loei-cucumber-techniques", "rakbankerd-cucumber-overview"],
+      "rationale": "Market-context discussion is qualitative (no income/profit guarantees per SAFETY_POLICY); OPSMOAC Loei establishes commercial viability and harvest count, rakbankerd frames Thai market structure. Explicit refusal to forecast income reduces the rating to medium."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["kukr-aromatic-native-cucumber-ssr", "tcithaijo-thai-forest-bulletin-cucumis-hardwickii", "opsmoac-loei-cucumber-techniques", "opsmoac-chiangrai-powdery-mildew-cucurbits", "rakbankerd-cucumber-overview"],
+      "rationale": "Five Thai sources contribute to the regional and use-context breakdown: KU SSR aromatic-native-variety paper for genetic-conservation framing, Thai Forest Bulletin for NW-Thailand Karen-tribe wild form, OPSMOAC Loei for northeast practice, OPSMOAC Chiang Rai for north powdery-mildew warning, rakbankerd for general Thai practice."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": ["umn-growing-cucumbers", "ucipm-cucurbits-pest-management", "ufifas-tr007-miami-dade-cucumber", "pmc-cucurbit-genetic-resources-2021"],
+      "rationale": "Four international sources directly support what foreign authorities say versus what does not transfer to Thailand; explicit Thailand-applicability framing for each (UMN temperate-zone caveat, UC IPM California-product caveat, UF/IFAS Florida varieties caveat, Genes 2021 genetic-resource framing)."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "Twelve verified sources (eight Thai, four international) support every section, with multi-source coverage on every high-rated section. Section 9 (economics) downgraded to medium because Kaset Atlas declines income forecasts per SAFETY_POLICY."
+}

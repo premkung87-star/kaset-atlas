@@ -4,6 +4,49 @@
 
 ---
 
+## 2026-04-30 — Auto Pipeline: Added แตงกวา (Cucumber) via general-purpose dispatch (Phase 2 first run)
+
+**Type:** Content Addition (auto)
+**Crop:** แตงกวา (Cucumber) — `cucumber`
+**Category:** food-crops
+**Scientific:** *Cucumis sativus* L.
+
+**Run ID:** `f7a25c0d-dfce-4e64-b847-349dff377f5d`
+**Phase:** 2 (first run after Tier 1.4 codification — `general-purpose` dispatch is now the slash command's mandated path per commit `83c334d`)
+
+### Pipeline run (all stages via general-purpose dispatch)
+
+- **Researcher** (agent ID `a8dd577d2eb1f69bc`): 12 sources (8 Thai + 4 international), `minimum_sources_met: true`, 11 high-confidence + 1 medium. Tool calls: 79, duration 10m13s. 4/4 spot-check URLs HTTP 200.
+- **Drafter** (agent ID `aee7155d0759627e8`): 49,399-byte MDX (341 lines, 13 sections) + 6,308-byte reasoning sidecar. Tool calls: 28, duration 6m41s. Self-validation passed including Tier 1.4 emoji-prefix source-table check.
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=28
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections with `supporting_source_ids`, 11 unique source IDs in sidecar (1 of 12 cited URLs not used in sidecar — KU cucurbit-flower-sex-control source cited only in §intro, allowed under v1 schema)
+- **URL Verifier (`v3-soft200-aware`):** pass 12/12, no soft-200 errors
+- **Build Verifier:** pass — 19 pages built (was 18 with 5 crops, +1 for cucumber), Pagefind indexed
+- **Content Verifier** (general-purpose, agent ID `a9b7616ecac21f1d2`): `verification_status: fixed` — 0 blockers, 2 medium auto-fixed, 2 minor advisory, ready_for_publish:true. Tool calls: 35, duration 5m55s. Self-consistency PASS (4/4 findings retained, 0 hallucinations, 100% URL/line/section traceability).
+- **Auto-fixes applied (4):** 3 author-name corrections (`ดวงใจ ศรีไพบูลย์ทรัพย์` → `ดวงใจ เสรีไพบูลย์ทรัพย์` per KU record 335284, lines 78/131/188) + 1 misattribution fix (bacterial-wilt vector reattributed from UC IPM to UMN Extension at lines 208–210). Pre-fix mdx mtime 1777552519 → post-fix 1777552982 confirms fixes actually wrote to disk.
+- **Re-run after fixes:** subagent-output-verify pass (3/3 files), URL Verifier pass (12/12), Build Verifier pass (19 pages). One retry only, well within 1-retry-max safety limit.
+- **Subagent-output-verify (content-verifier):** pass — all 3 expected files exist + mtime check confirmed post-fix updates
+
+### Pattern adherence
+
+This run is the first to fully exercise the Tier 1.4 Pattern Win (general-purpose dispatch) end-to-end with the codified slash command. Three subagent dispatches (researcher 79 tool_use, drafter 28, content-verifier 35) all executed real tool calls — zero Category A failures. Verifier-stats.json now shows 6 successful general-purpose dispatches (4 across tomato, 3 across cucumber) vs. 5 documented Category A failures on the deprecated dedicated subagent paths.
+
+### Files changed
+- `src/content/crops/cucumber.mdx` (NEW, 49,703 bytes post-fix)
+- `src/content/crops/cucumber.reasoning.json` (NEW, 6,308 bytes)
+- `docs/AUDIT_LOG.md` (this entry)
+- `.claude/logs/verifier-stats.json` (cucumber `fixed` entry, run_id `f7a25c0d-...`)
+- `.claude/logs/subagent-dispatch.json` (drafter + content-verifier dispatch verify entries)
+- `.claude/state/researcher-output/cucumber.json` (preserved researcher JSON)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive.
+
+---
+
 ## 2026-04-30 — Auto Pipeline: Added มะเขือเทศ (Tomato) via general-purpose dispatch (Option 1 diagnostic resume)
 
 **Type:** Content Addition (auto)

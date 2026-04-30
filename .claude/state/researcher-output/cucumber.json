@@ -1,0 +1,159 @@
+{
+  "crop": {
+    "thai": "แตงกวา",
+    "english": "cucumber",
+    "scientific": "Cucumis sativus L.",
+    "category": "food-crops",
+    "family": "Cucurbitaceae"
+  },
+  "sources": [
+    {
+      "id": "kukr-aromatic-native-cucumber-ssr",
+      "title": "ความหลากหลายทางพันธุกรรมของแตงกวาพันธุ์พื้นเมืองที่มีกลิ่นหอมเหมือนใบเตยที่ประเมินด้วยเครื่องหมายเอสเอสอาร์",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/kukr/search_detail/result/20013150",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["genetic-diversity", "native-varieties", "ssr-markers", "thai-aromatic-cucumber"]
+    },
+    {
+      "id": "kukr-trichoderma-cucumber-root-rot",
+      "title": "การชักนำความต้านทานต่อโรครากเน่าของแตงกวาที่เกิดจากเชื้อรา Pythium aphanidermatum ด้วยเชื้อรา Trichoderma harzianum สายพันธุ์ T-50",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/kps_agri/search_detail/result/335284",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["root-rot", "biocontrol", "trichoderma", "pythium", "disease-management"]
+    },
+    {
+      "id": "kukr-cucurbit-sex-expression",
+      "title": "การควบคุมการแสดงเพศดอกของพืชตระกูลแตง",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/KPS/search_detail/dowload_digital_file/199785/72027",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["flower-biology", "sex-expression", "cucurbits", "pollination"]
+    },
+    {
+      "id": "rakbankerd-cucumber-overview",
+      "title": "แตงกวา (Cucumber) — รักบ้านเกิด",
+      "url": "https://www.rakbankerd.com/agriculture/print.php?id=442&s=tblplant",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "medium",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["planting", "soil", "fertilizer", "irrigation", "varieties", "harvest"]
+    },
+    {
+      "id": "opsmoac-loei-cucumber-techniques",
+      "title": "เกษตรกรหน้าใส เผยเทคนิคปลูกแตงกวาอย่างเซียน — สำนักงานเกษตรและสหกรณ์จังหวัดเลย",
+      "url": "https://www.opsmoac.go.th/loei-local_wisdom-preview-451491791839",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["soil-preparation", "drip-irrigation", "trichoderma-seed-treatment", "compost", "yield", "harvest-frequency"]
+    },
+    {
+      "id": "opsmoac-chiangrai-powdery-mildew-cucurbits",
+      "title": "เตือนการเฝ้าระวังโรคราแป้งในพืชตระกูลแตง — สำนักงานเกษตรและสหกรณ์จังหวัดเชียงราย",
+      "url": "https://www.opsmoac.go.th/chiangrai-warning-preview-481991791837",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["powdery-mildew", "oidium", "disease-warning", "fungicide-options", "cucurbit-diseases"]
+    },
+    {
+      "id": "tcithaijo-japanese-cucumber-hydroponic",
+      "title": "ปัจจัยการปลูกต่อการติดผลและรูปทรงผลของแตงกวาญี่ปุ่น (Cucumis sativus L.) ในระบบการปลูกพืชไร้ดิน",
+      "url": "https://ph02.tci-thaijo.org/index.php/tsujournal/article/view/68934",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["hydroponics", "japanese-cucumber", "fruit-set", "fruit-shape", "greenhouse", "nutrient-solution"]
+    },
+    {
+      "id": "tcithaijo-thai-forest-bulletin-cucumis-hardwickii",
+      "title": "Cucumis sativus L. forma hardwickii (Royle) W.J. de Wilde & Duyfjes and feral forma sativus — Thai Forest Bulletin (Botany)",
+      "url": "https://li01.tci-thaijo.org/index.php/ThaiForestBulletin/article/view/24388",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "directly",
+      "key_topics": ["wild-cucumber", "domestication", "karen-hill-tribe", "botany", "taxonomy"]
+    },
+    {
+      "id": "umn-growing-cucumbers",
+      "title": "Growing cucumbers in home gardens — University of Minnesota Extension",
+      "url": "https://extension.umn.edu/vegetables/growing-cucumbers",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": ["planting", "soil-ph", "varieties", "watering", "harvest", "pest-management"]
+    },
+    {
+      "id": "ucipm-cucurbits-pest-management",
+      "title": "Cucurbits — UC Statewide IPM Program (Agriculture Pest Management Guidelines)",
+      "url": "https://ipm.ucanr.edu/agriculture/cucurbits/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": ["ipm", "cucumber-beetles", "downy-mildew", "powdery-mildew", "viruses", "aphids"]
+    },
+    {
+      "id": "ufifas-tr007-miami-dade-cucumber",
+      "title": "Cucumber Production in Miami-Dade County, Florida (HS-855/TR007) — UF/IFAS Extension",
+      "url": "https://ask.ifas.ufl.edu/publication/tr007",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "partially",
+      "key_topics": ["pickling-vs-slicing", "varieties", "fertigation", "drip-irrigation", "tropical-climate-cultivation", "pests"]
+    },
+    {
+      "id": "pmc-cucurbit-genetic-resources-2021",
+      "title": "Genetic Resources and Vulnerabilities of Major Cucurbit Crops — Genes (Basel) 2021, PMC8392200",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8392200/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": ["genetic-resources", "downy-mildew-resistance", "germplasm", "cucumis-sativus", "cucumber-varieties", "disease-vulnerability"]
+    }
+  ],
+  "minimum_sources_met": true,
+  "thai_sources_count": 8,
+  "international_sources_count": 4,
+  "high_confidence_count": 11
+}
