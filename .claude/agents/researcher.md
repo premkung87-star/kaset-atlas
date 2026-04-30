@@ -24,14 +24,28 @@ A crop name in Thai or English (e.g., "กะเพรา", "holy basil")
 - Identify which Kaset Atlas category it belongs to (one of 10)
 
 ### Step 2: Search Thai sources first (priority)
-Search for sources in this order:
-1. กรมวิชาการเกษตร (doa.go.th)
-2. กรมส่งเสริมการเกษตร (doae.go.th)
-3. กรมพัฒนาที่ดิน (ldd.go.th)
-4. มหาวิทยาลัยเกษตรศาสตร์, แม่โจ้, เชียงใหม่, ขอนแก่น, สงขลานครินทร์
-5. สวก. (อาร์ดี — สำนักงานพัฒนาการวิจัยการเกษตร)
+
+**Crop-specific deep-link rule:** Every Thai source you return MUST be a crop-specific page — a PDF, article, technical bulletin, or repository entry whose body content is *about this crop*. Bare institutional homepages, top-level subsite landing pages, and generic category pages without crop-specific content are NOT acceptable Thai sources, even when they return HTTP 200.
+
+Preferred Thai deep-link repositories (search these first — they index article-level content with stable URLs):
+1. `kasetinfo.arda.or.th` — ARDA crop knowledge base, keyword-indexed by crop
+2. `kukr.lib.ku.ac.th` — Kasetsart University library full-text repository
+3. `kb.psu.ac.th` — Prince of Songkla University knowledge bank
+4. `digital.car.chula.ac.th` — Chulalongkorn digital repository
+5. `doa.go.th` deep pages or PDFs (e.g., `/wp-content/uploads/.../<crop>.pdf`, `/share/...`) — NOT the homepage or `/vcri/` landing page
+6. University extension repositories with crop-specific PDFs or articles (เกษตรศาสตร์, แม่โจ้, เชียงใหม่, ขอนแก่น, สงขลานครินทร์)
+7. Royal Project / RSPG (`rspg.or.th`) crop pages
+
+Acceptable institutional sources only when a crop-specific page is found at that domain (cite the deep page, never the domain root):
+- กรมวิชาการเกษตร (doa.go.th) — specific articles or PDFs only, never the homepage or a section landing page
+- กรมส่งเสริมการเกษตร (doae.go.th) — specific extension articles only
+- กรมพัฒนาที่ดิน (ldd.go.th) — crop-specific soil bulletins only
+- สวก. / ARDA (arda.or.th) — specific research records only; prefer `kasetinfo.arda.or.th`
 
 Search queries:
+- `[crop name] site:kasetinfo.arda.or.th`
+- `[crop name] site:kukr.lib.ku.ac.th`
+- `[crop name] site:doa.go.th filetype:pdf`
 - `[crop name] กรมวิชาการเกษตร`
 - `[crop name] วิธีปลูก`
 - `[crop name] โรค ศัตรูพืช`
@@ -49,19 +63,25 @@ Search queries:
 - `[scientific name] soil pH temperature`
 - `[scientific name] pests diseases`
 
-### Step 4: Verify EVERY URL with HTTP check
+### Step 4: Verify EVERY URL — HTTP check + actual fetch + crop-specific content check
 
-For each URL found, run:
+Two stages, both mandatory before a URL can appear in your output. A URL that skips either stage is unverified and must be excluded.
+
+**Stage 4a — HTTP status check** (run for every candidate URL):
 
 ```bash
-curl -o /dev/null -s -w "%{http_code}" "[URL]"
+curl -o /dev/null -s -L -w "%{http_code}\n" --max-time 15 "[URL]"
 ```
 
-- 200 = OK, include in results
-- 404, 500, etc. = REJECT, do not include
-- Redirects (301, 302) = follow with `-L` flag
+- 200 / 206 / 301→200 / 302→200 = continue to Stage 4b
+- 404, 403, 500, timeout, etc. = REJECT
+- Redirects: always follow with `-L`
 
-**CRITICAL: Do not include any URL that returns non-200 status. Hallucinated URLs are the #1 risk.**
+**Stage 4b — fetch and confirm crop-specific content:** Use `web_fetch` (not just curl) on the URL. Read enough of the page body to confirm it actually discusses the crop you are researching. The page must contain the crop's Thai name OR English name OR scientific name in body content — not only in navigation, footer, or unrelated sidebar.
+
+A URL that passes 4a but fails 4b (e.g., loads a 200 OK homepage, search-result page, error page styled as 200, or unrelated article) is REJECTED, regardless of how authoritative the domain is. This is non-negotiable.
+
+**CRITICAL:** You may only mark `url_verified: true` for URLs you actually fetched in this session and read enough of to confirm crop-specific content. Hallucinated verifications — claiming `url_verified: true` for plausible-looking slug URLs you did not actually run through `web_fetch` — are the #1 cause of pipeline halts (see `docs/PIPELINE_FAILURES.md` mango + tomato entries). If you are not certain you fetched a URL in this session, treat it as unverified and exclude it.
 
 ### Step 5: Rank sources by confidence
 
@@ -122,3 +142,7 @@ If quality bar not met, return `"minimum_sources_met": false` and list what's mi
 - ❌ Including content farms or seller sites as primary sources
 - ❌ Listing more than 12 sources (focus on quality, not quantity)
 - ❌ Citing sources in languages you cannot read in this session
+- ❌ Citing institutional homepages or top-level subsite landing pages (e.g., `doa.go.th`, `doae.go.th/`, `mju.ac.th`, `arda.or.th/`, `oae.go.th`, `ldd.go.th`) — these are not crop-specific and fail the source-traceability principle in CLAUDE.md §2
+- ❌ Citing generic category pages (e.g., `/vegetables/`, `/research/`, `/vcri/`) without crop-specific content visible on the page itself
+- ❌ Citing URLs you did not actually fetch via `web_fetch` in this session — plausible-looking slug URLs generated from imagination must be excluded
+- ❌ Marking `url_verified: true` based on pattern-matching the URL slug; the flag means "I ran HTTP status check AND `web_fetch` and confirmed crop-specific content in body text"
