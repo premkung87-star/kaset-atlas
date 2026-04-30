@@ -6,6 +6,39 @@
 
 ---
 
+## 2026-04-30 — Lettuce / ผักกาดหอม: researcher final response refused by Usage Policy
+
+**Stage:** researcher (final synthesis response, post tool-use)
+**Run ID:** `2fbd636f-d739-4e75-b145-d22a637f9a6a`
+**Failure type:** `policy-refusal`
+**Crop input:** lettuce / ผักกาดหอม
+**Dispatch mode:** general-purpose-only (Tier 1.4)
+
+### What happened
+
+- Researcher subagent ran tool calls successfully (~44 tool_use events observed before refusal).
+- The subagent's **final synthesis response** triggered an Anthropic Usage Policy refusal, so no JSON source list ever reached the pipeline.
+- Pipeline checkpoint shows `stage_completed: "preflight"` only — no researcher-output JSON, no draft, no MDX, no reasoning sidecar were written.
+
+### Artifacts state
+
+- `src/content/crops/lettuce.*` — none
+- `.claude/state/researcher-output/lettuce*.json` — none
+- `.claude/state/halted/...lettuce.../` — none prior; this run's checkpoint is now archived to `.claude/state/halted/2026-04-30-lettuce-usage-policy/`
+- Working tree was clean at halt; no commits attempted.
+
+### Action taken
+
+- Logged this halt to `.claude/logs/verifier-stats.json` (`halt_stage=researcher`, `failure_type=policy-refusal`, `tool_use_count=44`).
+- Archived `.claude/state/pipeline-current.json` → `.claude/state/halted/2026-04-30-lettuce-usage-policy/pipeline-current.json` so the next `/add-crop` run starts from clean state.
+- **No prompt or pipeline-script change.** N=1 for this failure mode — single observation does not justify editing `researcher.md` or pipeline scripts (Rule 10, Pattern Win threshold).
+
+### Recommendation
+
+Retry lettuce as a **fresh** `/add-crop` run, not a resume. Usage Policy refusals on a final synthesis response are typically non-deterministic at the model-output filter layer, so a re-run will likely succeed without any code change. If the same refusal recurs on a second lettuce attempt, escalate to investigate whether something specific in lettuce research output (e.g., a quoted source phrase) is the trigger — but only after observation N≥2.
+
+---
+
 ## 2026-04-30 — Tomato (Option 1 diagnostic resume): Drafter emitted bare-Thai confidence cells (verify-source-table fail)
 
 **Stage:** verify-source-table (Stage 2 structural gate, after Drafter)
