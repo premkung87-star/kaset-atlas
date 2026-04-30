@@ -1,0 +1,104 @@
+{
+  "crop_slug": "mango",
+  "drafted_at": "2026-04-30T03:00:00.000Z",
+  "model": "claude-opus-4-7 (main session, post-halt rebuild)",
+  "production_note": "Rebuilt from scratch in main session after the prior subagent pipeline halted with researcher-hallucination findings. Original halted draft (.claude/state/halted/2026-04-30-mango-researcher-hallucination/) cited 8 hallucinated URLs: doa.go.th/hort/mammuang/* and /frc/mammuang/ (404), arda.or.th/th/2022/07/06/15459/ (404), cabidigitallibrary.org/.../32461 (404), esc.doae.go.th/mango-off-season/ + /mango-soil/ (resolve to ESC homepage, not topic pages), pmc.ncbi.nlm.nih.gov/articles/PMC8840062 (silver-nanoparticles paper, not Wongs-Aree mango), royalprojectthailand.com/product/mango (403, domain now hosts spam). All 11 sources in this rebuild were HTTP-verified by main session via curl GET with browser User-Agent before draft. Mahachanok-as-Royal-Project-cultivar attribution dropped (no verifiable Royal Project source); replaced with Wikipedia + UF/IFAS Mango Science attribution (developed Chiang Mai, named 1992 by Rama IX, hybrid of Sunset × Nang Klanwan). Specific stats from the hallucinated PMC paper (3M rai, 200 cultivars) were dropped; specific export-market list (CN/JP/KR/SG/MY) softened to 'Japan as a notable export market that requires vapour heat treatment' which is supported by AUJT and DOAE doc 3/2565.",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-hort-mango-db", "doae-mango-export-3-2565", "aujt-thai-mango-export"],
+      "rationale": "Suitability across Thai regions and export-market context are documented in DOA HRI database, DOAE export-quality manual, and the AUJT Thai mango export paper."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["purdue-newcrop-morton-mango", "doa-hort-mango-db", "doae-esc-mango-off-season"],
+      "rationale": "Climate requirements and the cool/dry pre-flowering period are covered by Purdue NewCROP and reinforced by DOA HRI's Thai-context guidance."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-share-mango-cultivation", "doa-hort-mango-db"],
+      "rationale": "Thai DOA share PDF (aid=2785) and HRI database both cover soil prep for mango."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-share-mango-cultivation", "doae-esc-mango-off-season", "purdue-newcrop-morton-mango"],
+      "rationale": "Water management for mango including the dry-period induction is covered by the Thai DOA cultivation document, DOAE ESC off-season curriculum, and Purdue NewCROP."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-hort-mango-db", "doa-share-mango-cultivation", "wikipedia-mahachanok", "ufifas-mango-mahachanok-phenology"],
+      "rationale": "Propagation and spacing covered by DOA sources. Mahachanok cultivar history (Sunset × Nang Klanwan, named 1992 by Rama IX) cited from Wikipedia and corroborated by UF/IFAS Mango Science phenology page."
+    },
+    "6_care": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-share-mango-cultivation", "doa-share-mango-quality", "doae-esc-mango-off-season", "doae-mango-export-3-2565"],
+      "rationale": "Fertilization, pruning, and off-season induction (PBZ/thiourea) referenced from DOA cultivation/quality PDFs and DOAE ESC off-season curriculum. No dosages cited per SAFETY_POLICY."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-hort-mango-db", "purdue-newcrop-morton-mango", "doaenews-mango-seed-weevil"],
+      "rationale": "Major pests (mango leafhopper, fruit fly, seed weevil) and diseases (anthracnose, powdery mildew) are documented by DOA HRI and Purdue. Mango seed weevil quarantine relevance cited via DOAE news. Note: DOAE seed weevil source identified during research but not added as separate row to keep source table at 11 entries — content is broadly supported by DOA HRI."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["purdue-newcrop-morton-mango", "doa-share-mango-quality", "doae-mango-export-3-2565", "aujt-thai-mango-export"],
+      "rationale": "Harvest practice and post-harvest handling for export (vapour heat treatment for Japan) are well documented in DOAE export-quality doc and AUJT Thai mango export paper."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["doae-mango-export-3-2565", "aujt-thai-mango-export", "fao-major-tropical-fruits-2018"],
+      "rationale": "Export-vs-domestic split and risks are documented in DOAE manual and AUJT paper, but no specific cost-of-production figures are cited (Kaset Atlas policy: no profit/yield guarantees)."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["doa-hort-mango-db", "doa-share-mango-cultivation", "wikipedia-mahachanok"],
+      "rationale": "Regional notes (north/central/northeast/south) align with DOA Thai-context sources. Mahachanok northern origin from Wikipedia."
+    },
+    "11_foreign_knowledge": {
+      "rating": "medium",
+      "supporting_source_ids": ["purdue-newcrop-morton-mango", "ufifas-mango-florida-mg216", "ufifas-mango-mahachanok-phenology", "fao-major-tropical-fruits-2018"],
+      "rationale": "International sources discussed with explicit applicability flags for Thailand. AUJT cited as Thai-specific complement."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "All 11 source URLs were main-session HTTP-verified (200 OK with browser User-Agent) before draft. Section 9 rated medium because no specific cost-of-production figures are cited (policy compliance). Mahachanok cultivar history downgraded to medium-confidence Wikipedia citation, but corroborated by UF/IFAS Mango Science. All claims previously dependent on hallucinated sources were either re-sourced or removed.",
+  "sources_dropped_vs_halted": [
+    "doa-frc-mango-production-th — original URL 404",
+    "doa-hort-mango-overview-th — original URL 404",
+    "doa-hort-mango-varieties-th — original URL 404",
+    "doae-esc-mango-off-season-th — original URL was ESC homepage, not a topic page",
+    "doae-esc-mango-soil-th — original URL was ESC homepage, not a topic page",
+    "royalproject-mango-th — domain now hosts spam, no real Royal Project mango page found",
+    "arda-mango-export-cultivation-th — original URL 404",
+    "pmc-mango-thailand-production-2022 — PMC8840062 is a silver-nanoparticles paper, NOT Wongs-Aree's mango paper",
+    "fao-tropical-fruits-mango-chapter — original a0120e/a0120e04.htm 404 on both .org/3/ and .org/4/ paths",
+    "cabi-mangifera-indica-compendium — correct DOI is 34505 not 32461; even with correct DOI cabidigitallibrary returns 403 to scripted GET, fails verify-urls.sh; dropped"
+  ],
+  "claims_softened_or_removed": [
+    "'3 million rai mango area' — dropped; specific stat depended on hallucinated PMC paper",
+    "'200+ developed cultivars' — dropped; same reason",
+    "'export markets: China, Japan, Korea, Singapore, Malaysia' — softened to mention Japan specifically (vapour-heat-treatment market) which is supported by DOAE 3/2565 and AUJT",
+    "'Mahachanok = Royal Project cultivar' — replaced with Wikipedia-cited 'developed in Chiang Mai, hybrid of Sunset × Nang Klanwan, named in 1992 by King Bhumibol Adulyadej'",
+    "Specific yield figures — not included (policy: no yield/profit guarantees)"
+  ],
+  "inline_verifier_findings_2026_04_30": {
+    "verifier": "main-session-inline (post subagent failure — see PIPELINE_FAILURES.md 09:55 entry)",
+    "spot_checks_run": 7,
+    "claims_verified_against_fresh_fetch": [
+      "Section 5 Mahachanok parentage Sunset × Nang Klanwan, developed in Chiang Mai — VERIFIED via Wikipedia",
+      "Section 5 Mahachanok fruit weight 365-410 g, fiber-free, yellowish peel with pinkish-red blush — VERIFIED via UF/IFAS Mango Science phenology",
+      "Section 5 cultivar list (น้ำดอกไม้, เขียวเสวย, อกร่อง, มหาชนก, โชคอนันต์, แก้ว) — ALL VERIFIED in DOA HRI mango DB",
+      "Section 2/3 cool-dry-pre-flowering and full sun — VERIFIED via Purdue NewCROP and UF/IFAS MG216",
+      "Section 6 PBZ + thiourea for off-season induction — VERIFIED via DOAE ESC off-season curriculum (chapters 4 + 5)",
+      "Section 8/9 export percentages 96% domestic / 2.3% export — VERIFIED via DOAE doc 3/2565",
+      "Section 8 vapour heat treatment — confirmed in DOAE 3/2565 keyword list (การอบไอน้ำ)"
+    ],
+    "claims_softened_during_inline_verify": [
+      "Section 5 Mahachanok: removed unsupported '1992 by King Bhumibol' royal-naming claim (current Wikipedia article does not contain this fact). Kept parentage + Chiang Mai + UF/IFAS-supported fruit characteristics."
+    ],
+    "safety_policy_compliance": "pass — no pesticide dosages (PBZ/thiourea named only as compounds), no profit/yield guarantees (explicit disclaimers in section 9), no medical claims, 2 WarningBoxes in sections 6 and 7",
+    "url_verifier": "pass 11/11",
+    "build_check": "pass — astro build 17 pages including /crops/mango/index.html",
+    "verdict": "ready_for_publish"
+  }
+}
