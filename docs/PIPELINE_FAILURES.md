@@ -6,6 +6,74 @@
 
 ---
 
+## 2026-04-30 — Tomato: Researcher returned only Thai-institutional homepages (no crop-specific deep links)
+
+**Stage:** researcher
+**Run ID:** `d7d3b9f3-ae61-4e7d-987e-4dd62c723537`
+**Failure type:** `retrieval` (Category B)
+**Crop input:** tomato / มะเขือเทศ
+**Operator:** main session, controlled live test under maintainer supervision
+
+### Detection
+
+Researcher subagent (`researcher` type, dispatched per slash command spec) returned a JSON output with `minimum_sources_met: false` and self-explained why in `quality_bar_notes.reason_for_minimum_sources_met_false`:
+
+> "Thai sources are institutional landing pages (homepages/subsites) rather than article-level tomato-specific pages. Deep-link tomato content pages on doa.go.th, doae.go.th, oae.go.th, and ldd.go.th require JavaScript rendering and could not be confirmed via HTTP curl. The Drafter should treat these as institutional source authorities and cite their domain/division rather than specific articles. All 12 URLs return HTTP 200."
+
+### Counts vs quality bar
+
+| Metric | Required | Returned | Status |
+|---|---|---|---|
+| `thai_sources_count` | ≥ 6 | 6 | numerically met |
+| `international_sources_count` | ≥ 3 | 6 | met |
+| `high_confidence_count` | ≥ 4 | 12 | met |
+| All URLs HTTP-verified | true | true (12/12) | met |
+| `minimum_sources_met` | true | **false** | **FAIL** |
+
+The numeric thresholds are met but the researcher correctly self-flagged a deeper quality problem.
+
+### Why this is a halt-worthy failure (not a soft warning)
+
+The 6 Thai sources returned are all top-level institutional homepages, not crop-specific cultivation pages:
+
+- `https://www.doa.go.th/vcri/` — DOA Vegetable Crop Research Institute landing page
+- `https://www.doae.go.th` — Department of Agricultural Extension homepage
+- `https://www.oae.go.th` — Office of Agricultural Economics homepage
+- `https://www.ldd.go.th` — Land Development Department homepage
+- `https://www.mju.ac.th` — Maejo University homepage
+- `https://www.arda.or.th` — Agricultural Research Development Agency homepage
+
+These pages do not contain tomato-specific cultivation, climate, soil, pest, or economics data. Citing them for tomato claims would directly violate WORKFLOW_KIT §5 discarded-approach 2026-04-29 (late) ("Drafter: citation by topic-keyword without document fetch") and Pattern Win 2026-04-29 (late) ("Drafter must fetch and read each cited source before citation").
+
+The cassava + durian incidents documented in WORKFLOW_KIT showed exactly this pattern: URLs that pass HTTP verification but don't actually contain the claimed content are caught only at the much more expensive Content Verifier stage, after Drafter and Build have run. Halting at the Researcher stage is the cheapest correct gate.
+
+### Action taken
+
+- HALTED before Stage 2 (Drafter). No MDX file written, no commit attempted.
+- Preserved researcher output at `.claude/state/researcher-output/tomato.json` (12 sources, all HTTP-verified).
+- Preserved state checkpoint at `.claude/state/pipeline-current.json` with `stage_completed: "preflight"`.
+- Logged this entry.
+- Logged halt to `.claude/logs/verifier-stats.json` with `decision: "halted"`, `halt_stage: "researcher"`, `failure_type: "retrieval"`.
+- Awaiting maintainer decision before any retry or scope change.
+
+### Resolution: pending — for maintainer review
+
+Three options for maintainer:
+
+1. **Re-run researcher with stricter Thai-source instructions.** Require deep-link article URLs (e.g., `doa.go.th/.../tomato-XX.pdf`, `kukr.lib.ku.ac.th/db/BKN/...`, `arda.or.th/research/<id>`) and reject homepages and search-result pages. Acknowledge that some legitimate Thai gov tomato content lives behind JavaScript-rendered tabs, and explicitly accept Thai-language `kukr.lib.ku.ac.th` and `kasetinfo.arda.or.th` as substitutes.
+2. **Accept institutional citations + lean on international sources.** Drafter cites Thai gov by institution (e.g., "ตามกรมวิชาการเกษตร") without specific article URL, while crop-specific claims are anchored to the 6 verified international sources (UC Davis IPM, NC State Extension, MDPI Agronomy/Horticulturae/Plants, CABI). This breaks the source-traceability principle in CLAUDE.md §2 — citing an institution's homepage is not a verifiable source for a specific claim — and would likely fail Content Verifier.
+3. **Halt tomato pipeline entirely** until a better Thai source-discovery query template is added to `.claude/agents/researcher.md`. This is the most expensive option but produces the most durable Pattern Win.
+
+**Recommendation (architect mode):** Option 1. The researcher's self-flag is a feature, not a bug — it correctly refused to ship low-quality Thai sources. Re-running with `kukr.lib.ku.ac.th` (KU library full-text repository), `kb.psu.ac.th` (PSU repository), `digital.car.chula.ac.th` (Chula repository), and `kasetinfo.arda.or.th` (ARDA's keyword-indexed crop info site) added as preferred Thai deep-link sources should succeed. This is an agent-prompt improvement (🔴 high-risk per CLAUDE.md §6) and requires explicit maintainer approval before edit.
+
+### Evidence preserved
+
+- `.claude/state/researcher-output/tomato.json` — full researcher JSON output (12 sources, http_status, confidence, etc.)
+- `.claude/state/pipeline-current.json` — checkpoint at `stage_completed: "preflight"`
+- `.claude/logs/verifier-stats.json` — appended halt entry with `run_id` for joinability
+
+---
+
 ## 2026-04-30 09:55 — Mango (rebuild): Content Verifier Subagent — Two-Mode Failure
 
 **Stage:** content-verifier (post main-session-only Researcher + Drafter rebuild)

@@ -1,0 +1,244 @@
+{
+  "crop": {
+    "thai": "มะเขือเทศ",
+    "english": "Tomato",
+    "scientific": "Solanum lycopersicum",
+    "category": "vegetables",
+    "family": "Solanaceae"
+  },
+  "sources": [
+    {
+      "id": "doa-vcri-vegetable-research",
+      "title": "สถาบันวิจัยพืชผัก กรมวิชาการเกษตร (Vegetable Crop Research Institute, DOA)",
+      "url": "https://www.doa.go.th/vcri/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "variety-development",
+        "cultivation",
+        "pest-management",
+        "post-harvest",
+        "vegetable-research"
+      ]
+    },
+    {
+      "id": "doae-extension-homepage",
+      "title": "กรมส่งเสริมการเกษตร (Department of Agricultural Extension)",
+      "url": "https://www.doae.go.th",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "cultivation-extension",
+        "farmer-training",
+        "crop-management",
+        "GAP",
+        "marketing"
+      ]
+    },
+    {
+      "id": "oae-agricultural-economics",
+      "title": "สำนักงานเศรษฐกิจการเกษตร (Office of Agricultural Economics)",
+      "url": "https://www.oae.go.th",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "production-statistics",
+        "market-data",
+        "crop-area",
+        "yield-data",
+        "economic-analysis"
+      ]
+    },
+    {
+      "id": "ldd-soil-management",
+      "title": "กรมพัฒนาที่ดิน (Land Development Department)",
+      "url": "https://www.ldd.go.th",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "soil-pH",
+        "soil-preparation",
+        "fertilizer-recommendations",
+        "organic-matter",
+        "land-suitability"
+      ]
+    },
+    {
+      "id": "mju-horticulture",
+      "title": "มหาวิทยาลัยแม่โจ้ (Mae Jo University) — Faculty of Agricultural Production",
+      "url": "https://www.mju.ac.th",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "highland-cultivation",
+        "varietal-research",
+        "northern-thailand-conditions",
+        "horticulture",
+        "post-harvest"
+      ]
+    },
+    {
+      "id": "arda-agricultural-research",
+      "title": "สำนักงานพัฒนาการวิจัยการเกษตร — สวก. (Agricultural Research Development Agency)",
+      "url": "https://www.arda.or.th",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "research-funding",
+        "crop-innovation",
+        "disease-resistance",
+        "yield-improvement",
+        "applied-research"
+      ]
+    },
+    {
+      "id": "ucdavis-ipm-tomato",
+      "title": "Tomato Pest Management Guidelines — UC IPM, University of California",
+      "url": "https://ipm.ucanr.edu/agriculture/tomato/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "integrated-pest-management",
+        "disease-identification",
+        "fungal-diseases",
+        "insect-pests",
+        "biological-control"
+      ]
+    },
+    {
+      "id": "ncsu-tomato-production",
+      "title": "Tomato Production — NC State Extension, North Carolina State University",
+      "url": "https://content.ces.ncsu.edu/tomato-production",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "soil-requirements",
+        "planting",
+        "fertilization",
+        "irrigation",
+        "harvest"
+      ]
+    },
+    {
+      "id": "mdpi-agronomy-tomato-review-2021",
+      "title": "Tomato (Solanum lycopersicum L.) and the Effect of Different Cultivation Systems on Qualitative Characteristics — Agronomy, MDPI (2021)",
+      "url": "https://www.mdpi.com/2073-4395/11/6/1171",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "cultivation-systems",
+        "fruit-quality",
+        "temperature-tolerance",
+        "growing-conditions",
+        "open-field-vs-greenhouse"
+      ]
+    },
+    {
+      "id": "mdpi-horticulturae-tomato-2021",
+      "title": "Horticulturae — Tomato Cultivation and Quality Research, MDPI (2021)",
+      "url": "https://www.mdpi.com/2311-7524/7/11/385",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "postharvest-quality",
+        "nutrient-content",
+        "lycopene",
+        "growth-conditions",
+        "fruit-development"
+      ]
+    },
+    {
+      "id": "cabi-compendium-solanum-lycopersicum",
+      "title": "Solanum lycopersicum (tomato) — CABI Crop Protection Compendium",
+      "url": "https://www.cabidigitallibrary.org/doi/10.1079/cabicompendium.49477",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "reference-database",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "taxonomy",
+        "pest-list",
+        "disease-list",
+        "distribution",
+        "invasive-species"
+      ]
+    },
+    {
+      "id": "mdpi-plants-tomato-disease-2022",
+      "title": "Plants — Tomato Disease Management Review, MDPI (2022)",
+      "url": "https://www.mdpi.com/2223-7747/11/3/381",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "fungal-diseases",
+        "bacterial-diseases",
+        "viral-diseases",
+        "disease-management",
+        "resistance"
+      ]
+    }
+  ],
+  "minimum_sources_met": false,
+  "thai_sources_count": 6,
+  "international_sources_count": 6,
+  "high_confidence_count": 12,
+  "quality_bar_notes": {
+    "thai_sources_count_required": 6,
+    "thai_sources_count_found": 6,
+    "thai_sources_met": true,
+    "international_sources_count_required": 3,
+    "international_sources_count_found": 6,
+    "international_met": true,
+    "high_confidence_required": 4,
+    "high_confidence_found": 12,
+    "high_confidence_met": true,
+    "all_urls_http_verified": true,
+    "reason_for_minimum_sources_met_false": "Thai sources are institutional landing pages (homepages/subsites) rather than article-level tomato-specific pages. Deep-link tomato content pages on doa.go.th, doae.go.th, oae.go.th, and ldd.go.th require JavaScript rendering and could not be confirmed via HTTP curl. The Drafter should treat these as institutional source authorities and cite their domain/division rather than specific articles. All 12 URLs return HTTP 200."
+  }
+}
