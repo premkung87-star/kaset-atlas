@@ -129,6 +129,16 @@ Wait for JSON. Validate:
   `failure_type: tool-execution` (Category A — drafter claimed file writes
   the harness did not actually execute). Do NOT retry blindly — log and
   await maintainer review.
+- **Source-table integrity check (Day-2 instrumentation):**
+  ```bash
+  ./scripts/verify-source-table.sh src/content/crops/<slug>.mdx
+  ```
+  Accept on `verification_status: pass`. On `fail`, halt with
+  `failure_type: generation-contract` (Category C — drafter produced a
+  malformed source table: missing rows, duplicate URLs, malformed
+  Markdown links, stray body URLs, or below the SOURCE_POLICY minimum
+  of 9 sources). This is a deterministic structural gate that runs
+  before URL Verifier so a broken table doesn't waste network calls.
 
 On fail: log, halt.
 On pass: update checkpoint with `stage_completed=drafter`.
