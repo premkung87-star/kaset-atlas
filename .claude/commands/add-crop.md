@@ -19,6 +19,14 @@ view .claude/agents/<name>.md
 
 This ensures any update to the on-disk prompt takes effect on the next pipeline run without needing to retain prompt copies elsewhere.
 
+## Operating principle: General-purpose dispatch only (Tier 1.4 — added 2026-04-30)
+
+Every subagent dispatch in this pipeline MUST use `subagent_type: general-purpose` and embed the role's prompt text in the message. Do NOT use the dedicated `subagent_type: researcher` / `drafter` / `content-verifier` agent types.
+
+**Why:** Four documented incidents on this project (durian, mango researcher, mango drafter, mango Content Verifier ×2, tomato resume #2) have shown the dedicated subagent paths producing Category A *tool-execution failures* — the agent renders `<function_calls>` blocks as plain text inside its assistant content without invoking the harness, so `tool_use` count is 0 across the whole dispatch despite a long, plausible-looking response. The 2026-04-30 tomato Option 1 controlled diagnostic confirmed `general-purpose` dispatch executes tool calls correctly with the same role prompts (researcher: 38 tool_use, drafter: 29 tool_use, content-verifier: 26 tool_use). See `docs/PIPELINE_FAILURES.md` and `docs/AUDIT_LOG.md` 2026-04-30 tomato entry.
+
+**How to read the canonical prompt and embed it:** the read-then-dispatch principle (Tier 1.1) still applies — `view .claude/agents/<name>.md` first, then pass the file contents as part of the message text to a `general-purpose` subagent. The general-purpose agent has access to all tools the dedicated types had (Read, WebFetch, WebSearch, Bash, Edit, Write).
+
 ## Pre-flight (mandatory; halt on any failure)
 
 1. Read `CLAUDE.md` (operating manual) — confirm operating mode is Definition B.
@@ -82,8 +90,8 @@ After successful push, delete the checkpoint file (clean state for next run).
 view .claude/agents/researcher.md
 ```
 
-Dispatch a `general-purpose` subagent:
-- System prompt = full text of `.claude/agents/researcher.md`
+Dispatch a `subagent_type: general-purpose` subagent (per Tier 1.4 above — do NOT use `subagent_type: researcher`, that path has produced Category A tool-execution failures with `tool_use: 0`):
+- System prompt = full text of `.claude/agents/researcher.md` (read-then-dispatch per Tier 1.1)
 - Crop input = $1
 
 Wait for JSON. Validate per `docs/AUTOMATION_PIPELINE.md`:
@@ -102,8 +110,8 @@ On pass: update state checkpoint with `stage_completed=researcher`.
 view .claude/agents/drafter.md
 ```
 
-Dispatch a NEW `general-purpose` subagent:
-- System prompt = full text of `.claude/agents/drafter.md`
+Dispatch a NEW `subagent_type: general-purpose` subagent (per Tier 1.4 above — do NOT use `subagent_type: drafter`, that path has produced Category A tool-execution failures with `tool_use: 0`):
+- System prompt = full text of `.claude/agents/drafter.md` (read-then-dispatch per Tier 1.1)
 - Researcher's full JSON output
 - Existing crops manifest (built in pre-flight step 11)
 - Today's date
@@ -196,8 +204,8 @@ On pass: update checkpoint.
 view .claude/agents/content-verifier.md
 ```
 
-Dispatch a NEW `general-purpose` subagent (NOT continuing the drafter agent):
-- System prompt = full text of `.claude/agents/content-verifier.md`
+Dispatch a NEW `subagent_type: general-purpose` subagent (per Tier 1.4 above — do NOT use `subagent_type: content-verifier`, that path has produced Category A tool-execution failures with `tool_use: 0`; the dispatch must also be a fresh subagent — not a continuation of the drafter agent — to preserve fresh-context isolation):
+- System prompt = full text of `.claude/agents/content-verifier.md` (read-then-dispatch per Tier 1.1)
 - Path to the drafted MDX file
 - Path to the reasoning sidecar (so verifier can check confidence claims)
 - Today's date
@@ -326,6 +334,7 @@ Print summary:
 - Inventing URLs (all URLs must come from Researcher's verified output)
 - Using `contributor: "Prem Pawee"` — must be `"AI Pipeline (auto)"`
 - Skipping the Build Verifier (Stage 4) — non-negotiable
+- Using `subagent_type: researcher` / `drafter` / `content-verifier` instead of `general-purpose` (Tier 1.4). Five documented Category A `tool-execution` failures across durian, mango ×3, and tomato resume #2 vs zero on `general-purpose` — the dedicated paths render `<function_calls>` blocks as text without invoking the harness, producing `tool_use: 0` despite long plausible-looking responses. The 2026-04-30 tomato Option 1 controlled diagnostic confirmed `general-purpose` dispatch executes tool calls correctly with the same role prompts.
 
 ## Safety limits
 
