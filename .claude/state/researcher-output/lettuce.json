@@ -1,0 +1,160 @@
+{
+  "crop": {
+    "thai": "ผักกาดหอม",
+    "english": "Lettuce",
+    "scientific": "Lactuca sativa",
+    "category": "food-crops",
+    "family": "Asteraceae"
+  },
+  "sources": [
+    {
+      "id": "hrdi-lettuce-general",
+      "title": "ผักกาดหอมทั่วไป — องค์ความรู้เพื่อการพัฒนาพื้นที่สูงอย่างยั่งยืน (HRDI / Royal Project)",
+      "url": "https://hkm.hrdi.or.th/Knowledge/detail/2",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["overview", "highland-cultivation", "climate", "soil", "varieties"]
+    },
+    {
+      "id": "hrdi-lettuce-iceberg",
+      "title": "ผักกาดหอมห่อ (Head/Iceberg Lettuce) — HRDI / Royal Project",
+      "url": "https://hkm.hrdi.or.th/Knowledge/detail/3",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["iceberg", "climate", "soil-pH", "spacing", "harvest", "tipburn-prevention"]
+    },
+    {
+      "id": "hrdi-lettuce-butterhead",
+      "title": "ผักกาดหอมบัตเตอร์เฮด (Butterhead Lettuce) — HRDI / Royal Project",
+      "url": "https://hkm.hrdi.or.th/Knowledge/detail/4",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["butterhead", "climate-10-24C", "pH-6.0-6.5", "spacing", "postharvest"]
+    },
+    {
+      "id": "hrdi-lettuce-redleaf",
+      "title": "ผักกาดหอมใบแดง (Red Leaf Lettuce) — HRDI / Royal Project",
+      "url": "https://hkm.hrdi.or.th/Knowledge/detail/5",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["red-leaf", "varieties", "rainy-season-shade", "year-round-production"]
+    },
+    {
+      "id": "hrdi-rainy-season-diseases",
+      "title": "โรคพืชผักที่ควรรู้ต้องระวังในฤดูฝน (HRDI rainy-season vegetable diseases — includes lettuce / cos / butterhead)",
+      "url": "https://hkm.hrdi.or.th/Knowledge/detail/697",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["diseases", "Cercospora", "rainy-season", "IPM", "drainage"]
+    },
+    {
+      "id": "ku-lettuce-comparative-growth",
+      "title": "การเปรียบเทียบการเจริญเติบโต ปริมาณไนเตรท และอายุการเก็บรักษาของผักกาดหอม (KU thesis, ฐิติมา ตรีโลเกศ, 2556)",
+      "url": "https://kukr.lib.ku.ac.th/bkn/Detail/info/284049",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["growth-comparison", "nitrate", "shelf-life", "storage"]
+    },
+    {
+      "id": "ku-trichoderma-hydroponic-lettuce",
+      "title": "ประสิทธิภาพของเชื้อรา Trichoderma asperellum และโพแทสเซียมไดไฮโดรเจนฟอสเฟต ต่อการส่งเสริมการเจริญเติบโตและการลดโรครากเน่าของผักกาดหอมที่ปลูกในระบบไฮโดรโพนิกส์ (Journal of Agricultural Science, 2016)",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/KPS/search_detail/result/397301",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["hydroponics", "root-rot", "biocontrol", "Trichoderma"]
+    },
+    {
+      "id": "mju-organic-lettuce-seed",
+      "title": "การผลิตเมล็ดพันธุ์ผักอินทรีย์ไว้ใช้เอง: ผักกาดหอม (Maejo University)",
+      "url": "https://kb.mju.ac.th/assets/img/articleFile/256407290a6c3a2fd47d4be4a71fed67db64ee71.pdf",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["seed-production", "organic", "seedling", "spacing", "Thai-context"]
+    },
+    {
+      "id": "kkj-biopesticide-greenoak",
+      "title": "ผลของชีวภัณฑ์และสารเคมีต่อการจัดการศัตรูพืชในผักกาดหอม สายพันธุ์กรีนโอ๊ค (Khon Kaen Agricultural Journal, 2022)",
+      "url": "https://li01.tci-thaijo.org/index.php/agkasetkaj/article/view/258394",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": ["IPM", "biopesticide", "Trichoderma", "Beauveria", "Metarhizium", "greenhouse", "thrips", "whitefly", "residue"]
+    },
+    {
+      "id": "ucanr-ipm-lettuce",
+      "title": "Managing Pests in Gardens: Lettuce — UC IPM (UC ANR)",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/lettuce/index.html",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": ["IPM", "pests", "diseases", "tipburn", "bolting", "downy-mildew", "Sclerotinia"]
+    },
+    {
+      "id": "umn-growing-lettuce",
+      "title": "Growing lettuce, endive and radicchio in home gardens — University of Minnesota Extension",
+      "url": "https://extension.umn.edu/vegetables/growing-lettuce-endive-and-radicchio",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": ["temperature", "soil-pH-6.0-6.8", "fertilizer", "pests", "harvest-timing", "bolting"]
+    },
+    {
+      "id": "cornell-resistant-lettuce-varieties",
+      "title": "Disease-resistant lettuce varieties — Cornell Vegetables",
+      "url": "https://www.vegetables.cornell.edu/pest-management/disease-factsheets/disease-resistant-vegetable-varieties/disease-resistant-lettuce-varieties/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": ["disease-resistance", "downy-mildew", "lettuce-mosaic-virus", "Sclerotinia", "Fusarium", "cultivar-types"]
+    }
+  ],
+  "minimum_sources_met": true,
+  "thai_sources_count": 8,
+  "international_sources_count": 4,
+  "high_confidence_count": 12,
+  "notes": "All 12 URLs HTTP-verified (Stage 4a) and WebFetch-verified for crop-specific lettuce content (Stage 4b) on 2026-04-30. Heavy weighting toward Thai highland (Royal Project / HRDI) sources because lettuce is grown commercially in Thailand mainly under highland / cool-season conditions; the four HRDI pages cover the main cultivar groups (general, iceberg, butterhead, red leaf) plus rainy-season disease management. Rejected during verification: anrcatalog.ucanr.edu/pdf/7215.pdf and 7216.pdf (HTTP 404 — old links), UC Davis postharvest fact sheets (HTTP 200 to curl but blocked WebFetch — could not Stage 4b verify), FAO openknowledge bitstream (curl 200 but WebFetch 403 — cannot confirm crop-specific section), CMU thesis chapter PDF hort0850wj_ch2 (binary content unreadable to WebFetch), kasetinfo.arda.or.th (no lettuce-specific deep page surfaced)."
+}

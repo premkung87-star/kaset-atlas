@@ -4,6 +4,90 @@
 
 ---
 
+## 2026-04-30 — Pipeline + maintainer repair: Added ผักกาดหอม (Lettuce) after citation-year correction (Phase 2 controlled run)
+
+**Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)
+**Crop:** ผักกาดหอม (Lettuce) — `lettuce`
+**Category:** food-crops
+**Scientific:** *Lactuca sativa*
+
+**Run ID:** `d4d3c59e-97d7-4ed3-bc13-0e4a854c613d`
+**Phase:** 2 (controlled run with explicit policy-safe constraints from maintainer)
+**Prior run ID (halt that preceded this success):**
+- `2fbd636f-...` — researcher final-response Usage Policy refusal (preflight stage only); checkpoint archived to `.claude/state/halted/2026-04-30-lettuce-usage-policy/`. Logged in `docs/PIPELINE_FAILURES.md`. No prompt change made (N=1 for that failure mode).
+
+### Pipeline run (all subagent stages via `general-purpose` dispatch per Tier 1.4)
+
+- **Researcher** (agent ID `abfa4d9f893e12f66`): 12 sources (8 Thai + 4 international), all 🟢 high-confidence, all URLs HTTP-verified to 200 + WebFetch-confirmed crop-specific content. Tool calls: 44, duration 10m35s. Strong Thai highland/Royal Project foundation (HRDI ×5 covers iceberg/butterhead/red-leaf/rainy-season-disease/general) plus Thai academic (KU thesis, KU/Trichoderma study, Maejo organic seed) plus Khon Kaen Agricultural Journal IPM peer-review, balanced with UC IPM, UMN, Cornell.
+- **Drafter** (agent ID `aa68e5f91e7ee23cd`): 50,945-byte MDX (360 lines, 13 sections) + 4,519-byte reasoning sidecar. Tool calls: 26, duration 6m45s. All four cultivar groups covered (cos, butterhead, iceberg, red-leaf). Highland reality reflected honestly in §2 + §11; lowland heat constraints stated explicitly. Cross-links to sibling crops added in §10. Self-validation passed.
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=26
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 12 unique source IDs in sidecar matching 12 unique URLs in MDX
+- **URL Verifier (`v3-soft200-aware`):** pass 12/12, no soft-200 errors
+- **Build Verifier:** pass — 20 pages built (was 19 with cucumber, +1 lettuce), Pagefind indexed
+- **Content Verifier — first pass** (agent ID `acfb387a9f60e3926`): `verification_status: fixed` — 0 blockers, 1 medium auto-fixed (postharvest temperature at line 252: corrected `~3°C` to `pre-cool ~3°C → store ~0°C` to match HRDI butterhead source verbatim), 0 minor, ready_for_publish:true. Tool calls: 24, duration 3m25s. Self-consistency PASS.
+- **Re-run after auto-fix:** subagent-output-verify pass (split invocation: mdx with mtime-after; sidecar+stats existence-only — see below), URL Verifier pass (12/12), Build Verifier pass (20 pages), all structural gates re-pass.
+- **Content Verifier — retry pass** (agent ID `a95a472fa05661b3b`, mandatory per spec medium-1-3 + auto-fix matrix): `verification_status: fail` — 1 🔴 BLOCKER. Tool calls: 28, duration 3m52s. Self-consistency PASS.
+
+### Halt at retry — citation year off-by-one (upstream-origin)
+
+The retry verifier caught what the first verifier missed: lines 223 and 347 cited the Khon Kaen Agricultural Journal article as `(2565)` / `แก่นเกษตร 2565` (= 2022 CE), but the article was actually published in 2566 BE / 2023 CE per `DC.Date.issued = 2023-07-07` and breadcrumb `ปีที่ 51 ฉบับที่ 4 (2566): (กรกฎาคม-สิงหาคม)`. The error originated in the Researcher's JSON title field (`(Khon Kaen Agricultural Journal, 2022)`) and propagated faithfully through Drafter and the first Content Verifier.
+
+URL, content, claims, species names, and findings were all otherwise faithful — only the year digit was wrong.
+
+Pipeline halted before commit. Logged to `docs/PIPELINE_FAILURES.md` with full evidence + remediation options. No manual content patching was attempted at this point per maintainer Phase-2 constraint.
+
+### Maintainer repair (option 1 — smallest reversible fix)
+
+Maintainer approved a two-character manual edit:
+- Line 223: `Khon Kaen Agricultural Journal (2565)` → `(2566)`
+- Line 347: `แก่นเกษตร 2565` → `แก่นเกษตร 2566`
+
+No other content changed. URL, source title structure, claim wording, and source-table layout unchanged.
+
+### Final verification after maintainer repair
+
+- **MDX safety:** pass
+- **Source-table integrity:** pass — 12 data rows, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections, 12 source IDs match
+- **URL Verifier:** pass 12/12
+- **Build Verifier:** pass — 20 pages
+- **Content Verifier — final pass** (agent ID `af55c8e2715eb5104`): `verification_status: pass` — 0 blockers, 0 medium, 0 minor, ready_for_publish:true. Tool calls: 14, duration 2m12s. Self-consistency PASS. Independently re-confirmed `2566` / `2023 CE` against TCI ThaiJo metadata for the Khon Kaen article.
+- **audit-crops.sh:** PASS — lettuce 3/3 structural gates; corpus 7 crops, 20 result rows pass, 0 fail-new, 1 known-exception (mango sidecar, pre-existing).
+
+### Pattern adherence
+
+This run is the third Phase 2 run (after tomato `64fc52d` and cucumber `bd7c4d2`) and the first to require maintainer manual content repair. Four `general-purpose` dispatches (researcher 44 tool_use, drafter 26, content-verifier-first 24, content-verifier-retry 28, content-verifier-final 14) all executed real tool calls — zero Category A failures, consistent with the Tier 1.4 Pattern Win baseline. The retry-pass mechanism caught a Stage-1 (Researcher) data-quality issue that the first-pass Content Verifier missed — useful evidence that the spec's "re-run all three after auto-fix" requirement is doing real work.
+
+### Subagent-output-verify split invocation note
+
+The pipeline spec's `--mtime-after` flag, when applied to the full file list (`<slug>.mdx`, `<slug>.reasoning.json`, `verifier-stats.json`), false-positives on the sidecar — the Content Verifier's auto-fix touched only the mdx, not the sidecar (whose mtime stays at the Drafter's earlier write). The semantically correct invocation splits files into "claimed-modified" (mdx, with `--mtime-after` gate) and "claimed-preserved" (sidecar + stats, existence-only). Both invocations passed for this run. Future improvement: per-file `--mtime-after` flag in `subagent-output-verify.sh` would remove the split. Not promoted to Pattern Win (N=1 observation; same-as-spec script behavior, not a tool defect that broke the run).
+
+### Possible future Pattern Win — researcher year-correctness check
+
+This is the first observed researcher-year-misattribution-class failure (N=1 — the tomato pre-fix issues were Thai-institutional-homepage class, not year class). A second similar incident on a future crop would justify a researcher.md prompt update requiring per-source publication-year cross-check against canonical metadata fields (`DC.Date.issued`, `<meta>` tags, breadcrumbs) before returning. Not promoted today.
+
+### Files changed
+
+- `src/content/crops/lettuce.mdx` (NEW, 51,099 bytes — includes content-verifier auto-fix at line 252 + maintainer year repair at lines 223 and 347)
+- `src/content/crops/lettuce.reasoning.json` (NEW, 4,519 bytes)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (retry-pass blocker entry — kept as historical record; maintainer repair completes the resolution)
+- `.claude/logs/verifier-stats.json` (3 lettuce entries: first-pass `fixed`, retry-pass `fail`, final-pass `pass` after repair)
+- `.claude/logs/subagent-dispatch.json` (drafter + content-verifier-first + content-verifier-retry + content-verifier-final dispatch verify entries)
+- `.claude/state/researcher-output/lettuce.json` (preserved researcher JSON)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive.
+
+### Commit message rationale
+
+Standard `[auto]` suffix omitted because this run required maintainer manual repair (the two-character year edit). Commit message reads `content(food-crops): add lettuce after citation-year repair` to make the maintainer-touched provenance honest in `git log`.
+
+---
+
 ## 2026-04-30 — Auto Pipeline: Added แตงกวา (Cucumber) via general-purpose dispatch (Phase 2 first run)
 
 **Type:** Content Addition (auto)

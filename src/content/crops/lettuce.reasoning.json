@@ -1,0 +1,64 @@
+{
+  "crop_slug": "lettuce",
+  "drafted_at": "2026-04-30T00:00:00Z",
+  "model": "claude-sonnet-4-6",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-general", "hrdi-lettuce-iceberg", "hrdi-lettuce-butterhead", "hrdi-lettuce-redleaf"],
+      "rationale": "Highland-only / cool-season constraint is documented across all four HRDI references and matches well with UMN Extension cool-season framing."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-iceberg", "hrdi-lettuce-butterhead", "umn-growing-lettuce"],
+      "rationale": "Temperature range 10-24C is explicitly stated in HRDI sources for both iceberg and butterhead, corroborated by UMN cool-season values."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-iceberg", "hrdi-lettuce-butterhead", "umn-growing-lettuce"],
+      "rationale": "pH 6.0-6.5 (HRDI Thai sources) and pH 6.0-6.8 (UMN) align tightly; loose loamy soil with high organic matter is consistent across both Thai and US extension guidance."
+    },
+    "4_water": {
+      "rating": "medium",
+      "supporting_source_ids": ["umn-growing-lettuce", "ucanr-ipm-lettuce", "hrdi-lettuce-iceberg"],
+      "rationale": "Shallow-root irrigation principles come from UMN; tipburn calcium link from UC IPM and HRDI weekly Ca/B foliar guidance — solid but not as quantitative as for some crops."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-iceberg", "hrdi-lettuce-butterhead", "mju-organic-lettuce-seed"],
+      "rationale": "Seedling cell-tray practice (3-4 weeks, max 30 days), spacing 30x30 hot/40x40 rainy, and propagation method come directly from HRDI iceberg/butterhead guides."
+    },
+    "6_care": {
+      "rating": "medium",
+      "supporting_source_ids": ["ku-lettuce-comparative-growth", "ku-trichoderma-hydroponic-lettuce", "ucanr-ipm-lettuce"],
+      "rationale": "Nitrate-accumulation caution is grounded in the KU thesis topic; hydroponic Trichoderma supports biocontrol guidance; specific Thailand fertilizer rates intentionally deferred to extension officers per safety policy."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-rainy-season-diseases", "ucanr-ipm-lettuce", "cornell-resistant-lettuce-varieties", "kkj-biopesticide-greenoak"],
+      "rationale": "Cercospora coverage from HRDI rainy-season doc, broader disease/insect list from UC IPM, resistant-variety strategy from Cornell, and Thailand-specific biopesticide evidence from Khon Kaen Agricultural Journal."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-iceberg", "hrdi-lettuce-butterhead", "hrdi-lettuce-redleaf"],
+      "rationale": "Harvest timings (40-60 days iceberg, 75-90 days butterhead/red-leaf), firmness press-test, postharvest 3C high-humidity storage all from HRDI."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["hrdi-lettuce-general", "hrdi-lettuce-butterhead", "ku-trichoderma-hydroponic-lettuce"],
+      "rationale": "Market structure (Royal Project / hydroponics / restaurant supply) is described qualitatively — no income or yield numbers given per safety policy."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["hrdi-lettuce-general", "hrdi-rainy-season-diseases", "ku-trichoderma-hydroponic-lettuce", "mju-organic-lettuce-seed"],
+      "rationale": "Regional breakdown directly grounded in HRDI highland focus; hydroponics paragraph in KU work; organic seed-saving in Maejo university source."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": ["umn-growing-lettuce", "ucanr-ipm-lettuce", "cornell-resistant-lettuce-varieties"],
+      "rationale": "Foreign sources are paraphrased with explicit Thailand applicability caveats — temperate-season framing flagged as not applicable, chemical recommendations deferred to Thai authorities, cultivar lists noted as US-registered."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "12 high-confidence sources (5 Thai government / 3 Thai university / 1 peer-reviewed Thai journal / 3 US university extension) cover all 11 sections with no thin spots; safety-sensitive content (chemical rates, nitrate health claims, profit guarantees) consistently deferred to authorities per SAFETY_POLICY."
+}

@@ -6,6 +6,65 @@
 
 ---
 
+## 2026-04-30 — Lettuce / ผักกาดหอม: Content Verifier retry-pass blocker (citation year off-by-one)
+
+**Stage:** content-verifier (retry pass, post-fix)
+**Run ID:** `d4d3c59e-97d7-4ed3-bc13-0e4a854c613d`
+**Failure type:** `misattribution` (citation-year off-by-one)
+**Crop input:** lettuce / ผักกาดหอม
+**Dispatch mode:** general-purpose-only (Tier 1.4) — all four general-purpose dispatches executed real tool calls (researcher 44, drafter 26, verifier 24, retry-verifier 28; zero Category A failures)
+
+### What happened
+
+End-to-end pipeline ran cleanly through Stages 1–4:
+- Researcher: 12/12 sources verified (8 Thai + 4 international, all 🟢 high-confidence)
+- Drafter: 13-section MDX + reasoning sidecar; mdx-safety / source-table / claim-grounding / subagent-output-verify all `pass`
+- URL Verifier: 12/12 URLs HTTP 200
+- Build Verifier: pass, 20 pages
+
+Content Verifier (first pass) found 1 medium issue and applied 1 auto-fix at line 252 (postharvest temperature: corrected `~3°C` to `pre-cool ~3°C → store ~0°C` to match HRDI butterhead source).
+
+Per spec decision-matrix (medium 1-3 + auto-fix → re-run URL+Build+Verifier), all three were re-run after the auto-fix. URL re-verify pass, Build re-verify pass, structural gates pass. The retry Content Verifier dispatch found one **🔴 BLOCKER**.
+
+### The blocker
+
+| | Value |
+|---|---|
+| File evidence | `lettuce.mdx` lines 223 + 347: `Khon Kaen Agricultural Journal (2565)` and `แก่นเกษตร 2565` |
+| Source URL | `https://li01.tci-thaijo.org/index.php/agkasetkaj/article/view/258394` |
+| Source canonical metadata | `<meta name="DC.Date.issued" scheme="ISO8601" content="2023-07-07"/>`, breadcrumb `ปีที่ 51 ฉบับที่ 4 (2566): (กรกฎาคม-สิงหาคม)`, CSL `(2023)` |
+| Discrepancy | MDX claims 2565 BE (= 2022 CE); article was published 2566 BE (= 2023 CE), Vol 51 Issue 4 |
+| Independent confirmation | Main session re-fetched the URL and saw the same DC.Date.issued / breadcrumb |
+
+The drafter did not invent this — the **Researcher's JSON** included `(Khon Kaen Agricultural Journal, 2022)` in the source title (the data may have been collected in 2022 but the journal article was published 2023). The drafter faithfully transcribed the Researcher's year. The misattribution propagated from Stage 1.
+
+### Other checks (all pass)
+
+- All 12 URLs returned HTTP 200 (both passes)
+- The line-252 auto-fix from the first verifier landed correctly and verifies clean against HRDI butterhead source
+- SAFETY_POLICY: zero pesticide dosages, zero fertilizer ratios, zero medical claims, zero income guarantees, WarningBox in §7
+- SOURCE_POLICY: 12 distinct sources, each cited once, all 🟢 high-tier
+- Frontmatter: `contributor: "AI Pipeline (auto)"`, `lastUpdated: 2026-04-30`, `publishedAt: 2026-04-30`, `confidenceOverall: high`, `category: food-crops`
+- Reasoning sidecar: 11 sections, all "high" ratings have ≥2 supporting source IDs, no phantom IDs
+
+### Action taken
+
+- Halted before commit. No `git commit`, no `git push`.
+- Working tree retains `src/content/crops/lettuce.mdx` + `lettuce.reasoning.json` (uncommitted) so the maintainer can review and decide remediation.
+- Logged to `.claude/logs/verifier-stats.json` two entries (first-pass `decision: fixed, auto_fixes: 1`; retry-pass `decision: fail, blockers: 1, manual_intervention_required: true, intervention_type: misattributed_citation_year`).
+- No manual patching of crop content (per maintainer Phase-2 constraint).
+- No retry beyond the spec's 1-retry-max (already used).
+
+### Remediation options (for maintainer decision)
+
+1. **Two-character manual edit, then re-run final gates only** — change `2565` → `2566` on lines 223 and 347. After fix, re-run `verify-urls`, `verify-build`, `verify-source-table`, and a single Content Verifier retry. URL/content/safety/frontmatter checks have already passed; only the year string differs. Lowest-cost option.
+2. **Re-dispatch researcher with year-correctness instruction** — to systematically fix the upstream source-title-year drift (this is the second documented researcher-year-error class in the corpus; first was tomato self-flag on institutional-homepage Thai sources). Higher cost; would also yield a clean Pattern Win for §4.
+3. **Accept the citation as "research period 2565 / published 2566"** — add an explicit disambiguation note in the source table date column. This relaxes the verifier's strictness and would need a SOURCE_POLICY clarification on what "publication year" means for journals where data-collection and publication span years.
+
+Recommendation: option 1 (smallest reversible fix); option 2 if the year-drift pattern repeats on a future crop (Pattern Win threshold at N=2).
+
+---
+
 ## 2026-04-30 — Lettuce / ผักกาดหอม: researcher final response refused by Usage Policy
 
 **Stage:** researcher (final synthesis response, post tool-use)
