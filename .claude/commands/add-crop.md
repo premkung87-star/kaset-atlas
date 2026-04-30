@@ -139,6 +139,26 @@ Wait for JSON. Validate:
   Markdown links, stray body URLs, or below the SOURCE_POLICY minimum
   of 9 sources). This is a deterministic structural gate that runs
   before URL Verifier so a broken table doesn't waste network calls.
+- **Claim-grounding sidecar check (Day-2 instrumentation, v1):**
+  ```bash
+  ./scripts/verify-claim-grounding.sh \
+    --with-mdx src/content/crops/<slug>.mdx \
+    src/content/crops/<slug>.reasoning.json
+  ```
+  Accept on `verification_status: pass`. On `fail`, halt with
+  `failure_type: generation-contract` (Category C — sidecar contract
+  violated: malformed JSON, missing required fields, fewer than 11
+  sections, invalid rating, rationale below 25 chars, high-confidence
+  section with a single supporting source, duplicate source IDs within
+  a section, filename↔crop_slug mismatch, or sidecar referencing more
+  unique source IDs than the MDX source table contains). The
+  `coverage_assessment` block in the report describes which sections
+  use the legacy `supporting_source_types` schema (e.g. retroactive
+  sweet-basil sidecar) — those are warnings, not failures.
+
+  v1 of this script does NOT verify content fidelity (verbatim quotes
+  appearing in source bodies). That requires the v2 schema migration
+  documented in the script header — out of scope for this gate.
 
 On fail: log, halt.
 On pass: update checkpoint with `stage_completed=drafter`.
