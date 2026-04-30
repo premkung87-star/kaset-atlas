@@ -6,6 +6,74 @@
 
 ---
 
+## 2026-04-30 — Tomato (resume after researcher patch): Category A subagent tool-execution failure
+
+**Stage:** researcher (re-dispatch with patched prompt)
+**Run ID:** `92c14f76-6b5a-49e7-897c-154c26a1d12f`
+**Prior Run ID:** `d7d3b9f3-ae61-4e7d-987e-4dd62c723537` (the researcher-self-flag halt below)
+**Failure type:** `tool-execution` (Category A)
+**Crop input:** tomato / มะเขือเทศ
+**Patched prompt under test:** `.claude/agents/researcher.md` at commit `0bb87fa` ("Prioritize Thai crop-specific research sources")
+
+### Detection
+
+Researcher subagent (`subagent_type: researcher`, agent ID `a3669df1753bc25c1`) was dispatched per the slash command's Read-then-dispatch principle. The dispatch ran for 22 minutes 32 seconds (`duration_ms: 1352556`) and terminated with API error `max_output_tokens` — the model exceeded the 32,000 output token cap.
+
+Post-mortem of the subagent JSONL log at `.claude/projects/.../subagents/agent-a3669df1753bc25c1.jsonl`:
+
+| Metric | Value |
+|---|---|
+| Assistant turns | 5 |
+| Text blocks emitted | 5 |
+| Total text characters | 311,639 |
+| **Actual tool calls (`tool_use`)** | **0** |
+| **Actual tool results (`tool_result`)** | **0** |
+| Final stop reason | `max_output_tokens` |
+
+The subagent generated `<function_calls><invoke name="...">` blocks **as plain text inside its assistant text content**. The harness did NOT execute any of those calls. The agent never read its prompt file via `view`, never ran `curl`, never ran `web_fetch`, and never confirmed any URL. It hallucinated its way through 311 KB of plausible-looking research narrative until it hit the output cap.
+
+### Why this is the same pattern as the mango incident
+
+This is identical to the mode documented in this file under **2026-04-30 — Mango: Researcher + Drafter Subagent Tool-Dispatch Failure (multi-stage)**:
+
+> "Both subagents in this pipeline run produced output that LOOKED like successful tool execution (with `<function_calls>` blocks containing curl/Read/Write calls) but the harness did NOT actually execute those tool calls — the blocks were rendered as text in the agent's response."
+
+In the mango incident, the failure surfaced at URL Verifier (stage 3) because the researcher produced a JSON with hallucinated 200-status URLs that real `curl` then 404'd. This time, the researcher never even produced a final JSON — it ran out of output tokens before reaching the closing brace, so the failure surfaced at the dispatch layer itself rather than at a downstream gate.
+
+### What this means for the researcher.md patch under test
+
+The patched prompt's new instructions (`web_fetch` confirmation, deep-link Thai repositories, ban on institutional homepages) **were never actually exercised** in this run. Any conclusion about whether the patch fixes the prior tomato halt is unsupported by this run's evidence. The patch may still be correct; the dispatch-layer failure prevented testing it.
+
+### Action taken
+
+- HALTED before reaching Stage 2 (Drafter). No MDX file written, no commit attempted.
+- Preserved evidence at `.claude/state/researcher-output/tomato-resume-categoryA-failure.json` with the diagnostic counts and first/last text excerpts from the failed subagent.
+- Updated state checkpoint at `.claude/state/pipeline-current.json` with `halted_at_stage: "researcher"`, `halt_failure_type: "tool-execution"`.
+- Appended halt entry to `.claude/logs/verifier-stats.json` with the run_id for future joinability with `subagent-dispatch.json` (this run did not reach the subagent-output-verify gate, so no dispatch-log row was written).
+- Logged this entry.
+- Did NOT retry, did NOT switch agent type, did NOT run main-session-only research. Per maintainer's "do not manually patch around the failure" directive.
+
+### Resolution: pending — for maintainer review
+
+This is the second known recurrence of Category A tool-execution failure for the `researcher` subagent type (mango was first). The pattern is now reproducible. Options for maintainer:
+
+1. **Switch researcher dispatch to a different subagent type** (e.g., `general-purpose`) and re-test. The slash command's literal text actually says "Dispatch a `general-purpose` subagent" — using `subagent_type: researcher` was an interpretive choice in this resume that may have triggered the failure. WORKFLOW_KIT Pattern Win candidate: align dispatch type with the slash command literal.
+2. **Reduce researcher prompt length** to lower the per-turn output budget pressure. The patched `.claude/agents/researcher.md` is now 148 lines vs. 125 before; the longer prompt may be eating into the 32k output budget. Risky — would dilute the safety guarantees the patch added.
+3. **Run researcher inline in the main session** (stage substitution). This breaks fresh-context isolation but is the documented escape valve when subagent dispatch fails (cassava pass-3 set the precedent in WORKFLOW_KIT §4 2026-04-30).
+4. **Investigate the dispatch infrastructure** before any further pipeline runs. The mango entry below already flagged this in its "Resolution: pending" — option 2 there. Three crops (durian, mango, tomato resume) have now hit Category A failures in the researcher/verifier subagent path. Pattern is durable; root cause unknown.
+5. **Halt the auto-pipeline entirely** and re-run only via `general-purpose` until dispatch reliability is established.
+
+**Architect-mode recommendation:** Option 1 is the cheapest test that distinguishes "patched researcher.md is bad" from "researcher subagent type is unreliable in this environment". If `general-purpose` with the same patched prompt also fails, the prompt is suspect. If it succeeds, the dispatch type is suspect.
+
+### Evidence preserved
+
+- `.claude/state/researcher-output/tomato-resume-categoryA-failure.json` — diagnostic snapshot (tool_use=0, text_turns=5, text_chars=311639, first/last excerpts)
+- `.claude/state/pipeline-current.json` — checkpoint at `stage_completed: "preflight"`, `halted_at_stage: "researcher"`, `awaiting_maintainer_decision: true`
+- `.claude/logs/verifier-stats.json` — appended halt entry with `run_id: 92c14f76-6b5a-49e7-897c-154c26a1d12f` and `failure_type: tool-execution`
+- Subagent JSONL log at `~/.claude/projects/-Users-premmynotnerdyboy-Desktop-kaset-atlas/f73eecd9-6e18-44cd-8830-6061cd545f9a/subagents/agent-a3669df1753bc25c1.jsonl` (outside repo, full transcript)
+
+---
+
 ## 2026-04-30 — Tomato: Researcher returned only Thai-institutional homepages (no crop-specific deep links)
 
 **Stage:** researcher

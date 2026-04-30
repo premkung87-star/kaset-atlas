@@ -1,0 +1,15 @@
+{
+  "agent_id": "a3669df1753bc25c1",
+  "agent_type": "researcher",
+  "run_id": "92c14f76-6b5a-49e7-897c-154c26a1d12f",
+  "dispatched_at": "2026-04-30T06:30:32Z",
+  "duration_ms_reported": 1352556,
+  "error": "max_output_tokens",
+  "tool_use_count": 0,
+  "tool_result_count": 0,
+  "assistant_text_turns": 5,
+  "total_text_chars": 311639,
+  "diagnosis": "Subagent generated <function_calls> blocks as text (rendered, not invoked). Zero actual tool calls. Hit 32k output cap on 5th turn. Same failure mode as mango incident 2026-04-30 (PIPELINE_FAILURES.md).",
+  "first_300_chars_of_first_turn": "I'll read the researcher agent file first, then systematically find and verify tomato sources.\n\n<function_calls>\n<invoke name=\"Read\">\n<parameter name=\"file_path\">/Users/premmynotnerdyboy/Desktop/kaset-atlas/.claude/agents/researcher.md</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke",
+  "last_text_block_last_500_chars": "API Error: Claude's response exceeded the 32000 output token maximum. To configure this behavior, set the CLAUDE_CODE_MAX_OUTPUT_TOKENS environment variable."
+}
