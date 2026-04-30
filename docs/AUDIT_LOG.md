@@ -4,6 +4,89 @@
 
 ---
 
+## 2026-04-30 — Pipeline + maintainer repair: Added ผักบุ้ง (Morning Glory / Water Spinach) after seoDescription length repair (Phase 2 controlled run)
+
+**Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)
+**Crop:** ผักบุ้ง (Morning Glory / Water Spinach / Kangkong) — `morning-glory`
+**Category:** food-crops
+**Scientific:** *Ipomoea aquatica* Forsk.
+
+**Run ID:** `9d5b5451-9d4a-440b-a6b1-8360c6e171ed`
+**Phase:** 2 (controlled run with explicit policy-safe constraints from maintainer)
+
+### Pipeline run (all subagent stages via `general-purpose` dispatch per Tier 1.4)
+
+- **Researcher** (agent ID `a2c1fa79859f39193`): 11 sources (7 Thai + 4 international), 9 high-confidence + 2 medium. Tool calls: 69, duration 11m41s. All URLs HTTP-verified (200) AND WebFetch-confirmed crop-specific. Three drafter cautions embedded for pesticide-dosage stripping (DOAE/OPSMOAC fungicide tables) + heavy-metals public-health framing (Göthberg & Greger 2002). Both cultivar groups documented (ผักบุ้งจีน dry-bed + ผักบุ้งไทย/ผักบุ้งน้ำ water-grown).
+- **Drafter** (agent ID `a630116da9975b5bd`): 54,935-byte MDX (383 lines, 13 sections) + 5,000-byte reasoning sidecar. Tool calls: 40, duration 8m08s. Both cultivar groups distinguished in §1, §3, §5, §6, §8. Heavy-metals data placed in §10 with explicit research-attribution framing. Self-validation passed.
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=40
+- **Source-table integrity:** pass — 11 data rows, 4 header columns, 11 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 11 unique source IDs in sidecar matching 11 unique URLs in MDX
+- **URL Verifier (`v3-soft200-aware`):** pass 11/11, no soft-200 errors
+
+### Halt at Build Verifier (Stage 4) — Zod schema violation
+
+Build Verifier failed on first attempt with `InvalidContentEntryDataError`:
+
+```
+crops → morning-glory data does not match collection schema.
+seoDescription: String must contain at most 160 character(s)
+```
+
+Drafted `seoDescription` was 172 chars; schema cap (`src/content/config.ts:106`) is 160. Over by 12 chars. **Failure type:** `generation-contract` (Category C — drafter contract violation; the drafter prompt enumerates frontmatter fields but does not surface per-field schema caps, so the drafter would have to derive them from `config.ts`).
+
+Pipeline halted before Stage 5. Logged to `docs/PIPELINE_FAILURES.md` with full evidence + remediation options. No manual content patching attempted at this point per maintainer Phase-2 constraint.
+
+### Maintainer repair (option 1 — smallest reversible fix)
+
+Maintainer approved a one-line frontmatter edit:
+- Line 53 (`seoDescription`): removed `OPSMOAC ` (8 chars) and `ม.เกษตรฯ ` (9 chars), keeping `กรมพัฒนาที่ดิน DOAE FAO และ UF/IFAS` as the publisher anchors.
+- Original (172 chars): `"คู่มือปลูกผักบุ้งภาษาไทย ครอบคลุมผักบุ้งจีนและผักบุ้งน้ำ รวมข้อมูลกรมพัฒนาที่ดิน DOAE OPSMOAC ม.เกษตรฯ FAO และ UF/IFAS — การปลูก โรค ราสนิมขาว ไตรโคเดอร์มา ความปลอดภัยอาหาร"`
+- Repaired (155 chars): `"คู่มือปลูกผักบุ้งภาษาไทย ครอบคลุมผักบุ้งจีนและผักบุ้งน้ำ รวมข้อมูลกรมพัฒนาที่ดิน DOAE FAO และ UF/IFAS — การปลูก โรค ราสนิมขาว ไตรโคเดอร์มา ความปลอดภัยอาหาร"`
+
+No other content changed. Title, slug, category, summary, source table, body, and reasoning sidecar all untouched.
+
+### Final verification after maintainer repair
+
+- **MDX safety:** pass
+- **Source-table integrity:** pass — 11 rows, 11 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections, 11 source IDs match
+- **URL Verifier:** pass 11/11
+- **Build Verifier:** pass — 21 pages built (was 20 with lettuce, +1 morning-glory), Pagefind indexed
+- **Content Verifier — final pass** (agent ID `a59ba890eab96f7fd`): `verification_status: pass` — 0 blockers, 0 medium, 0 minor, ready_for_publish:true. Tool calls: 17, duration 3m50s. Self-consistency PASS. Re-confirmed seoDescription length (155 chars). 12/12 spot-checked claims verified verbatim against live source content (Göthberg 2002 heavy-metals ranges, FAO x6862e spacing/water-depth/harvest, Trichoderma efficacy %, OPSMOAC white-rust biology). Phase-2 safety: zero fungicide dosages, zero pesticide product names, zero NPK rates; heavy-metals framing research-attributed with explicit "เป็นแนวปฏิบัติเชิงเกษตร ไม่ใช่คำแนะนำทางการแพทย์" disclaimer.
+- **Subagent-output-verify (content-verifier-final):** pass — all 3 expected files exist (mdx, sidecar, verifier-stats)
+- **audit-crops.sh:** PASS — morning-glory 3/3 structural gates; corpus 8 crops, 23 result rows pass, 0 fail-new, 1 known-exception (mango sidecar, pre-existing).
+
+### Pattern adherence
+
+This run is the second Phase 2 run requiring maintainer manual repair (after lettuce `e1aa5ab`). Three `general-purpose` dispatches (researcher 69 tool_use, drafter 40, content-verifier-final 17) all executed real tool calls — zero Category A failures, consistent with the Tier 1.4 Pattern Win baseline.
+
+The build-verifier halt caught a class of failure (frontmatter schema-cap violation) that the structural gates (`check-mdx-safety` / `verify-source-table` / `verify-claim-grounding`) cannot catch — they don't validate Zod constraints. Build Verifier is the deterministic gate for that, and it did its job at Stage 4 before any wasted Stage 5 dispatch. Useful evidence that the existing gate stack covers this failure class without a new script.
+
+### Pattern Win candidate (deferred — N=1)
+
+The drafter prompt enumerates required frontmatter fields but does not surface the schema's per-field length caps. This is the first observed schema-validation halt of this class. A second similar incident on a future crop would justify promoting a per-field-limits table into `.claude/agents/drafter.md` Step 3 frontmatter requirements section. Not promoted today.
+
+### Files changed
+
+- `src/content/crops/morning-glory.mdx` (NEW, 54,904 bytes — includes maintainer seoDescription trim on line 53)
+- `src/content/crops/morning-glory.reasoning.json` (NEW, 5,000 bytes — untouched by repair)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (build-verifier halt entry — kept as historical record)
+- `.claude/logs/verifier-stats.json` (2 morning-glory entries: halted + final-pass post-repair)
+- `.claude/logs/subagent-dispatch.json` (drafter + content-verifier-final dispatch verify entries)
+- `.claude/state/researcher-output/morning-glory.json` (preserved researcher JSON)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive.
+
+### Commit message rationale
+
+Standard `[auto]` suffix omitted because this run required maintainer manual repair (the seoDescription frontmatter trim). Commit subject reads `content(food-crops): add morning glory after seo description repair` to make the maintainer-touched provenance honest in `git log`. Same convention as the lettuce `e1aa5ab` commit.
+
+---
+
 ## 2026-04-30 — Pipeline + maintainer repair: Added ผักกาดหอม (Lettuce) after citation-year correction (Phase 2 controlled run)
 
 **Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)

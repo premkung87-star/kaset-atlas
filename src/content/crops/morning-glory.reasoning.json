@@ -1,0 +1,64 @@
+{
+  "crop_slug": "morning-glory",
+  "drafted_at": "2026-04-30T00:00:00Z",
+  "model": "claude-sonnet-4-6",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "baanlaesuan-edible-library-water-convolvulus", "fao-handbook-aquatic-plants-x6862e"],
+      "rationale": "Direct Thai-government source (LDD), Thai ag-media (baanlaesuan), and FAO all confirm tropical year-round suitability and >25C optimum temperature."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-handbook-aquatic-plants-x6862e", "baanlaesuan-edible-library-water-convolvulus"],
+      "rationale": "FAO and baanlaesuan both state >25C optimum and full sun; this aligns with Thai climate across all regions year-round."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "baanlaesuan-edible-library-water-convolvulus", "fao-handbook-aquatic-plants-x6862e"],
+      "rationale": "LDD covers dry-bed soil prep, baanlaesuan gives pH 5-7 range, FAO covers wet-land water levels; together they describe both cultivation modes."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-handbook-aquatic-plants-x6862e", "baanlaesuan-edible-library-water-convolvulus", "agkasetkaj-pakbung-microgreens-2018"],
+      "rationale": "FAO documents wet-land water depth progression (3-5 to 15-20 cm); baanlaesuan covers dry-bed irrigation; agkasetkaj covers microgreens watering."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "fao-handbook-aquatic-plants-x6862e", "baanlaesuan-edible-library-water-convolvulus", "uf-ifas-hs618-kangkong-stephens"],
+      "rationale": "LDD gives Thai seeding rate (13-15 kg/rai); FAO gives wet-land vs dry-land spacing (40 cm vs 12 cm); baanlaesuan covers seed soaking; UF/IFAS covers propagation methods."
+    },
+    "6_care": {
+      "rating": "medium",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "baanlaesuan-edible-library-water-convolvulus", "doae-esc-white-rust-pakbung"],
+      "rationale": "Care guidance kept high-level per safety policy: nitrogen fertilizer principle from LDD/baanlaesuan, mulching from baanlaesuan, crop rotation/sanitation from DOAE; specific NPK rates intentionally omitted."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["doae-esc-white-rust-pakbung", "opsmoac-phetchabun-warning-2017-pakbung", "pajrmu-trichoderma-white-rust-2016", "ldd-pakbung-jeen-2007"],
+      "rationale": "DOAE and OPSMOAC define white-rust biology and IPM; pajrmu provides quantitative Trichoderma efficacy data (16.25% to 5% disease incidence); LDD notes low pest pressure overall. Chemical doses stripped per policy."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "baanlaesuan-edible-library-water-convolvulus", "fao-handbook-aquatic-plants-x6862e", "agkasetkaj-pakbung-microgreens-2018"],
+      "rationale": "LDD and baanlaesuan converge on 18-25 day pull-harvest for Chinese morning glory; FAO documents wet-land cut-and-come-again at 30 days then every 7-10 days; agkasetkaj covers microgreen harvest."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["ldd-pakbung-jeen-2007", "agkasetkaj-pakbung-microgreens-2018"],
+      "rationale": "LDD title and framing characterize morning glory as low-investment income-generating crop; agkasetkaj supports microgreens market context. No yield/profit guarantees per safety policy; ranges and qualitative framing only."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["ku-tha-chin-river-environmental-pakbung-2014", "pajrmu-trichoderma-white-rust-2016", "goethberg-greger-bangkok-heavy-metals-2002"],
+      "rationale": "KU Tha Chin study covers central-Thailand wet-cultivation context; pajrmu (Maha Sarakham) anchors the Northeast; Goethberg 2002 provides peer-reviewed heavy-metals food-safety context for Bangkok region. Framed as public-health context, not medical advice."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-handbook-aquatic-plants-x6862e", "uf-ifas-hs618-kangkong-stephens", "wikipedia-ipomoea-aquatica"],
+      "rationale": "FAO is the classic global reference for cultivation systems; UF/IFAS provides extension-grade context including Florida invasive caveat; Wikipedia covers names and US regulatory framing. Section flags what does and does not transfer to Thailand."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "Six Thai-government / Thai-university / Thai-peer-reviewed sources plus three international sources cover both cultivar groups (Chinese vs water morning glory) and both cultivation modes (dry-bed vs wet-land). White-rust and heavy-metals risks are well-documented from primary research."
+}

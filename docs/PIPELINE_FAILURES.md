@@ -6,6 +6,73 @@
 
 ---
 
+## 2026-04-30 — Morning Glory / ผักบุ้ง: Build Verifier schema validation failure (`seoDescription` over 160-char limit)
+
+**Stage:** build-verifier (Stage 4)
+**Run ID:** `9d5b5451-9d4a-440b-a6b1-8360c6e171ed`
+**Failure type:** `generation-contract` (Category C — drafter produced frontmatter that violates the content-collection Zod schema)
+**Crop input:** morning glory / ผักบุ้ง
+**Dispatch mode:** general-purpose-only (Tier 1.4) — researcher 69 tool_use, drafter 40 tool_use, both real executions, no Category A failures
+
+### What happened
+
+Pipeline ran cleanly through Stages 1–3:
+- Researcher: 11 sources verified (7 Thai + 4 international, 9 high-confidence), all URLs HTTP+WebFetch verified
+- Drafter: 13-section MDX (54.9 KB) + reasoning sidecar (5 KB); mdx-safety / source-table / claim-grounding / subagent-output-verify all `pass`
+- URL Verifier: 11/11 URLs HTTP 200
+
+**Build Verifier (Stage 4) failed** with content-collection schema validation error:
+
+```
+[InvalidContentEntryDataError] crops → morning-glory data does not match collection schema.
+  seoDescription: String must contain at most 160 character(s)
+  Location: src/content/crops/morning-glory.mdx:0:0
+```
+
+### Evidence
+
+| | Value |
+|---|---|
+| Schema constraint | `src/content/config.ts:106` — `seoDescription: z.string().max(160).optional()` |
+| Drafted seoDescription length | **172 characters** |
+| Over by | 12 characters |
+| Drafted value | `"คู่มือปลูกผักบุ้งภาษาไทย ครอบคลุมผักบุ้งจีนและผักบุ้งน้ำ รวมข้อมูลกรมพัฒนาที่ดิน DOAE OPSMOAC ม.เกษตรฯ FAO และ UF/IFAS — การปลูก โรค ราสนิมขาว ไตรโคเดอร์มา ความปลอดภัยอาหาร"` |
+
+The Drafter prompt's frontmatter section enumerates fields but does NOT state the 160-char `seoDescription` cap; that constraint lives only in the schema. The Drafter would have to read `src/content/config.ts` to discover it (the prompt does say "All required fields per `src/content/config.ts` schema" but does not list per-field limits).
+
+The Stage 1–3 deterministic gates (`check-mdx-safety`, `verify-source-table`, `verify-claim-grounding`, `verify-urls`) all pass because they don't validate Zod schema constraints — that's Build Verifier's job. Build Verifier caught the issue at the content-sync step, before any pages were rendered.
+
+### Other checks (state at halt)
+
+- All 11 URLs HTTP 200 (URL Verifier first pass)
+- MDX safety: 0 unsafe patterns
+- Source-table integrity: 11 rows, 11 unique URLs, 0 issues
+- Claim-grounding: 11 sections, 11 source IDs, 0 issues, 0 warnings
+- Subagent-output-verify (drafter): pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=40
+- Stage 5 (Content Verifier) NOT dispatched — halted at Stage 4 per spec
+
+### Action taken
+
+- Halted before commit. No `git commit`, no `git push`.
+- Working tree retains `src/content/crops/morning-glory.mdx` + `morning-glory.reasoning.json` (uncommitted) so the maintainer can review.
+- Logged to `.claude/logs/verifier-stats.json` with `decision: "halted"`, `halt_stage: "build-verifier"`, `failure_type: "generation-contract"`, `intervention_type: "schema_violation_seoDescription_172_chars_over_160_limit"`.
+- No manual patching of crop content (per maintainer Phase-2 constraint).
+- No retry attempted (build-verifier failures don't have a retry path in the spec; they require maintainer remediation).
+
+### Remediation options (for maintainer decision)
+
+1. **Smallest manual edit** — trim `seoDescription` by 12+ chars (e.g., remove "OPSMOAC" or "ม.เกษตรฯ" or shorten the trailing keyword list). Then re-run `verify-build` and Stage 5 (Content Verifier). This is parallel to the lettuce 2-character year repair: minimal, reversible, doesn't require redrafting.
+2. **Re-dispatch drafter with explicit per-field limits in the prompt** — add a frontmatter limits table to drafter.md (`title ≤ 100`, `summary ≤ 280`, `seoDescription ≤ 160`, etc.) so the drafter doesn't have to derive limits from `config.ts`. This would systematically prevent the failure class. Higher cost (Pattern Win candidate at N=1; second occurrence on a future crop would justify promotion).
+3. **Drop seoDescription** — it's `.optional()` in the schema. Removing the field entirely would also pass the build. Not recommended (loses SEO signal); option 1 is preferable.
+
+Recommendation: option 1 (smallest reversible fix), with a Pattern Win note: if any future crop drafts an seoDescription >160 chars, promote option 2 (drafter prompt patch) to Pattern Win and update `.claude/agents/drafter.md`.
+
+### Pattern Win candidate (deferred — N=1)
+
+The drafter prompt enumerates required frontmatter fields but does not surface the schema's per-field length caps. This is the first observed schema-validation halt of this class. A second similar incident would justify promoting a per-field-limits table into `drafter.md` Step 3 frontmatter requirements section. Not promoted today.
+
+---
+
 ## 2026-04-30 — Lettuce / ผักกาดหอม: Content Verifier retry-pass blocker (citation year off-by-one)
 
 **Stage:** content-verifier (retry pass, post-fix)

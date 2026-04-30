@@ -1,0 +1,253 @@
+{
+  "crop": {
+    "thai": "ผักบุ้ง",
+    "english": "Morning Glory (Water Spinach / Kangkong)",
+    "scientific": "Ipomoea aquatica Forsk.",
+    "category": "food-crops",
+    "family": "Convolvulaceae",
+    "notes": "Edible aquatic / semi-aquatic vegetable. Two main cultivar groups grown in Thailand: ผักบุ้งจีน (Chinese morning glory, narrow-leaf white-stem, dry-bed, ~25-30 days) and ผักบุ้งไทย/ผักบุ้งน้ำ (Thai morning glory, broader-leaf reddish-stem, water-grown / floating). NOT the ornamental morning glory (Ipomoea purpurea / I. tricolor / I. nil). Listed as a US federal noxious weed (Federal Noxious Weed Act, 1974) — relevant context for international-source caveats but does not affect Thai cultivation guidance."
+  },
+  "sources": [
+    {
+      "id": "ldd-pakbung-jeen-2007",
+      "title": "ผักบุ้งจีนพืชสร้างรายได้งาม (เอกสารชุดภูมิปัญญา หมอดินเกษตรกรไทย, สนท.080006-2550)",
+      "url": "http://www1.ldd.go.th/menu_Dataonline/G8/G8_09.pdf",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "publisher": "กรมพัฒนาที่ดิน (Land Development Department) — สำนักนิเทศและถ่ายทอดเทคโนโลยีการพัฒนาที่ดิน",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "พันธุ์ยอดไผ่ 9",
+        "soil-prep (ไถลึก 30-40 ซม. ตากดิน 1-2 อาทิตย์ ปูนขาว 100-300 กก./ไร่)",
+        "seeding-rate (13-15 กก./ไร่)",
+        "bed-dimensions (สูง 30 ซม. กว้าง 120 ซม.)",
+        "fertilization (46-0-0 at 50 กก./ไร่ split 7d + 15d)",
+        "watering (1-2x/day, avoid waterlogging)",
+        "harvest (20-25 days, pulled with roots; export-cut at 18-22 days)",
+        "economics (~10 บาท/กก., export to Hong Kong/Malaysia/Singapore)",
+        "low pest pressure"
+      ]
+    },
+    {
+      "id": "doae-esc-white-rust-pakbung",
+      "title": "ราสนิมขาวในผักบุ้ง",
+      "url": "https://esc.doae.go.th/%E0%B8%A3%E0%B8%B2%E0%B8%AA%E0%B8%99%E0%B8%B4%E0%B8%A1%E0%B8%82%E0%B8%B2%E0%B8%A7%E0%B9%83%E0%B8%99%E0%B8%9C%E0%B8%B1%E0%B8%81%E0%B8%9A%E0%B8%B8%E0%B9%89%E0%B8%87/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "publisher": "ศูนย์วิทยบริการเพื่อส่งเสริมการเกษตร, กรมส่งเสริมการเกษตร (DOAE)",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "white-rust disease (Albugo ipomoea-aquaticae)",
+        "rainy-season risk",
+        "yellow upper-leaf spots, white pustules underside",
+        "cultural controls (lime soil-sterilization, healthy seed, spacing for airflow)",
+        "early monitoring of leaf undersides",
+        "crop rotation"
+      ],
+      "drafter_caution": "Page mentions specific fungicide names + dosages (mancozeb+metalaxyl, 5-7d cadence). DRAFTER MUST NOT reproduce dosage tables — restate generally as 'consult กรมส่งเสริมการเกษตร / local extension officer for fungicide recommendations' per SAFETY_POLICY."
+    },
+    {
+      "id": "opsmoac-phetchabun-warning-2017-pakbung",
+      "title": "เตือนภัย: ผักบุ้งทุกระยะการเจริญเติบโต ระวังโรคราสนิมขาว (Albugo ipomoea-aquaticae) ช่วง 10-16 พฤษภาคม 2560",
+      "url": "https://www.opsmoac.go.th/phetchabun-warning-preview-391291791918",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "publisher": "สำนักงานเกษตรและสหกรณ์จังหวัดเพชรบูรณ์, สำนักงานปลัดกระทรวงเกษตรและสหกรณ์ (OPSMOAC)",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "white-rust pest-warning bulletin",
+        "hot+rainy weather trigger",
+        "all growth stages susceptible",
+        "1-2mm white pustules on leaf underside",
+        "stem/petiole swelling in severe cases",
+        "secondary bacterial leaf blight (Xanthomonas sp.)"
+      ],
+      "drafter_caution": "Contains pesticide dosage table — exclude verbatim per SAFETY_POLICY; cite only the disease-identification + cultural-control content."
+    },
+    {
+      "id": "ku-tha-chin-river-environmental-pakbung-2014",
+      "title": "ปัจจัยสิ่งแวดล้อมที่ส่งผลต่อการเจริญเติบโตของผักบุ้ง (Ipomoea aquatica Forsk) ช่วงฤดูแล้งในแม่น้ำท่าจีน",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/drought/search_detail/result/352891",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "publisher": "คลังความรู้ดิจิทัล มหาวิทยาลัยเกษตรศาสตร์ (Kasetsart University Digital Knowledge Repository) — work by Pruekpanasunth, Chanthakaew, Dampin (2557/2014), pp. 139-145",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "environmental factors affecting Ipomoea aquatica",
+        "dry-season growth in Tha Chin River",
+        "water-spinach as bioindicator / Royal-initiated conservation context",
+        "Pak Bia cape area"
+      ]
+    },
+    {
+      "id": "pajrmu-trichoderma-white-rust-2016",
+      "title": "ประสิทธิภาพของเชื้อราไตรโคเดอร์มาชนิดสดในการควบคุมโรคราสนิมขาวของผักบุ้ง ที่เกิดจากเชื้อรา Albugo ipomoeae-aquaticae",
+      "url": "https://li01.tci-thaijo.org/index.php/pajrmu/article/view/248771",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed",
+      "publisher": "วารสารเกษตรพระวรุณ, มหาวิทยาลัยราชภัฏมหาสารคาม (Prawarun Agriculture Journal, Maha Sarakham Rajabhat University, Vol. 13 No. 1, 2016)",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "biocontrol with fresh Trichoderma",
+        "compost-mixed Trichoderma reduced disease incidence to 5% (vs. 16.25% control, P<0.01)",
+        "yield 2.47-2.67 kg/m² (treated) vs 2.37 kg/m² (control)",
+        "RCBD methodology",
+        "IPM principle"
+      ]
+    },
+    {
+      "id": "agkasetkaj-pakbung-microgreens-2018",
+      "title": "ผลของพันธุ์และวัสดุเพาะต่อการเจริญเติบโตและผลผลิตในการผลิตต้นอ่อนผักบุ้ง",
+      "url": "https://li01.tci-thaijo.org/index.php/agkasetkaj/article/view/250113",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed",
+      "publisher": "วารสารแก่นเกษตร (Khon Kaen Agriculture Journal), Vol. 46 No. 3 (2018), pp. 543-548",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "water-spinach microgreens / ต้นอ่อนผักบุ้ง",
+        "two bamboo-leaf cultivars compared",
+        "four substrates: peat moss, coconut coir, rice-hull, potting mix",
+        "peat moss + potting mix gave highest germination/height/fresh weight",
+        "rice-hull + coconut coir required longer growth period"
+      ]
+    },
+    {
+      "id": "baanlaesuan-edible-library-water-convolvulus",
+      "title": "Edible Library: วิธีปลูกผักบุ้งจีน",
+      "url": "https://gardenandfarm.baanlaesuan.com/342693/edible-library/water-convolvulus",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-ag-media",
+      "publisher": "บ้านและสวน Garden & Farm (Amarin Printing & Publishing)",
+      "confidence": "medium",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "soil pH 5-7",
+        "optimal temp >25°C",
+        "seed soak 8-12h",
+        "straw mulching",
+        "harvest 18-25 days or 30 cm tall",
+        "rainy-season cultivation",
+        "moist sandy-loam preference"
+      ]
+    },
+    {
+      "id": "fao-handbook-aquatic-plants-x6862e",
+      "title": "Handbook of Utilization of Aquatic Plants — Chapter on Ipomoea aquatica (drawing on Edie & Ho 1969)",
+      "url": "https://www.fao.org/4/x6862e/x6862e07.htm",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "fao",
+      "publisher": "Food and Agriculture Organization of the United Nations",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": [
+        "wet-land vs dry-land cultivation",
+        "mean temp >25°C requirement",
+        "wet-land: 40 cm spacing, flooded 3-5 cm initially → 15-20 cm",
+        "first harvest 30 days after transplant; subsequent every 7-10 days",
+        "dry-land: ~12 cm spacing, harvest 50-60 days, frequent overhead irrigation",
+        "Hong Kong production 3-5 million kg/year (15% of summer veg)"
+      ],
+      "thailand_applicability_note": "Hong Kong cultivation system maps closely to Thai practice; Thai growers use both methods with similar timelines."
+    },
+    {
+      "id": "uf-ifas-hs618-kangkong-stephens",
+      "title": "HS618: Kangkong — Ipomoea aquatica Forsk., also Ipomoea reptans Poir",
+      "url": "https://journals.flvc.org/edis/article/view/139708",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-extension",
+      "publisher": "UF/IFAS Extension, Horticultural Sciences Department, University of Florida (J. M. Stephens; orig. May 1994, rev. Sep 2015)",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": [
+        "common-name aliases (water spinach, swamp cabbage, water convolvulus)",
+        "upland vs swamp forms",
+        "young succulent tips preferred (older stems fibrous)",
+        "wet-soil preference",
+        "Florida invasive caveat — production discouraged"
+      ],
+      "thailand_applicability_note": "Production guidance generalizable; the noxious-weed/invasive caveats are US-specific and should be reported as international context, not as Thai cultivation restrictions."
+    },
+    {
+      "id": "wikipedia-ipomoea-aquatica",
+      "title": "Ipomoea aquatica",
+      "url": "https://en.wikipedia.org/wiki/Ipomoea_aquatica",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "encyclopedia",
+      "publisher": "Wikipedia / Wikimedia Foundation (CC BY-SA)",
+      "confidence": "medium",
+      "language": "en",
+      "applies_to_thailand": "with-caveats",
+      "key_topics": [
+        "taxonomy (Convolvulaceae, Solanales)",
+        "common-name aliases across Asia (kangkong/kangkung, ong choy, kōngxīncài, phak bung)",
+        "hollow nodal-rooting stems, arrowhead-to-lance leaves",
+        "culinary uses across SE Asia",
+        "heavy-metal accumulation warning + recommendation to remove stem-bottom",
+        "USDA noxious-weed listing + Texas exception"
+      ],
+      "drafter_caution": "Use only for cross-referencing aliases / regulatory framing. Do NOT treat as primary source for cultivation. Prefer FAO / UF-IFAS / Thai gov sources for any technical claim."
+    },
+    {
+      "id": "goethberg-greger-bangkok-heavy-metals-2002",
+      "title": "Accumulation of heavy metals in water spinach (Ipomoea aquatica) cultivated in the Bangkok region, Thailand",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/12206434/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed",
+      "publisher": "Göthberg A., Greger M., Holm K., Bengtsson B-E. — Environmental Toxicology and Chemistry 21(9):1934-1939 (2002), abstract via PubMed/NCBI",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "9 cultivation sites in greater Bangkok",
+        "lead 40-530 µg/kg dry weight",
+        "cadmium ≤10-123 µg/kg dw",
+        "total mercury 12-2,590 µg/kg dw (highly variable by site)",
+        "methylmercury 0.8-221 µg/kg dw",
+        "Pb + Cd levels not direct human-health threat at typical consumption",
+        "mercury concentrations 'very high at some sites' — concern for children + fetuses",
+        "leaves accumulate more Hg than stems"
+      ],
+      "thailand_applicability_note": "Direct primary evidence for Thai food-safety angle. Frame as 'studies in Bangkok-region growing areas have measured…' — never as guaranteed risk levels for any specific farm. Public-health context only, not medical advice."
+    }
+  ],
+  "minimum_sources_met": true,
+  "thai_sources_count": 7,
+  "international_sources_count": 4,
+  "high_confidence_count": 9,
+  "researcher_notes": [
+    "All 11 URLs HTTP-verified (curl -L 200) AND WebFetch-confirmed crop-specific content in this session.",
+    "DOA hort PDF (https://www.doa.go.th/hort/.../การปลูกผักบุ้งจีน.pdf) returned 403 to curl; excluded despite being topically perfect because it cannot be HTTP-verified per Stage 4a requirement.",
+    "rakbankerd.com page 6807 returned 200 to curl but is bot-blocked (Incapsula challenge) preventing WebFetch confirmation; excluded per Stage 4b.",
+    "KPRU bung.pdf (ga.kpru.ac.th) HTTP-verified but contained heavy 'สรรพคุณ' (medicinal-use) claims (cure for nosebleed/hemorrhoids/gonorrhea/diabetes/cancer prevention/etc.) violating SAFETY_POLICY 'medical or health claims about plants'; excluded.",
+    "kukr.lib.ku.ac.th journal article 'ผักบุ้ง' (Sukhprakarn 1978) record exists at https://kukr.lib.ku.ac.th/kukr_es/kukr/search_detail/dowload_digital_file/317620/54882 but full text restricted ('ไม่ได้รับสิทธิ์อนุญาตเผยแพร่'); citing only the metadata page would not pass Drafter content checks, so used the Tha Chin River study (352891) instead as the KU citation.",
+    "kasetinfo.arda.or.th has no crop-specific page indexed for ผักบุ้ง (verified by site:search returning 0 results); domain root excluded per crop-specific deep-link rule.",
+    "Two pest-related Thai sources (DOAE white-rust article + OPSMOAC Phetchabun warning) contain specific fungicide dosage tables (metalaxyl, mancozeb). Drafter MUST follow SAFETY_POLICY by citing only disease-identification + cultural-control + IPM-principle content; do NOT reproduce dosage figures or trade-name fungicide recommendations.",
+    "Food-safety angle is well-covered by Göthberg & Greger 2002 (Bangkok, primary peer-reviewed) + Wikipedia's heavy-metal note; FAO + Khon Kaen + Maha Sarakham peer-reviewed papers all confirm low pest pressure → ผักบุ้งจีน is generally hardy; main disease of concern is Albugo white rust during rainy season."
+  ]
+}
