@@ -108,6 +108,19 @@ All required fields per `src/content/config.ts` schema:
 - Source table at bottom MUST list every source used
 - Use confidence emoji: 🟢 🟡 🟠 ⚪
 
+##### Source-table confidence column format (mandatory)
+
+Every cell in the rightmost confidence column of the §13 source table MUST start with one of these emoji prefixes followed by the Thai prose (or the English equivalent). Bare Thai prose without the emoji prefix is invalid and will halt the pipeline at `scripts/verify-source-table.sh`.
+
+| Allowed cell value (Thai)    | English equivalent (also accepted) |
+|------------------------------|------------------------------------|
+| `🟢 สูง`                      | `🟢 High`                          |
+| `🟡 ปานกลาง`                  | `🟡 Medium`                        |
+| `🟠 ต่ำ`                      | `🟠 Low`                           |
+| `⚪ ไม่แน่ชัด`                | `⚪ Uncertain`                     |
+
+Reference: `sweet-basil.mdx`, `holy-basil.mdx`, `cassava.mdx` all follow this convention. The deterministic gate `scripts/verify-source-table.sh` accepts the regex `🟢|🟡|🟠|⚪|High|Medium|Low|Uncertain`. Bare `สูง` / `ปานกลาง` / `ต่ำ` / `ไม่แน่ชัด` (without the emoji) are NOT in the regex and will halt the pipeline at Stage 2.
+
 #### MDX safety rules (CRITICAL — prevents build breakage)
 
 The body text must be safe for the MDX 3 / Astro MDX integration. JSX component tag names always start with a **capital letter** (e.g., `<ThailandBox>`, `<WarningBox>`, `<SourceBox />`). The parser treats `<` followed by a lowercase letter or digit as a JSX opening too — and fails the build when it can't parse it as a tag.
@@ -234,6 +247,8 @@ Before saving, verify:
 - [ ] Reasoning sidecar `<slug>.reasoning.json` exists and is valid JSON (`jq empty <slug>.reasoning.json`)
 - [ ] If existing crops manifest contained sibling crops, the body text references them where natural (e.g., comparison to closely-related species)
 - [ ] Bilingual fields populated for AI-citable structured data: `titleEn`, `scientificName`, `aliases` (the layout consumes these for JSON-LD `alternateName` and `keywords`)
+- [ ] Every source-table confidence cell starts with one of `🟢` / `🟡` / `🟠` / `⚪` followed by Thai prose `สูง` / `ปานกลาง` / `ต่ำ` / `ไม่แน่ชัด` (or the English equivalent `High` / `Medium` / `Low` / `Uncertain` with the same emoji prefix). Bare prose without the leading emoji is invalid.
+- [ ] Run `./scripts/verify-source-table.sh src/content/crops/<english-slug>.mdx` and confirm `verification_status: "pass"`. Any output of `missing_or_unrecognized_confidence` means a confidence cell lacks the required emoji prefix; fix and re-run before claiming `self_validation_passed: true`.
 
 ### Step 5: Output
 
@@ -270,6 +285,7 @@ Return JSON:
 - ❌ Returning `self_validation_passed: true` while the MDX safety bash check has any output
 - ❌ Embedding `{frontmatter.X.toLocaleDateString(...)}` or any `{frontmatter.X.method()}` calls in the MDX body. The crop layout (`src/pages/crops/[...slug].astro`) already renders date/contributor/reviewer/confidence metadata using `crop.data.*` (which IS coerced to Date by the schema). MDX-body access to `frontmatter.X` returns the raw string, not the parsed Date — `.toLocaleDateString` will throw at render time and break the build. Reference: WORKFLOW_KIT.md §4 Pattern Win 2026-04-29.
 - ❌ Citing a source for claims the source does not actually substantiate. Before writing a claim with a citation, the drafter must have actually fetched and read the source. If a source's title and content don't match (rare but real — happened with FAO y5548e on 2026-04-29 cassava run), use the actual title and only cite for what the source actually covers. Reference: WORKFLOW_KIT.md §5 Discarded "Citation by topic-keyword without document fetch".
+- ❌ Source-table confidence cells without an emoji prefix — bare `สูง` / `ปานกลาง` / `ต่ำ` / `ไม่แน่ชัด` or bare `High` / `Medium` / `Low` / `Uncertain` are invalid. The cell value MUST match the regex `🟢|🟡|🟠|⚪|High|Medium|Low|Uncertain` per `scripts/verify-source-table.sh`. Reference: 2026-04-30 tomato Stage 2 halt (PIPELINE_FAILURES.md).
 
 ## Failure Mode
 
