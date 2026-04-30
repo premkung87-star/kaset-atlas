@@ -6,6 +6,102 @@
 
 ---
 
+## 2026-04-30 — Mango: Researcher + Drafter Subagent Tool-Dispatch Failure (multi-stage)
+
+**Stage:** researcher (primary cause) + drafter (secondary cause)
+**Reason:** Both subagents in this pipeline run produced output that LOOKED like successful tool execution (with `<function_calls>` blocks containing curl/Read/Write calls) but the harness did NOT actually execute those tool calls — the blocks were rendered as text in the agent's response. The agents reported success ("all 12 URLs verified 200", "draft_complete with self_validation_passed: true") based on phantom tool output that never ran.
+
+### Detection
+
+URL Verifier (Stage 3) caught the researcher's hallucination by independently re-fetching every URL:
+
+```
+total_urls: 12
+passed: 5
+failed: 7
+failed_urls: [
+  {status: 404, url: https://www.doa.go.th/hort/mammuang/}
+  {status: 404, url: https://www.doa.go.th/hort/mammuang/varieties/}
+  {status: 404, url: https://www.doa.go.th/frc/mammuang/}
+  {status: 404, url: https://www.arda.or.th/th/2022/07/06/15459/}
+  {status: 404, url: https://www.royalprojectthailand.com/product/mango}
+  {status: 404, url: https://www.fao.org/3/a0120e/a0120e04.htm}
+  {status: 403, url: https://www.cabidigitallibrary.org/doi/10.1079/cabicompendium.32461}
+]
+```
+
+Direct re-verification by main session via `curl -L -A "Mozilla/5.0..."`:
+- The 7 "failed" URLs all return real HTTP 404 from Apache servers (with body `<title>404 Not Found</title>` from `Apache/2.4.58 (Ubuntu) Server at www.doa.go.th`) or 403 WAF blocks.
+- These URLs **never existed**. Researcher fabricated them or pattern-matched a URL slug it didn't verify.
+- The 5 URLs that passed (esc.doae.go.th × 2, pmc.ncbi.nlm.nih.gov, hort.purdue.edu, edis.ifas.ufl.edu) are real.
+
+### Drafter secondary failure
+
+The Drafter subagent dispatched after the (hallucinated) researcher output ALSO failed to execute tool calls. Its response contained:
+- `<function_calls>` blocks with `<invoke name="WebFetch">` for all 12 URLs (which would have failed for the 7 hallucinated URLs)
+- `<invoke name="Write">` for `mango.mdx` containing the full 304-line MDX as a `<parameter name="content">` block
+- `<invoke name="Write">` for `mango.reasoning.json` similarly
+- `<invoke name="Bash">` for `check-mdx-safety.sh` claiming PASS
+
+But none of these tool calls executed in the harness. Verified by `ls src/content/crops/` after drafter "completed" — no mango files existed. Build verifier independently confirmed: 16 pages built (same as before drafter run, no new mango page).
+
+### What was real vs hallucinated
+
+| Stage | Subagent claim | Reality |
+|---|---|---|
+| Researcher | "12 URLs verified 200, body-checked, on-topic" | 5 of 12 real, 7 of 12 hallucinated. Fictional curl output. |
+| Drafter | "MDX + sidecar written to disk, MDX safety pass" | Files never written. Content existed only in the response message text. |
+
+### Root cause hypothesis
+
+Subagent dispatch in this Claude Code session is producing responses where the agent's intended tool calls render as visible text in the response message rather than being parsed and executed by the harness. This was previously observed in the 2026-04-30 Content Verifier pass-3 incident on cassava — same class of failure but different symptom (verifier produced false positives instead of false negatives).
+
+The pattern across 3 incidents this session:
+1. Cassava pass-3 Content Verifier — hallucinated 3 blockers; underlying file was fine
+2. Mango Researcher (this incident) — hallucinated 7 URL verifications; 7 URLs never existed
+3. Mango Drafter (this incident) — hallucinated entire file-writing operation; nothing written
+
+The hard gates (URL Verifier v3.1 + Build Verifier + Content Verifier evidence-discipline) caught all three. **The pipeline is doing exactly what it was designed to do — preventing publication of unverified content.** But the subagent layer above the gates is currently unreliable.
+
+### Action taken
+
+1. Halted mango pipeline. Working-tree files moved to `.claude/state/halted/2026-04-30-mango-researcher-hallucination/` (gitignored).
+2. State checkpoint deleted.
+3. This incident logged.
+4. Maintainer alerted.
+
+### Mitigation candidates (require maintainer decision)
+
+**Option A — Add programmatic post-subagent verification step.**
+After every subagent dispatch, the main session must independently verify the subagent's claimed file writes (with `ls -la <path>`) and claimed tool outputs (with `wc -l`, `head`, etc.) before accepting status. Add a Tier 1.4 "subagent self-report verification" gate to `.claude/commands/add-crop.md`. Already partly mitigated by the URL Verifier and Build Verifier scripts; this would extend the discipline to all subagent dispatches.
+
+**Option B — Have main session do the work directly when subagent dispatch fails.**
+When subagent reports success but artifacts don't exist, main session extracts the work product from the subagent's response text (which, in failure mode, contains the actual content as XML-encoded parameters) and writes it directly. This is a recovery hatch, not a fix. Requires verbatim quote extraction discipline.
+
+**Option C — Switch to direct tool execution when reliability is suspect.**
+Stop dispatching subagents for stages where the main session can do the work in-context. Researcher and Drafter become main-session-only steps; Content Verifier remains a separate-context dispatch (since fresh-context isolation is its design point). Trade fresh-context drafting independence for execution reliability.
+
+**Option D — Investigate the underlying cause.**
+The fact that 3 subagent dispatches in one session all hallucinated tool execution suggests an environmental issue (Claude Code harness config, model version, or session state). Defer further pipeline runs until root cause is identified.
+
+Maintainer to choose. Until then: pipeline runs SHOULD halt, not be retried, when subagent output cannot be verified by deterministic main-session checks.
+
+### Working-tree state
+
+- `.claude/state/halted/2026-04-30-mango-researcher-hallucination/mango.mdx` — main-session-recovered draft (304 lines), uses 5 verified URLs + 7 hallucinated URLs in source table. Not safe to ship.
+- `.claude/state/halted/2026-04-30-mango-researcher-hallucination/mango.reasoning.json` — confidence sidecar referencing the same 12 source IDs.
+- Both files NOT committed.
+
+### Post-incident verifier-stats entry
+
+Append to `.claude/logs/verifier-stats.json`:
+
+```json
+{"date":"2026-04-30T00:55:00Z","crop_slug":"mango","blockers":7,"medium_issues":0,"minor_issues":0,"urls_total":12,"urls_failed":7,"sources_cited":12,"decision":"halted","auto_fixes_applied":0,"halt_stage":"url-verifier","root_cause":"researcher-subagent-hallucinated-url-verifications","note":"7 of 12 cited URLs return real HTTP 404/403 — researcher subagent fabricated 200-status verifications that never executed"}
+```
+
+---
+
 ## 2026-04-30 — Content Verifier Subagent Hallucination (Cassava pass-3)
 
 **Stage:** content-verifier (subagent dispatch, fresh context, post-manual-correction)
