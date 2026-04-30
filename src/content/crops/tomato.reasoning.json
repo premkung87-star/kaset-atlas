@@ -1,0 +1,64 @@
+{
+  "crop_slug": "tomato",
+  "drafted_at": "2026-04-30T00:00:00Z",
+  "model": "claude-opus-4-7",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["kukr-cherry-tomato-central-thailand", "kukr-tomato-container-home-garden", "rspg-tomato-botanical"],
+      "rationale": "Multiple Thai sources (KU central-Thailand cherry tomato manual, KU pot-cultivation journal article, RSPG botanical database) confirm tomato is widely cultivated across Thailand both commercially and in home gardens; FAO temperature ranges anchor the cool-season recommendation."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "pmc-tomato-health-cultivation-review", "kukr-cherry-tomato-central-thailand"],
+      "rationale": "FAO Land & Water provides standard temperature, humidity, water and growing-period parameters; the Biology 2022 review corroborates temperature/light/salinity effects; KU central-Thailand source confirms Thai field reality."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "rakbankerd-tomato-cultivation", "pmc-tomato-health-cultivation-review"],
+      "rationale": "FAO gives international pH 5-7 and well-drained light loam; rakbankerd gives Thai farmer practice (4.5-6.8, lime adjustment, 30-40 cm tillage); PMC Biology 2022 ties soil salinity to fruit quality."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "ncstate-tomato-field-production", "pmc-tomato-health-cultivation-review"],
+      "rationale": "FAO gives 400-600 mm and crop coefficient ranges; NC State adds drip/fertigation guidance; PMC review corroborates water-stress effects on fruit quality."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["rakbankerd-tomato-cultivation", "fao-land-water-tomato", "fao-tomato-production-manual", "ncstate-tomato-field-production"],
+      "rationale": "rakbankerd provides Thai seedling and field-spacing practice; FAO Land & Water gives international spacing density; FAO tomato production manual covers indeterminate/determinate distinction; NC State adds staking and weaving."
+    },
+    "6_care": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "ncstate-tomato-field-production", "rakbankerd-tomato-cultivation"],
+      "rationale": "FAO provides international NPK reference levels (presented as reference, not prescription); NC State covers fertigation; rakbankerd covers Thai practice for blossom-end rot management; explicit deferral to กรมพัฒนาที่ดิน/กรมวิชาการเกษตร for site-specific rates."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["ucipm-tomato-pmg", "kukr-tomato-diseases-journal", "kukr-tomato-bacterial-wilt-control", "rakbankerd-tomato-cultivation"],
+      "rationale": "UC IPM provides comprehensive disease/pest taxonomy; KU 'Diseases of Tomato' journal article and KU bacterial wilt monograph anchor Thai relevance; rakbankerd covers Thai biological control practice (Beauveria); WarningBox in place; no specific chemical doses given."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "rakbankerd-tomato-cultivation", "pmc-tomato-health-cultivation-review"],
+      "rationale": "FAO and rakbankerd both give 70-90 days post-transplant + 90-150 days seed-to-harvest; PMC Biology 2022 supports the mature-green-vs-ripe-red trade-off (vitamin C vs lycopene) for harvest-stage choice."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["kukr-cherry-tomato-central-thailand", "fao-tomato-production-manual"],
+      "rationale": "Market-context discussion is qualitative (no income/profit guarantees per SAFETY_POLICY); KU central-Thailand source establishes commercial viability and FAO smallholder manual frames investment characteristics. Explicit refusal to forecast income reduces the rating to medium."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["kukr-cherry-tomato-central-thailand", "kukr-tomato-container-home-garden", "rspg-tomato-botanical", "rakbankerd-tomato-cultivation"],
+      "rationale": "All four Thai sources contribute to the regional and use-context breakdown; ภาคเหนือ/กลาง/อีสาน/ใต้ split is grounded in soil and climate realities corroborated across the Thai sources."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": ["fao-land-water-tomato", "fao-tomato-production-manual", "ucipm-tomato-pmg", "ncstate-tomato-field-production", "pmc-tomato-model-plant", "pmc-tomato-health-cultivation-review"],
+      "rationale": "Six international sources directly support what foreign authorities say versus what does not transfer to Thailand; explicit Thailand-applicability framing for each."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "Twelve verified sources (six Thai, six international) support every section, with multi-source coverage on every high-rated section and explicit downgrade on the economics section to medium because Kaset Atlas declines income forecasts."
+}

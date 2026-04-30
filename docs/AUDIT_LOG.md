@@ -4,6 +4,50 @@
 
 ---
 
+## 2026-04-30 — Auto Pipeline: Added มะเขือเทศ (Tomato) via general-purpose dispatch (Option 1 diagnostic resume)
+
+**Type:** Content Addition (auto)
+**Crop:** มะเขือเทศ (Tomato) — `tomato`
+**Category:** food-crops
+**Scientific:** *Solanum lycopersicum* L.
+
+**Run ID:** `a11ec1fe-3fb4-4d5d-a24c-ea19585a4906`
+**Prior run IDs (halts that preceded this success):**
+- `d7d3b9f3-...` — researcher self-flagged Thai-institutional-homepage halt → drove `0bb87fa` (researcher.md patch)
+- `92c14f76-...` — researcher subagent type Category A tool-execution failure (0 actual tool calls, 311 KB hallucinated text)
+- `69cf9cfa-...` — Stage 2 verify-source-table fail on bare-Thai confidence cells → drove `d94cfaf` (drafter.md patch)
+
+### Pipeline run (all stages via general-purpose dispatch per Option 1 diagnostic 2026-04-30)
+
+- **Researcher** (committed in `e93b329` from prior `69cf9cfa-...` run): 12 sources (6 Thai + 6 international), all url_verified=true, 11 high-confidence + 1 medium. Tool calls: 38, duration 6 min. Output preserved at `.claude/state/researcher-output/tomato-resume2-success.json`.
+- **Drafter** (this run, agent ID `a7dae217fa85e7020`): 47,278-byte MDX (341 lines, 13 sections) + 5,369-byte reasoning sidecar. Tool calls: 29, duration 6m26s. Self-validation passed including the new emoji-prefix check (per `d94cfaf` patch).
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=29
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues (the Stage 2 gate that blocked the prior run now passes)
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 12 unique source IDs in sidecar matching 12 unique URLs in MDX
+- **URL Verifier (`v3-soft200-aware`):** pass 12/12, no soft-200 errors
+- **Build Verifier:** pass — 18 pages built (was 17 with 4 crops, +1 for tomato), Pagefind indexed
+- **Content Verifier** (general-purpose, agent ID `a60f12faedabd112b`): pass — 0 blockers, 1 medium (informational only — NC State framing nuance), 1 minor. Tool calls: 26, duration 4m52s. Self-consistency PASS (3/3 findings retained, 0 hallucinations). All 12 URLs re-fetched and content-fidelity-checked verbatim.
+- **Subagent-output-verify (content-verifier):** pass — all 3 expected files exist (mdx, sidecar, verifier-stats), tool_calls=26
+- **Auto-fixes applied:** 0
+
+### Diagnostic finding (recorded for future reference)
+
+This run confirmed via Option 1 controlled diagnostic that **`general-purpose` dispatch executes tool calls correctly** in this environment for Researcher, Drafter, and Content Verifier roles, while the dedicated `subagent_type: researcher`/`drafter`/`content-verifier` types have repeatedly rendered tool-call markup as text without invoking the harness (Category A failure mode — 4 documented incidents: durian, mango ×2, tomato resume #2). The slash command's literal "Dispatch a general-purpose subagent" guidance is the empirically working path. WORKFLOW_KIT Pattern Win entry to follow.
+
+### Files changed
+- `src/content/crops/tomato.mdx` (NEW, 47,278 bytes)
+- `src/content/crops/tomato.reasoning.json` (NEW, 5,369 bytes)
+- `docs/AUDIT_LOG.md` (this entry)
+- `.claude/logs/verifier-stats.json` (content-verifier pass entry)
+- `.claude/logs/subagent-dispatch.json` (drafter + content-verifier dispatch verify entries)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive "If it passes and commits, do not push until I review the result."
+
+---
+
 ## 2026-04-30 10:15 — Auto Pipeline: Added มะม่วง (Mango) — Main-Session Researcher + Drafter + Inline Verifier (Content Verifier subagent failed twice, recovered inline)
 
 **Type:** Content Addition (post-halt rebuild) + Pipeline Anomaly (subagent failure, second occurrence in 2 days)
