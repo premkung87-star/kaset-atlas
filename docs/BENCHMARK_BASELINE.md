@@ -1,8 +1,9 @@
 # Benchmark Baseline — Kaset Atlas Crop Audit
 
-> One-time baseline snapshot of the crop reliability gates as of
-> 2026-04-30. Future runs of `scripts/audit-crops.sh` are compared
-> against this snapshot to detect regression or drift.
+> Baseline snapshot of the crop reliability gates as of 2026-04-30
+> (post-tomato auto-publish, 5-crop corpus). Future runs of
+> `scripts/audit-crops.sh` are compared against this snapshot to
+> detect regression or drift.
 
 ## How to reproduce
 
@@ -19,7 +20,7 @@ network-free):
 ./scripts/audit-crops.sh --with-build   # adds verify-build.sh once (npm build)
 ```
 
-## Baseline (2026-04-30)
+## Baseline (2026-04-30, 5-crop corpus)
 
 | Crop | check-mdx-safety | verify-source-table | verify-claim-grounding | Status |
 |------|---|---|---|---|
@@ -27,29 +28,38 @@ network-free):
 | holy-basil | ✓ pass | ✓ pass | ✓ pass | pass |
 | mango | ✓ pass | ✓ pass | ⚠ known exception | pass-with-known-exception |
 | sweet-basil | ✓ pass | ✓ pass | ✓ pass (legacy schema) | pass |
+| tomato | ✓ pass | ✓ pass | ✓ pass | pass |
 
-**Aggregate:** 4 crops audited, 11 pass / 0 new-fail / 1 known-exception / 0 skipped.
+**Aggregate:** 5 crops audited, 14 pass / 0 new-fail / 1 known-exception / 0 skipped. Audit status: **PASS**.
+
+Tomato shipped on 2026-04-30 via the auto-pipeline (commit `64fc52d`,
+`content(food-crops): add tomato [auto]`) and is the first crop drafted
+end-to-end after the `general-purpose` dispatch Pattern Win
+(WORKFLOW_KIT §4 2026-04-30) and the drafter source-table-confidence
+patch (commit `d94cfaf`). Auto-pipeline run summary: researcher 38
+tool calls / drafter 29 / content-verifier 26, all reliability gates
+green, 0 blockers.
 
 ## Per-gate pass rates (default audit)
 
 | Gate | Pass | Fail | Known | Total | Pass rate |
 |---|---|---|---|---|---|
-| check-mdx-safety | 4 | 0 | 0 | 4 | 100% |
-| verify-source-table | 4 | 0 | 0 | 4 | 100% |
-| verify-claim-grounding | 3 | 0 | 1 | 4 | 75% (100% excl. exception) |
+| check-mdx-safety | 5 | 0 | 0 | 5 | 100% |
+| verify-source-table | 5 | 0 | 0 | 5 | 100% |
+| verify-claim-grounding | 4 | 0 | 1 | 5 | 80% (100% excl. exception) |
 
 ## Schema-coverage observation
 
 `verify-claim-grounding.sh` v1 reports the schema mode of each
 sidecar. As of this baseline:
 
-- 3 of 4 sidecars use the current schema (`supporting_source_ids`):
-  cassava, holy-basil, mango.
-- 1 of 4 uses the legacy schema (`supporting_source_types`):
+- 4 of 5 sidecars use the current schema (`supporting_source_ids`):
+  cassava, holy-basil, mango, tomato.
+- 1 of 5 uses the legacy schema (`supporting_source_types`):
   sweet-basil — this is the retroactive sidecar created in commit
   `2870ef6` and is preserved as-is. It validates as `pass` with
   one warning entry: `legacy_schema_supporting_source_types(sections=11)`.
-- 0 of 4 carry the future v2 fields (`claims` array per section,
+- 0 of 5 carry the future v2 fields (`claims` array per section,
   per-claim `evidence_quote`). v2 schema would unlock deterministic
   quote-in-source-body verification; that migration is out of scope
   for the current pipeline gates.

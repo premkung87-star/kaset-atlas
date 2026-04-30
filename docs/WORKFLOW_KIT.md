@@ -67,6 +67,12 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 
 ## 4. Pattern Wins (chronological, append-only)
 
+### 2026-04-30 — General-purpose dispatch only for pipeline subagents (Tier 1.4)
+**Pattern:** All `/add-crop` pipeline subagent dispatches (Researcher, Drafter, Content Verifier) MUST use `subagent_type: general-purpose` with the role's prompt text embedded in the message. The dedicated `subagent_type: researcher` / `drafter` / `content-verifier` paths are forbidden.
+**Why it works:** Five documented Category A *tool-execution failures* on this project (durian, mango ×3, tomato resume #2) all came from the dedicated subagent paths — the agent rendered `<function_calls>` blocks as plain text inside its assistant content without invoking the harness, producing `tool_use: 0` despite long, plausible-looking responses (one run hit `max_output_tokens` after 311 KB of hallucinated text in 22 minutes with 0 actual tool calls). The 2026-04-30 tomato Option 1 controlled diagnostic confirmed `general-purpose` dispatch executes tool calls correctly with the same role prompts: researcher 38 tool_use, drafter 29 tool_use, content-verifier 26 tool_use, end-to-end auto-publish in commit `64fc52d`.
+**Replaced:** Implicit interpretation of the slash command's "Dispatch a `general-purpose` subagent" wording as compatible with `subagent_type: researcher`/`drafter`/`content-verifier` (the dedicated agent definition files exist on disk and tempted the orchestrator into using them).
+**Source:** Tomato live test 2026-04-30 (PIPELINE_FAILURES.md entries `92c14f76`, `69cf9cfa`; AUDIT_LOG.md tomato entry; auto-publish commit `64fc52d`). The `add-crop.md` slash command was patched in a follow-up commit to add Tier 1.4 banner + per-stage explicit prohibitions + Forbidden bullet.
+
 ### 2026-04-30 — Content Verifier evidence-discipline (post-hallucination incident)
 **Pattern:** Content Verifier prompt now mandates: (1) Step 0 deterministic file-stats preamble (Thai char count, URL list, section heading list) at top of every report; (2) verbatim quotes on every blocker (file evidence with line number + ≥10-word source excerpt + discrepancy statement); (3) Step 9.5 self-consistency check that auto-rejects findings referencing URLs/sections/content not in own preamble.
 **Why it works:** A subagent that produces a hallucinated finding will simultaneously print a deterministic preamble showing the actual data, making the contradiction self-evident. Verbatim quote requirement makes hallucination impossible — a quote either exists in the file or it doesn't. Self-consistency check catches the verifier's own drift before the report is submitted.
@@ -384,6 +390,8 @@ Do **not** rewrite past entries. The log is append-only for traceability. If a p
 ---
 
 ## Last Updated
+
+2026-04-30 (tomato live test) — Tomato shipped via auto-pipeline (commit `64fc52d`); 5-crop corpus baseline now in `docs/BENCHMARK_BASELINE.md`. Pattern Win added: §4 "General-purpose dispatch only for pipeline subagents (Tier 1.4)" — empirically validated by the Option 1 controlled diagnostic against five prior Category A failures.
 
 2026-04-30 — Phase 1 polish session: Pagefind UI wired, Vercel Analytics + Speed Insights enabled, `@astrojs/rss` feed shipped, Dependabot config added, `pipeline-monitor` agent recruited (Phase 2 readiness). Pattern Win + Discarded entries logged for the Content Verifier hallucination incident. Live site at https://kasetatlas.com/ with 3 crops + custom-domain SSL.
 
