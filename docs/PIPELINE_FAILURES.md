@@ -6,6 +6,85 @@
 
 ---
 
+## 2026-04-30 — Tomato (Option 1 diagnostic resume): Drafter emitted bare-Thai confidence cells (verify-source-table fail)
+
+**Stage:** verify-source-table (Stage 2 structural gate, after Drafter)
+**Run ID:** `69cf9cfa-5bc7-411f-9209-4c1cb6119682`
+**Prior Run IDs:** `d7d3b9f3-...` (researcher self-flag), `92c14f76-...` (researcher subagent type Category A)
+**Failure type:** `generation-contract` (Category C)
+**Crop input:** tomato / มะเขือเทศ
+**Diagnostic mode:** Option 1 — `general-purpose` dispatch substituted for `researcher`/`drafter` subagent types
+
+### Major positive diagnostic finding (separate from this halt)
+
+The Option 1 diagnostic confirmed: **`general-purpose` dispatch executes tool calls correctly** in this environment. Both Researcher and Drafter ran end-to-end with real tool execution:
+
+| Stage | Subagent type | tool_uses | duration | Outcome |
+|---|---|---|---|---|
+| Researcher (prior run) | `researcher` (dedicated) | **0** | 22m32s | max_output_tokens cap; never invoked harness |
+| Researcher (this run) | `general-purpose` | **38** | 6m | clean JSON, 12 sources, 4/4 spot-checked URLs HTTP 200 |
+| Drafter (this run) | `general-purpose` | **26** | 4m46s | wrote tomato.mdx (36 KB) + tomato.reasoning.json (4.7 KB) |
+
+The maintainer's hypothesis stands: the Category A failure mode is specific to the `researcher`/`drafter`/`content-verifier` dedicated subagent types in this project, not all subagent dispatch. The slash command's literal "Dispatch a `general-purpose` subagent" guidance is the working path.
+
+### What halted Stage 2
+
+`./scripts/verify-source-table.sh src/content/crops/tomato.mdx` returned `verification_status: fail` with 12 `missing_or_unrecognized_confidence` issues — every row of the source table.
+
+The script (line 148) accepts confidence cells matching:
+```
+🟢|🟡|🟠|⚪|High|Medium|Low|Uncertain
+```
+
+The Drafter wrote 11 rows as bare Thai `สูง` and 1 row as bare `ปานกลาง`. No emoji, no English. The script's regex doesn't match bare Thai prose.
+
+All three existing crops use the emoji-prefixed convention:
+- `sweet-basil.mdx`: `🟢 สูง`, `🟡 ปานกลาง`
+- `holy-basil.mdx`: `🟢 สูง`, `🟡 ปานกลาง`
+- `cassava.mdx`: `🟢 สูง`, `🟡 ปานกลาง`
+
+The Drafter's response did pass `self_validation_passed: true`, indicating the agent did not run the verifier itself before claiming completion. The drafter prompt's MDX-safety bash check is mandatory pre-save, but the source-table verifier check is not part of the drafter's self-validation list — that's by design (it's an external gate), but the drafter prompt does not explicitly state the confidence-cell format requirement either.
+
+### Other Stage 2 gates (all passed)
+
+| Gate | Result |
+|---|---|
+| `check-mdx-safety.sh` | pass — 0 unsafe patterns |
+| `subagent-output-verify.sh --stage drafter` | pass — both files exist, mtime 1777537666/1777537700 after dispatch start, sizes 36040/4729 bytes ≥ 1024, tool_calls=26 |
+| `verify-source-table.sh` | **fail** — 12 issues, see above |
+| `verify-claim-grounding.sh` | pass — 11 sections, all with supporting_source_ids, 12 unique source IDs in sidecar matching 12 unique URLs in MDX |
+
+The reasoning sidecar passes its v1 structural check. URL Verifier (Stage 3), Build Verifier (Stage 4), Content Verifier (Stage 5) were not run.
+
+### Action taken
+
+- HALTED before Stage 3 (URL Verifier). Per maintainer's "do not manually patch around the failure" directive, I did NOT edit `tomato.mdx` to insert emoji into the confidence cells.
+- Preserved `src/content/crops/tomato.mdx` and `src/content/crops/tomato.reasoning.json` in the working tree (untracked) for maintainer review.
+- Appended halt entry to `.claude/logs/verifier-stats.json` with `failure_type: generation-contract`, `halt_stage: verify-source-table`.
+- Updated state checkpoint at `.claude/state/pipeline-current.json` with `halted_at_stage: verify-source-table`, `awaiting_maintainer_decision: true`.
+- Logged this entry.
+
+### Resolution: pending — for maintainer review
+
+This is a small, low-risk drafter contract gap. Three options:
+
+1. **Re-dispatch Drafter via `general-purpose`** with an explicit instruction in the prompt that confidence cells in the source table MUST use the emoji-prefixed format (`🟢 สูง`, `🟡 ปานกลาง`, `🟠 ต่ำ`, `⚪ ไม่แน่ใจ`) consistent with all three existing crops. The current `tomato.mdx` would be discarded and rewritten. ~5 min runtime cost. 🟢 low-risk.
+2. **Edit `.claude/agents/drafter.md`** to add the confidence-cell format requirement to the source-table specification + the self-validation checklist. Then re-dispatch. Future drafts won't hit this gate. 🟡 medium-risk per CLAUDE.md §6 (agent-prompt change). Architect-mode preference.
+3. **Manual surgical patch** — main session edits `tomato.mdx` to prefix all 12 confidence cells with the correct emoji per the per-source confidence in `tomato-resume2-success.json`. Then re-run from Stage 2 source-table gate forward. Fastest but violates "do not manually patch around the failure" directive without explicit approval.
+4. **Halt tomato run** entirely. Discard `tomato.mdx` + `tomato.reasoning.json`.
+
+**Architect-mode recommendation:** Option 2. The drafter prompt already lists confidence-emoji requirements in the body section (`🟢 🟡 🟠 ⚪ — apply per section heading`), but does not state the same requirement for the source-table column. Adding that one sentence prevents the failure on every future crop, not just tomato. Cost: 1-line prompt edit + 5-min re-dispatch.
+
+### Evidence preserved
+
+- `src/content/crops/tomato.mdx` (36040 bytes, untracked, 13 sections, 12-source table, all confidence cells in bare-Thai)
+- `src/content/crops/tomato.reasoning.json` (4729 bytes, untracked, 11 sections with supporting_source_ids, valid JSON)
+- `.claude/state/researcher-output/tomato-resume2-success.json` (already committed)
+- `.claude/state/pipeline-current.json` (gitignored, frozen)
+- `.claude/logs/verifier-stats.json` — halt entry with `run_id: 69cf9cfa-...`
+
+---
+
 ## 2026-04-30 — Tomato (resume after researcher patch): Category A subagent tool-execution failure
 
 **Stage:** researcher (re-dispatch with patched prompt)

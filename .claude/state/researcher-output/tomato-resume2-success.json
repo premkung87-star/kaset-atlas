@@ -1,0 +1,221 @@
+{
+  "crop": {
+    "thai": "มะเขือเทศ",
+    "english": "tomato",
+    "scientific": "Solanum lycopersicum L.",
+    "category": "vegetables",
+    "family": "Solanaceae"
+  },
+  "sources": [
+    {
+      "id": "kukr-cherry-tomato-central-thailand",
+      "title": "การปลูกมะเขือเทศเชอรี่ในภาคกลาง (Cherry Tomato Cultivation in Central Thailand)",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/KPS/search_detail/dowload_digital_file/192834/69503",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "cherry tomato",
+        "cultivation",
+        "central region",
+        "varieties"
+      ]
+    },
+    {
+      "id": "kukr-tomato-container-home-garden",
+      "title": "การปลูกมะเขือเทศในกระถางเป็นพืชสวนครัว (Growing Tomatoes in Pots as a Home Garden Crop)",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/BKN/search_detail/result/317546",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "container gardening",
+        "home garden",
+        "tomato cultivation"
+      ]
+    },
+    {
+      "id": "kukr-tomato-bacterial-wilt-control",
+      "title": "การควบคุมโรคเหี่ยวของมะเขือเทศที่เกิดจากเชื้อแบคทีเรีย (Control of Bacterial Wilt Disease of Tomato)",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/bkn_agri/search_detail/result/25236",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "bacterial wilt",
+        "disease control",
+        "Ralstonia"
+      ]
+    },
+    {
+      "id": "kukr-tomato-diseases-journal",
+      "title": "โรคของมะเขือเทศ (Diseases of Tomato) — เกษตรอภิรมย์ 2564",
+      "url": "https://kukr.lib.ku.ac.th/kukr_es/KPS_AGRI/search_detail/result/20014220",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-university",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "tomato diseases",
+        "fungal",
+        "bacterial",
+        "viral",
+        "leaf curl"
+      ]
+    },
+    {
+      "id": "rspg-tomato-botanical",
+      "title": "มะเขือเทศ — ข้อมูลพืช (RSPG Plants Database)",
+      "url": "http://www.rspg.or.th/plants_data/use/color3-9.htm",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "royal-project",
+      "confidence": "high",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "botanical description",
+        "Solanaceae",
+        "uses",
+        "scientific classification"
+      ]
+    },
+    {
+      "id": "rakbankerd-tomato-cultivation",
+      "title": "การปลูกมะเขือเทศ — รักบ้านเกิด",
+      "url": "https://www.rakbankerd.com/agriculture/page.php?id=7754&s=2",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "thai-government",
+      "confidence": "medium",
+      "language": "th",
+      "applies_to_thailand": "directly",
+      "key_topics": [
+        "soil preparation",
+        "seedling propagation",
+        "watering",
+        "fertilization",
+        "pest management"
+      ]
+    },
+    {
+      "id": "fao-land-water-tomato",
+      "title": "Tomato — FAO Land & Water Crop Information",
+      "url": "https://www.fao.org/land-water/databases-and-software/crop-information/tomato/en/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-organization",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "water requirements",
+        "climate",
+        "yield",
+        "irrigation",
+        "soil pH"
+      ]
+    },
+    {
+      "id": "fao-tomato-production-manual",
+      "title": "Tomato production manual (Waelti & Bakyalire, 2020) — FAO",
+      "url": "https://www.fao.org/family-farming/detail/en/c/1637519/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "international-organization",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "plant types",
+        "indeterminate vs determinate",
+        "smallholder production"
+      ]
+    },
+    {
+      "id": "ucipm-tomato-pmg",
+      "title": "UC IPM Pest Management Guidelines: Tomato",
+      "url": "https://ipm.ucanr.edu/agriculture/tomato/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "partially",
+      "key_topics": [
+        "IPM",
+        "early blight",
+        "late blight",
+        "fusarium wilt",
+        "whiteflies",
+        "fruitworm"
+      ]
+    },
+    {
+      "id": "ncstate-tomato-field-production",
+      "title": "Tomato Field Production — NC State Extension",
+      "url": "https://vegetables.ces.ncsu.edu/tomatoes-field-production/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "university-extension",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "partially",
+      "key_topics": [
+        "staked production",
+        "fertigation",
+        "cultivar selection",
+        "IPM"
+      ]
+    },
+    {
+      "id": "pmc-tomato-model-plant",
+      "title": "Solanum lycopersicum, a Model Plant for the Studies in Developmental Biology, Stress Biology and Food Science (Foods, 2022)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9407197/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "developmental biology",
+        "stress biology",
+        "food science",
+        "model species"
+      ]
+    },
+    {
+      "id": "pmc-tomato-health-cultivation-review",
+      "title": "Tomatoes: An Extensive Review of the Associated Health Impacts of Tomatoes and Factors That Can Affect Their Cultivation (Biology, 2022)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8869745/",
+      "url_verified": true,
+      "http_status": 200,
+      "type": "peer-reviewed-journal",
+      "confidence": "high",
+      "language": "en",
+      "applies_to_thailand": "with-adaptation",
+      "key_topics": [
+        "health benefits",
+        "cultivation factors",
+        "lycopene",
+        "horticultural quality"
+      ]
+    }
+  ],
+  "minimum_sources_met": true,
+  "thai_sources_count": 6,
+  "international_sources_count": 6,
+  "high_confidence_count": 11
+}
