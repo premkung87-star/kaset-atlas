@@ -43,3 +43,4 @@ public/pagefind/
 # Pipeline state (transient; not committed)
 .claude/state/pipeline-current.json
 .claude/state/*.tmp
+.claude/state/halted/
