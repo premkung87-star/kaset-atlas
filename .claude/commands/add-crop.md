@@ -31,7 +31,16 @@ This ensures any update to the on-disk prompt takes effect on the next pipeline 
 8. `git branch --show-current` → must be `main`.
 9. `test -f .claude/HALT` → must NOT exist.
 10. Confirm crop "$1" not already drafted (`ls src/content/crops/`).
-11. Build "existing crops manifest" for the Drafter (Tier 2.8):
+11. **Capture run identifiers (Day-1 instrumentation):**
+    ```bash
+    RUN_ID=$(uuidgen 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "run-$(date +%s)")
+    RUN_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    ```
+    `RUN_ID` joins per-stage `subagent-dispatch.json` rows to the per-crop
+    `verifier-stats.json` row. `RUN_STARTED_AT` is the lower bound for any
+    file mtime check (a subagent that writes a file should write it
+    *after* the dispatch began).
+12. Build "existing crops manifest" for the Drafter (Tier 2.8):
     ```bash
     for f in src/content/crops/*.mdx; do
       [ "$(basename "$f")" = "_template.mdx" ] && continue
@@ -105,6 +114,21 @@ Wait for JSON. Validate:
 - File exists at returned `file_path`
 - Reasoning sidecar exists: `src/content/crops/<slug>.reasoning.json` (Tier 2.9)
 - MDX safety check passes: `./scripts/check-mdx-safety.sh src/content/crops/<slug>.mdx`
+- **Subagent output verification (Day-1 instrumentation):**
+  ```bash
+  ./scripts/subagent-output-verify.sh \
+    --run-id "$RUN_ID" \
+    --stage drafter \
+    --agent drafter \
+    --mtime-after "$RUN_STARTED_AT" \
+    --tool-calls-claimed <count from drafter response, or omit> \
+    src/content/crops/<slug>.mdx \
+    src/content/crops/<slug>.reasoning.json
+  ```
+  Accept on `verification_status: pass`. On `fail`, halt with
+  `failure_type: tool-execution` (Category A — drafter claimed file writes
+  the harness did not actually execute). Do NOT retry blindly — log and
+  await maintainer review.
 
 On fail: log, halt.
 On pass: update checkpoint with `stage_completed=drafter`.
@@ -158,6 +182,36 @@ Decision matrix from verifier output:
 | `blockers: 1+` | Halt, log all blockers, exit |
 | `medium_issues: 1-3`, `auto_fixes_applied` | Re-run URL Verifier + Build Verifier + Content Verifier (1 retry max). If still pass, proceed |
 | `medium_issues: 4+` | Halt, log, escalate |
+
+**Subagent output verification (Day-1 instrumentation):**
+
+```bash
+./scripts/subagent-output-verify.sh \
+  --run-id "$RUN_ID" \
+  --stage content-verifier \
+  --agent content-verifier \
+  --tool-calls-claimed <count from verifier response, or omit> \
+  src/content/crops/<slug>.mdx \
+  src/content/crops/<slug>.reasoning.json \
+  .claude/logs/verifier-stats.json
+```
+
+Why these three files:
+- `<slug>.mdx` and `<slug>.reasoning.json` should still exist after the
+  verifier finishes — disappearance/truncation indicates a faulty edit.
+- `.claude/logs/verifier-stats.json` should exist and be non-empty
+  (the verifier's Step 10 mandates appending a line).
+
+If the verifier reported `auto_fixes_applied > 0`, additionally pass
+`--mtime-after "$RUN_STARTED_AT"` so the script confirms the mdx file's
+mtime advanced *after* the verifier dispatch began. A fix-claim with
+unchanged mtime is the exact failure mode observed in the 2026-04-30
+mango Content Verifier incident.
+
+On `verification_status: fail`, halt with `failure_type: tool-execution`.
+Do NOT mark the run as published until the verifier discrepancy is
+investigated by the maintainer. Log the run_id so the failure can be
+joined to its dispatch entry in `.claude/logs/subagent-dispatch.json`.
 
 After verifier passes: update checkpoint with `stage_completed=content-verifier`.
 
@@ -251,3 +305,42 @@ Print summary:
 - Build gate (Stage 4) MUST pass — no exceptions
 
 If any safety limit is hit, write `.claude/HALT` automatically and exit.
+
+## Telemetry (Day-1 instrumentation, 2026-04-30)
+
+Two log files capture pipeline reliability:
+
+- `.claude/logs/verifier-stats.json` — one line per *crop run* (existing).
+  v2 entries SHOULD include `run_id`, `manual_intervention_required`,
+  `intervention_type`, and `failure_type`. See `.claude/logs/README.md`.
+- `.claude/logs/subagent-dispatch.json` — one line per *subagent dispatch
+  verification* (new). Written by `scripts/subagent-output-verify.sh`.
+  Schema documented in `.claude/logs/README.md`.
+
+Both share `run_id` so a Category A (tool execution failure) seen in
+`subagent-dispatch.json` can be joined to the crop run in
+`verifier-stats.json`.
+
+**Failure type taxonomy (use these strings exactly when populating
+`failure_type` in either log):**
+
+- `none` — clean run
+- `tool-execution` — Category A; subagent claimed file work that disk
+  reality contradicts (caught by `subagent-output-verify.sh`)
+- `retrieval` — Category B; researcher returned hallucinated/dead URLs
+- `generation-contract` — Category C; drafter cited unsupported claims
+  or emitted unsafe MDX
+- `verification` — Category D; content-verifier produced inconsistent
+  findings (false positive or false negative)
+- `publish` — Category E; commit/push step failed
+
+**Intervention type taxonomy:**
+
+- `none` — pipeline ran end-to-end without main-session edits
+- `script-patch` — main session patched a verifier script mid-run
+- `content-edit` — main session manually edited the mdx/sidecar
+- `stage-substitution` — main session ran the stage's work directly
+  instead of dispatching the subagent
+
+These taxonomies are descriptive only in v1; future iterations may
+make them enforced enums in a JSON schema.
