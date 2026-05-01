@@ -4,6 +4,36 @@
 
 ---
 
+## 2026-05-01 — Codex intern integration via `codex-plugin-cc` (trial v1)
+
+**Type:** Architecture / Tooling integration
+
+**Decision:** Integrate Codex (OpenAI's coding assistant, `codex-cli` 0.128.0) into the Claude Code workflow as a **gated, review-only, second-opinion service** under an explicit Senior/Junior contract. Claude Code remains the Senior Engineer and workflow owner; Codex acts as Intern / Junior Helper invocable via the `/codex:review` and `/codex:adversarial-review` slash commands provided by the `codex-plugin-cc` plugin (v1.0.4). Trial scope: branch `chore/codex-intern-trial`; one trial cycle; expendable cleanup if rejected.
+
+**Rationale:**
+- The maintainer's existing ChatGPT Plus subscription (account `premkung87@gmail.com`, pre-existing for unrelated use) provides Codex auth at no marginal cost. **The trial does not add a new paid service to Kaset Atlas's CLAUDE.md §12 paid stack.** Plus quota usage is opportunistic; cancelling Plus does not break the auto-pipeline.
+- Fresh-context adversarial review reduces author-bias on senior decisions — same posture that earned the 2026-04-30 Content Verifier evidence-discipline Pattern Win in `docs/WORKFLOW_KIT.md §4`.
+- Plugin transport (local `codex-cli` invoked by `codex-plugin-cc` inside Claude Code) eliminates the human relay — no copy-paste of files or messages between ChatGPT and Claude Code — while keeping the cost surface bounded by Plus quota.
+
+**Constraints (binding for the trial):**
+- `/codex:rescue` (write-capable; defaults to `--write` per the plugin's rescue agent) is **forbidden by default** — `.ai/codex/RULES.md §B13`. Approval requires a prior `rescue-approval-<NN>` entry in `.ai/codex/TRIAL_LOG.md` naming target paths, scope, and rollback plan.
+- Even with rescue approval, the only writeable surface is `.ai/codex/` itself — `.ai/codex/RULES.md §B17` (absolute write boundary). Production code under `src/`, scripts under `scripts/`, agent prompts under `.claude/agents/`, slash commands under `.claude/commands/`, policy docs under `docs/` and `pawee/`, CI under `.github/workflows/`, and `CLAUDE.md` itself remain unmodifiable by Codex.
+- Stop-time review-gate hook is forbidden — `.ai/codex/RULES.md §B15` (would force Codex on every stop event, multiplying spend and creating an automatic Codex dependency).
+- Hard per-invocation budget: ≤ 3 input files, ≤ 50 KB combined input, ≤ 80 lines / ≤ 4 KB output, ≤ 5 invocations per maintainer-day — `.ai/codex/INTERN_ONBOARDING.md §3`.
+- Every Codex invocation requires a prior `.ai/codex/tasks/<date>-<slug>.md` brief, a post-run `.ai/codex/reports/<date>-<slug>.md` capture, and a `TRIAL_LOG.md` line — `.ai/codex/RULES.md §B10`.
+- Adversarial review of Codex output by Claude Code is mandatory. Verbatim Codex stdout is preserved exactly once, by design — inside the required `.ai/codex/reports/<date>-<slug>.md` capture artifact (REPORT_TEMPLATE.md §1). Outside that capture, **zero copy-paste**: Codex's wording must not be lifted into pack edits, policy doc edits, audit-log prose, commit messages, or any other authored content — Claude Code re-types every adopted finding from scratch — `.ai/codex/INTERN_ONBOARDING.md §6`.
+
+**Action Taken:**
+- `.ai/codex/` onboarding pack written and committed: 6 contract files (`INTERN_ONBOARDING.md`, `RULES.md`, `TASK_TEMPLATE.md`, `REPORT_TEMPLATE.md`, `LIMIT_FALLBACK.md`, `TRIAL_LOG.md`) plus the first-task brief and first-review report = 8 files total. Commit `43f3ecc chore: add Codex intern onboarding pack` on `chore/codex-intern-trial`.
+- Plugin installed: `codex-plugin-cc` v1.0.4 from the `openai-codex` marketplace. `/codex:setup --json` confirmed `ready: true` (Node v25.9.0, npm 11.12.1, codex-cli 0.128.0, ChatGPT login active, review gate disabled).
+- First trial review executed: `/codex:review --background --scope working-tree` against the onboarding pack itself. Codex returned 3 contract findings in 47 seconds (1 P1 + 2 P2); all 3 verified against repo state by Claude Code; all 3 remediations applied — REPORT_TEMPLATE status enum widened to include `rejected`, verbatim-stdout requirement tightened so an executive summary may accompany but never replace the raw stdout, and `RULES.md §B14` secret-trigger rewritten with explicit Trigger / Documentation-carve-out sections (three conjunctive conditions; "doubt → abort"). Every fix scoped to `.ai/codex/` only — `git diff HEAD~1 --stat` confirms zero touches outside `.ai/codex/`.
+
+**Trial expiry plan:** If the trial is rejected at end-of-cycle, deleting the `.ai/codex/` directory and uninstalling `codex-plugin-cc` removes Codex from the workflow in one cleanup commit, with zero functional loss to Kaset Atlas. The auto-pipeline (`/add-crop`) continues unchanged; the maintainer's Plus subscription is untouched.
+
+**Reporter:** Claude Code (Senior Engineer). Maintainer (Prem) authorized the integration, authored the constraint set, and approved each of the three pack remediations individually (E1 reviewed against five named security constraints before approval).
+
+---
+
 ## 2026-05-01 — Pipeline + maintainer repair: Added ผักชี (Cilantro / Coriander) after content-fidelity repair (Phase 2 controlled run)
 
 **Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)
