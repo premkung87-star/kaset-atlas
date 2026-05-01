@@ -6,6 +6,8 @@
 //   import JsonLd from '@components/JsonLd.astro';
 //   <JsonLd data={{ "@context": "https://schema.org", "@type": "Article", ... }} />
 //   <JsonLd data={[organizationSchema, websiteSchema]} />
+//
+// Mounted into BaseLayout's <head> for site-wide structured data; consumers must supply schema.org-compliant @type values.
 
 interface Props {
   data: Record<string, any> | Record<string, any>[];
