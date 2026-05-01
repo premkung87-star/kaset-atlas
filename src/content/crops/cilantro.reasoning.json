@@ -1,0 +1,64 @@
+{
+  "crop_slug": "cilantro",
+  "drafted_at": "2026-05-01T00:00:00Z",
+  "model": "claude-sonnet-4-6",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": ["kukr-drought-coriander-2013", "opsmoac-kanchanaburi-home-cultivation", "useful-tropical-plants-coriander"],
+      "rationale": "Multiple Thai government and university sources confirm cool-season preference; Useful Tropical Plants documents the seed-set issue below 500m elevation."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": ["plantvillage-psu-coriander", "useful-tropical-plants-coriander", "psu-extension-cilantro-unique-herb"],
+      "rationale": "Temperature ranges (15-25C optimal, 4-32C tolerance) and bolting threshold above 24-27C are independently confirmed across PlantVillage, Useful Tropical Plants, and Penn State Extension."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": ["usu-extension-cilantro", "opsmoac-phichit-pdf"],
+      "rationale": "pH 6.2-6.8 framed as a general Apiaceae soil principle (no source-specific attribution); soil texture and organic-matter preparation guidance corroborated by Utah State Extension and OPSMOAC Phichit."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": ["usu-extension-cilantro", "kukr-drought-coriander-2013", "psu-extension-cilantro-unique-herb"],
+      "rationale": "Utah State Extension's establishment-then-reduce watering guidance, drought-tolerance noted by Kasetsart KU repository, and Penn State Extension's ground-level (not overhead) watering for leaf-spot prevention all converge."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": ["wisconsin-extension-cilantro", "opsmoac-phichit-preview", "opsmoac-phichit-pdf"],
+      "rationale": "Direct-sow due to taproot from Wisconsin Extension; seed-soak overnight and 20-30cm row spacing from Phichit OPSMOAC; succession sowing well-documented."
+    },
+    "6_care": {
+      "rating": "high",
+      "supporting_source_ids": ["psu-extension-cilantro-unique-herb", "wisconsin-extension-cilantro"],
+      "rationale": "Slow-bolt cultivar names ('Calypso', 'Leisure', 'Confetti'), afternoon shade, mulching for soil temperature, and thinning are all Penn State and Wisconsin Extension guidance."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": ["plantvillage-psu-coriander", "psu-extension-cilantro-unique-herb"],
+      "rationale": "PlantVillage Penn State is the authoritative pest/disease source covering bacterial leaf spot, damping-off, powdery mildew, aphids, armyworms, and root-knot nematode; Penn State Extension corroborates."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": ["opsmoac-phichit-pdf", "phtnet-cmu-postharvest", "psu-extension-cilantro-unique-herb"],
+      "rationale": "Leaf 30-45 DAS and seed 90-120 DAS timelines from Phichit OPSMOAC; postharvest cold-chain principles from PHTNet CMU; cut-and-come-again from Penn State Extension."
+    },
+    "9_economics": {
+      "rating": "medium",
+      "supporting_source_ids": ["opsmoac-phichit-pdf", "opsmoac-kanchanaburi-home-cultivation"],
+      "rationale": "Yield range 1,300-1,900 kg/rai documented by Phichit OPSMOAC; seasonal price spikes referenced by Kanchanaburi OPSMOAC. Yield framed as recorded range, not guarantee."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": ["jircas-thaivege-coriander", "useful-tropical-plants-coriander", "opsmoac-kanchanaburi-home-cultivation"],
+      "rationale": "JIRCAS Thai Vegetables Database documents culinary uses; Useful Tropical Plants confirms highland advantage for seed production; Kanchanaburi OPSMOAC notes cool-season preference for Thai growers."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": ["wisconsin-extension-cilantro", "psu-extension-cilantro-unique-herb", "usu-extension-cilantro", "useful-tropical-plants-coriander"],
+      "rationale": "Foreign-source synthesis cleanly contrasts temperate-season advice (Wisconsin/Penn State/Utah) with tropical applicability (Useful Tropical Plants), explicitly flagging what does and does not transfer to Thailand."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "All 12 sources HTTP-verified by Researcher; Thai government, Thai university, JIRCAS, and four US/international extension sources converge on key claims. Yield section deliberately rated medium because it relies on a single Thai source and is presented as recorded range rather than guarantee."
+}

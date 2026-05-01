@@ -6,6 +6,246 @@
 
 ---
 
+## 2026-05-01 — Cilantro / ผักชี: Content Verifier final pass — residual Utah-State pH attribution in source-table topic label (post-repair)
+
+**Stage:** content-verifier (final pass after maintainer 3-site repair)
+**Run ID:** `4dc099b3-05f8-4c78-95a9-562afe1dc7c7`
+**Failure type:** `medium_residual_misattribution` (verifier's classification — 1 medium issue, 0 blockers in NDJSON; verifier's main response said "🔴 BLOCKER" but its own Step 10 stats line classified the issue as medium)
+**Crop input:** ผักชี / cilantro / *Coriandrum sativum*
+**Dispatch mode:** general-purpose-only (Tier 1.4) — content-verifier-final 24 tool_use, real execution
+
+### What happened
+
+The previous Content Verifier dispatch found 3 misattributed citations in the body (lines 129, 151, 154). Maintainer approved option-1 repairs and I applied:
+1. Line 129: removed Utah State pH attribution; rephrased as generic Apiaceae principle
+2. Line 151: replaced "deep but infrequent watering" with Utah State's actual establishment-then-reduce wording
+3. Line 154: dropped Wisconsin attribution; rephrased to Penn State's "ground-level, not overhead" wording
+Plus reasoning sidecar §3 + §4 rationale updates.
+
+All 3 body repair sites verified PASS by the final Content Verifier. URL Verifier 12/12 pass. Build pass (22 pages). MDX safety / source-table / claim-grounding / schema-caps all pass.
+
+**However**, the final verifier found a **residual misattribution in the §13 source table at line 379**:
+
+| Topic label (Thai) | Source |
+|---|---|
+| `pH ดิน, การให้น้ำ, การเก็บเกี่ยว` | Cilantro/Coriander in the Garden — Utah State University Extension |
+
+The "pH ดิน" topic label still credits Utah State with soil-pH coverage, but the Utah State page contains no pH content (independently verified by main session via curl + grep — only "6.5" hits were in `datePublished`/`dateModified` JSON metadata, not cilantro content). The maintainer's enumerated 3-site repair addressed body claims at lines 129/151/154 but did not touch the source-table topic-coverage label.
+
+### Verifier classification ambiguity
+
+The verifier's main response said `"blockers": 1` and labelled the finding 🔴 BLOCKER. But the verifier's own Step 10 NDJSON entry to `verifier-stats.json` says:
+
+```json
+{"blockers": 0, "medium_issues": 1, "minor_issues": 2, "intervention_type": "residual_pH_attribution_in_source_table"}
+```
+
+This inconsistency suggests the verifier itself was unsure of severity:
+- The **body** content (what readers actually rely on) is correct after repair — no claims about cilantro pH attributed to a source that doesn't support them.
+- The **source table** "topics" column is a meta-index of which subjects each source covers. Saying "Utah State covers pH ดิน + การให้น้ำ + การเก็บเกี่ยว" when it actually covers (การให้น้ำ + การเก็บเกี่ยว) is a documentation accuracy issue, not a body factual claim.
+
+I treat the verifier's NDJSON as the canonical severity (medium), per the principle that the structured stats line is what feeds drift signal — but per the maintainer's explicit instruction ("If Content Verifier still fails: do not keep patching repeatedly. Preserve evidence. Stop and show the remaining blocker(s)"), I halt regardless.
+
+### Other checks (all pass post-repair)
+
+- All 12 URLs HTTP 200 (verifier independently re-confirmed; JIRCAS reachable)
+- All 3 body repair sites verified faithful to source verbatim text
+- Reasoning sidecar §3 + §4 rationale updates landed correctly (no "pH 6.2-6.8 from Utah State" / no "deep-but-infrequent" / no "drip irrigation by Penn State")
+- 17 of 18 spot-checked claims verified verbatim
+- SAFETY_POLICY: WarningBox in §7, no dosages, no medical claims, yield framed as research-documented range with disclaimer
+- Frontmatter: contributor "AI Pipeline (auto)", lastUpdated/publishedAt 2026-05-01, schema caps OK
+- Schema caps: summary 161/280, seoDescription 117/160
+- audit-crops.sh: PASS (cilantro 3/3 structural gates)
+
+### Verifier also flagged 2 minor issues (not blocking)
+
+1. Wisconsin "0.6-1.3 cm" rounded as "0.5-1.5 cm" — slightly wider conversion tolerance (line 176)
+2. Wisconsin generic "bacterial leaf spot" + Penn State PlantVillage species-named *Pseudomonas syringae* — slight stretch on species-level agreement (line 215)
+
+Both are 🟢 minor; not blocking.
+
+### Action taken
+
+- Halted before commit. No `git commit`, no `git push`.
+- Working tree retains the maintainer-repaired `src/content/crops/cilantro.mdx` + updated `cilantro.reasoning.json` (uncommitted).
+- No further patching attempted (maintainer was explicit: "do not keep patching repeatedly").
+
+### Remediation options (for maintainer decision)
+
+1. **One-line source-table topic label edit** (recommended, smallest fix): on `src/content/crops/cilantro.mdx` line 379, change `| pH ดิน, การให้น้ำ, การเก็บเกี่ยว |` → `| การให้น้ำ, การเก็บเกี่ยว |`. Then re-run final structural gates (no Content Verifier re-dispatch needed since the body, source-policy, safety-policy, and frontmatter all already passed; only the topic-label is the residual issue — but the maintainer may want one final verifier pass for safety).
+2. **Accept as-is and ship anyway** — if the maintainer agrees the source-table topic-coverage label is meta-documentation rather than a body factual claim and the verifier's NDJSON-level "medium" classification is correct, the file could ship as-is. Less safe; sets precedent for tolerating misattribution in topic labels.
+3. **Hold + add Pattern Win on drafter prompt** — instruct drafter that source-table topic-coverage labels must list only topics that the source actually covers, mirroring the body-claim grounding rule. This would systematically prevent this class. Higher cost.
+
+Recommendation: **option 1** (one-line topic-label edit). Smallest reversible fix, exact same shape as the body repairs already approved. Awaiting maintainer decision.
+
+---
+
+## 2026-05-01 — Cilantro / ผักชี: Content Verifier blocker — 3 misattributed citations (drafter contract violation)
+
+**Stage:** content-verifier (Stage 5, first dispatch after URL verifier re-passed)
+**Run ID:** `4dc099b3-05f8-4c78-95a9-562afe1dc7c7`
+**Failure type:** `generation-contract` (Category C — drafter cited unsupported claims; verifier logged as `content-fidelity` which is the same class under a different label)
+**Crop input:** ผักชี / cilantro / *Coriandrum sativum*
+**Dispatch mode:** general-purpose-only (Tier 1.4) — researcher 56 tool_use, drafter 18 tool_use, content-verifier 32 tool_use, all real executions, zero Category A failures
+
+### Sequence of this run
+
+1. **Earlier (~22:48 UTC):** URL Verifier first pass halted with status `000` on JIRCAS URL (transient JIRCAS rate-limit on our IP). Logged as separate halt entry below.
+2. **15-minute wait** → URL Verifier re-passed 12/12 (the rate-limit cleared, URL is genuinely valid).
+3. **Build Verifier re-pass:** 22 pages built, pass.
+4. **Content Verifier first dispatch:** found **3 🔴 BLOCKERS** — all confirmed by independent main-session spot-check. Halted.
+
+### The blockers (all 3 independently spot-checked)
+
+#### Blocker 1 — pH 6.2-6.8 misattributed to Utah State Extension
+- **File evidence (line 129):** `**ค่า pH:** เหมาะที่ 6.2-6.8 (Utah State Extension) — ทนช่วง 6.0-7.5 ได้ดี`
+- **Source URL:** `https://extension.usu.edu/yardandgarden/research/cilantro-coriander-in-the-garden`
+- **What the source actually says (verbatim, fetched independently):** "Cilantro thrives in cool, sunny, well-drained garden soil enriched with compost." and "Cilantro/coriander grows well most soil types provided they are well drained and moderately fertile." **The source contains no pH numbers in cilantro content.** (The "6.5" hits in raw HTML are from `datePublished`/`dateModified` JSON metadata, not cilantro content.)
+- **Discrepancy:** ThailandBox at line 140 amplifies the false attribution. Reasoning sidecar §3 confabulates "pH 6.2-6.8 from Utah State" — confirms the misattribution is structural in the drafter's reasoning.
+
+#### Blocker 2 — "Deep but infrequent watering" + taproot connection misattributed to Utah State
+- **File evidence (line 151):** `Utah State Extension แนะนำการรดน้ำลึกแต่ไม่บ่อย เพื่อให้รากแก้วลงลึกและทนแล้งได้ดีขึ้น`
+- **What the source actually says (verbatim):** "Cilantro requires regular watering during establishment. Once the plants are established they need little water. Avoid over-watering as this plant does not do well in damp or humid conditions." and "Water sparingly as cilantro/coriander does not do well in damp or humid conditions."
+- **Discrepancy:** Utah State does not articulate "deep but infrequent" nor connect it to taproot development. The "deep" matches in the page are all about seed-sowing depth ("½″ deep"), not watering. Reasoning sidecar §4 contains the same confabulation.
+
+#### Blocker 3 — Drip irrigation misattributed to Wisconsin + Penn State Extension
+- **File evidence (line 154):** `**การใช้น้ำหยด:** ลดความชื้นบนใบ ลดโรคใบจุด เป็นแนวทางที่ Penn State และ Wisconsin Extension แนะนำ`
+- **Wisconsin Extension** (`https://hort.extension.wisc.edu/articles/cilantro-coriander-coriandrum-sativum/`) verbatim watering text: "Keep evenly moist throughout the growing season." Independent grep for `drip|leaf moisture|leaf wetness|overhead` returned **0 matches**. Wisconsin attribution is fully unsupported.
+- **Penn State Extension** (`https://extension.psu.edu/cilantro-a-unique-culinary-herb`) verbatim: "Increase air circulation and water at ground level, not overhead." Penn State recommends ground-level watering, but **does not specifically name drip irrigation** (drip is one form, but the source's wording is more general).
+- **Discrepancy:** Wisconsin attribution = fully fabricated. Penn State attribution = partial (correct on "not overhead", false on "drip irrigation specifically").
+
+### Verifier evidence discipline (Step 0/9.5) check
+
+The Content Verifier produced an Evidence Preamble with file stats, all 12 URLs, all 14 H2 headings, and frontmatter fields. Self-consistency check at Step 9.5 reported PASS (4 findings retained, 0 hallucinated). Main-session independently re-fetched all three contested sources and confirmed each finding against verbatim source text. No verifier hallucination — these are real misattributions in the drafter's output.
+
+### Other checks (state at halt)
+
+- All 12 URLs HTTP 200 (URL Verifier pass after 15-min wait)
+- MDX safety: 0 unsafe patterns
+- Source-table integrity: 12 rows, 12 unique URLs, 0 issues
+- Claim-grounding: 11 sections, 11 source IDs in sidecar (subset of 12 MDX URLs — allowed), 0 issues, 0 warnings
+- Subagent-output-verify (drafter): pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=18
+- Build Verifier: pass — 22 pages built
+- Frontmatter schema caps OK: summary 161/280, seoDescription 117/160
+- Species disambiguation in §1 correct: distinguishes Coriandrum sativum from Eryngium foetidum / Anethum graveolens / Oenanthe javanica
+- 19 of 22 spot-checked claims verified verbatim against sources. The 3 blockers are isolated to a soil-pH claim and two watering-method claims.
+
+### Action taken
+
+- Halted before commit. No `git commit`, no `git push`.
+- Working tree retains `src/content/crops/cilantro.mdx` + `cilantro.reasoning.json` (uncommitted).
+- Verifier-stats logged with `decision: "fail"`, `blockers: 3`, `manual_intervention_required: true`, `intervention_type: "misattributed-claims"`, `failure_type: "content-fidelity"`.
+- No content modification, no script modification, no source replacement attempted (per maintainer Phase-2 constraint).
+- Build verifier re-pass and content-verifier dispatch already counted as the spec's "max 1 retry" cycle for this run; no further auto-retry available without maintainer approval.
+
+### Remediation options (for maintainer decision)
+
+1. **Three small body edits** (smallest reversible fix; same shape as lettuce 2-char repair). The fixes are deterministic given the verbatim-source-quote evidence:
+   - **Line 129 / ThailandBox 140:** Either remove the Utah State attribution and rephrase pH 6.2-6.8 as a general principle for cilantro/Apiaceae from cumulative agricultural reference, OR replace pH range with what Utah/PlantVillage actually do say (PlantVillage gives `well-drained sandy or loam soil with pH 6.2-6.8` — verify and re-cite to PlantVillage instead of Utah State).
+   - **Line 151:** Replace "Utah State Extension แนะนำการรดน้ำลึกแต่ไม่บ่อย เพื่อให้รากแก้วลงลึก" with what Utah actually says: "Utah State Extension แนะนำการรดน้ำสม่ำเสมอช่วงต้นกล้า หลังจากตั้งตัวแล้วลดการให้น้ำลง และระวังการให้น้ำมากเกินซึ่งไม่เหมาะกับผักชี".
+   - **Line 154:** Drop the Wisconsin attribution. Rephrase to "การรดน้ำที่ระดับพื้นดิน (ไม่รดบนใบ) เพื่อลดโรคใบจุด ตามคำแนะนำของ Penn State Extension" — exactly what Penn State says.
+   - Update `cilantro.reasoning.json` §3 and §4 rationales to remove the same misattributions.
+   - Re-run final structural gates + Content Verifier final pass.
+2. **Re-dispatch drafter** with explicit instruction to verify each cited source's text supports each cited claim. Higher cost; would systematically prevent this class but doesn't help with N=1.
+3. **Patch drafter prompt** with claim-source-grounding-check requirement. Pattern Win candidate (the prompt already says "❌ Citing a source for claims the source does not actually substantiate" — the drafter still violated it. Stronger enforcement needed: per-claim verbatim quote requirement in §3 self-validation). Higher cost.
+
+Recommendation: **option 1** (three small body edits + sidecar update). Same shape as lettuce/morning-glory pattern. The verifier's verbatim source quotes give us deterministic guidance for each fix. Preserves the drafter's overall work which is otherwise sound (19 of 22 spot-checked claims pass).
+
+### Pattern Win candidate (deferred — N=1)
+
+This is the second observed drafter-content-fidelity-misattribution-class halt. The first was the lettuce citation-year off-by-one (different class — propagated from Researcher's source-title field, not a body misattribution). For drafter body misattribution to a source that does not contain the claim, this is N=1. A second similar incident would justify a Pattern Win promoting per-claim verbatim-quote-grounding into drafter.md self-validation. Not promoted today.
+
+---
+
+## 2026-05-01 — Cilantro / ผักชี: URL Verifier transient timeout on JIRCAS Thai Vegetables Database
+
+**Stage:** url-verifier (Stage 3)
+**Run ID:** `4dc099b3-05f8-4c78-95a9-562afe1dc7c7`
+**Failure type:** `retrieval` (Category B — transient network failure, NOT a dead URL or content defect)
+**Crop input:** ผักชี / cilantro / Coriandrum sativum
+**Dispatch mode:** general-purpose-only (Tier 1.4) — researcher 56 tool_use, drafter 18 tool_use, both real executions, no Category A failures
+
+### What happened
+
+Pipeline ran cleanly through Stages 1, 2, and 4:
+- Researcher: 12 sources verified (6 Thai + 6 international, 8 high-confidence). All URLs HTTP+WebFetch verified. Strict species disambiguation applied (rejected ผักชีฝรั่ง / ผักชีลาว / ผักชีล้อม sources).
+- Drafter: 13-section MDX (50.1 KB) + reasoning sidecar (4.5 KB); mdx-safety / source-table / claim-grounding / subagent-output-verify all `pass`. Schema-cap pre-checks landed (summary 161/280, seoDescription 117/160 — well under, no morning-glory-class repeat).
+- Build Verifier: pass — 22 pages built (was 21 with morning-glory, +1 cilantro), Pagefind indexed.
+
+**URL Verifier (Stage 3) failed** with status `000` on one URL:
+
+```json
+{
+  "total_urls": 12,
+  "passed": 11,
+  "failed": 1,
+  "failed_urls": [
+    {"status": "000", "url": "https://www.jircas.go.jp/en/database/thaivege/036"}
+  ],
+  "verification_status": "fail"
+}
+```
+
+### Diagnostic evidence (status 000 = curl timeout, NOT dead URL)
+
+curl exit code 28 = "Operation timeout". The URL works fine via direct curl with the same User-Agent moments before and after the script run:
+
+```
+$ curl -sI -L --max-time 30 -A "Mozilla/5.0 ..." "https://www.jircas.go.jp/en/database/thaivege/036"
+HTTP/1.1 200 OK
+Date: Thu, 30 Apr 2026 22:47:19 GMT
+Server: Apache
+Cache-Control: must-revalidate, no-cache, private
+Content-language: en
+
+$ curl -s -L --max-time 30 -r 0-200 -A "Mozilla/5.0 ..." "https://...036" | head -c 300
+<!DOCTYPE html>
+<html lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/...
+```
+
+But when `verify-urls.sh` runs (script uses identical UA + same `--max-time 15` flag + adds `-r 0-4095` range header), the connection times out:
+
+```
+$ curl -s -L --max-time 15 -r 0-4095 --user-agent "$UA" -o /dev/null -w "%{http_code}\n" "https://...036"
+000
+exit code: 28 (timeout)
+```
+
+This is reproducible across multiple verify-urls.sh runs in close succession but resolves on a longer timeout / different burst pattern, consistent with **JIRCAS server-side rate-limiting against our IP after rapid repeated requests** (Researcher tool calls + URL Verifier first pass + URL Verifier second pass + diagnostic test — all within ~10 minutes from the same IP).
+
+### Other checks (all clean)
+
+- 11/12 URLs returned HTTP 200 via the same script (the JIRCAS URL is the only one affected)
+- Researcher's Stage 4a (curl 200) + Stage 4b (WebFetch crop-specific content) on the same JIRCAS URL succeeded ~25 minutes earlier in this run
+- MDX safety: 0 unsafe patterns
+- Source-table integrity: 12 rows, 12 unique URLs, 0 issues
+- Claim-grounding: 11 sections, 11 source IDs in sidecar (subset of 12 MDX URLs — allowed by gate), 0 issues, 0 warnings
+- Subagent-output-verify (drafter): pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=18
+- Build Verifier: pass — 22 pages built (does NOT depend on URL reachability)
+- Stage 5 (Content Verifier) NOT dispatched — halted at Stage 3 per spec
+
+### Action taken
+
+- Halted before commit. No `git commit`, no `git push`.
+- Working tree retains `src/content/crops/cilantro.mdx` + `cilantro.reasoning.json` (uncommitted) so the maintainer can review.
+- Logged to `.claude/logs/verifier-stats.json` with `decision: "halted"`, `halt_stage: "url-verifier"`, `failure_type: "retrieval"`, `intervention_type: "transient_jircas_timeout_status_000"`.
+- No content modification, no script modification, no source replacement attempted (per maintainer Phase-2 constraint).
+- No retry beyond the second pass already attempted (re-running the same gate against a transient backend issue would be result-cherry-picking).
+
+### Remediation options (for maintainer decision)
+
+1. **Wait + re-run URL Verifier only** — The JIRCAS rate-limit will clear (typically within minutes to an hour). Re-running `./scripts/verify-urls.sh src/content/crops/cilantro.mdx` after a wait period should pass 12/12. If it does, proceed to Stage 5 (Content Verifier) → audit-log → commit. Lowest-cost path; preserves the JIRCAS source which is genuinely high-quality (Thai-context vegetables database from a Japanese ag research org).
+2. **Replace the JIRCAS source** — Re-dispatch researcher with instruction to find an alternate Thailand-applicable English-language source for botanical-classification + cuisine-uses content. Higher cost (full researcher rerun + content edit). Only justified if JIRCAS appears persistently unreachable across multiple sustained retries.
+3. **Patch verify-urls.sh to retry on status 000 with backoff** — Pattern Win candidate. The current script does one curl + one retry on non-2xx/3xx, but does not specifically retry on connection errors (status 000) with a wait. A `if status==000 then sleep N seconds and retry once` block would handle transient rate-limit/network blips. Higher cost (script modification = 🔴 high-risk per Rule 6); requires explicit maintainer approval. N=1 today; not promoted.
+
+Recommendation: **option 1** (wait + re-run URL Verifier only). The diagnostic evidence is unambiguous — the URL is valid, the content matches, the failure is transient rate-limit on the verifier's IP. No content defect exists. Same shape as the lettuce/morning-glory pattern: smallest reversible action that preserves the drafter's work.
+
+### Pattern Win candidate (deferred — N=1)
+
+This is the first observed transient-network-rate-limit halt of this class on the URL Verifier. A second similar incident (any URL hitting status 000 once and 200 on retry) would justify promoting an automatic retry-on-000-with-backoff into `scripts/verify-urls.sh`. Not promoted today.
+
+---
+
 ## 2026-04-30 — Morning Glory / ผักบุ้ง: Build Verifier schema validation failure (`seoDescription` over 160-char limit)
 
 **Stage:** build-verifier (Stage 4)

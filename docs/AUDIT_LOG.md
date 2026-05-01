@@ -4,6 +4,115 @@
 
 ---
 
+## 2026-05-01 — Pipeline + maintainer repair: Added ผักชี (Cilantro / Coriander) after content-fidelity repair (Phase 2 controlled run)
+
+**Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)
+**Crop:** ผักชี (Cilantro / Coriander / Chinese parsley) — `cilantro`
+**Category:** culinary-herbs
+**Scientific:** *Coriandrum sativum*
+
+**Run ID:** `4dc099b3-05f8-4c78-95a9-562afe1dc7c7`
+**Phase:** 2 (controlled run with explicit policy-safe constraints from maintainer)
+
+### Pipeline run (all subagent stages via `general-purpose` dispatch per Tier 1.4)
+
+- **Researcher** (agent ID `a9affd6b82f5c8758`): 12 sources (6 Thai + 6 international), 8 high-confidence + 4 medium. Tool calls: 56. All URLs HTTP+WebFetch verified. Strict species disambiguation applied — rejected sources for ผักชีฝรั่ง (*Eryngium foetidum*), ผักชีลาว (*Anethum graveolens*), and ผักชีล้อม (*Oenanthe javanica*); confirmed all 12 retained sources describe *Coriandrum sativum* only.
+- **Drafter** (agent ID `ae61ef4060457ad4c`): 50.1 KB MDX (392 lines, 13 sections) + 4.5 KB reasoning sidecar. Tool calls: 18. Bolting-tolerance angle covered (Penn State slow-bolt cultivars 'Calypso', 'Leisure', 'Confetti'); three plant parts (leaf/root/seed) documented per Thai cuisine usage; soak-and-crack seed pre-treatment from OPSMOAC Phichit. Self-validation passed including pre-save schema-cap check (summary 161/280, seoDescription 117/160 — well under, no morning-glory-class repeat).
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=18
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 11 unique source IDs in sidecar (subset of 12 MDX URLs — allowed by gate; same pattern as cucumber)
+
+### Three-iteration halt-and-repair sequence
+
+This run required **three Phase-2 maintainer interventions** before reaching publishable state. All halts and repairs are documented in `docs/PIPELINE_FAILURES.md`.
+
+#### Iteration 1: URL Verifier transient halt → 15-min wait
+
+URL Verifier first pass returned status `000` (curl exit 28, timeout) on the JIRCAS Thai Vegetables Database URL. Independent curl with same UA + 30 s timeout returned HTTP 200 with valid HTML body. Diagnosis: JIRCAS server-side rate-limit on the verifier's IP after rapid repeated requests (researcher Stage 4 + 2 verifier passes + diagnostic — all within ~10 minutes). **Failure type:** `retrieval` (Category B, transient — NOT a dead URL).
+
+**Maintainer decision (option 1):** wait 15 minutes, then re-run URL Verifier only. Re-run passed 12/12.
+
+#### Iteration 2: Content Verifier first pass → 3 misattributed-citation blockers + maintainer 3-site repair
+
+Content Verifier (agent ID `ab17c85f9bbd49fa9`, 32 tool_use) found 3 🔴 BLOCKERS — all confirmed by independent main-session spot-check:
+1. Line 129: pH 6.2-6.8 attributed to Utah State Extension; Utah State page contains no pH content (the "6.5" hits in raw HTML are `datePublished`/`dateModified` JSON metadata).
+2. Line 151: "Deep but infrequent watering" + taproot connection attributed to Utah State; Utah State actually says "water sparingly" / "regular watering during establishment / once established need little water".
+3. Line 154: Drip irrigation attributed to Wisconsin + Penn State; Wisconsin contains no drip / leaf-moisture / overhead language; Penn State says "water at ground level, not overhead" but does not specifically name drip irrigation.
+
+The reasoning sidecar §3 + §4 rationales contained the same misattributions, confirming the issue was structural in the drafter's reasoning, not isolated typos. **Failure type:** `generation-contract` (Category C — drafter cited unsupported claims).
+
+**Maintainer decision (option 1):** apply three small body edits + 2 sidecar rationale updates. All edits applied per maintainer's explicit instructions:
+- Line 129: rephrased pH 6.2-6.8 as a generic Apiaceae soil principle (verified PlantVillage doesn't support the range either, so no source-specific re-attribution available); kept the value as practical guidance for cultivators with a "consult กรมพัฒนาที่ดิน" handoff.
+- Line 151: replaced with Utah State's actual establishment-then-reduce wording.
+- Line 154: dropped Wisconsin attribution; rephrased to Penn State's "ground-level (not overhead)" wording — no "drip" claim.
+- Sidecar §3 rationale: removed "pH 6.2-6.8 from Utah State"; framed as generic Apiaceae principle.
+- Sidecar §4 rationale: removed "Deep-but-infrequent" and "drip irrigation by Penn State" confabulations; replaced with Utah State's actual establishment-then-reduce + Penn State's ground-level guidance.
+
+#### Iteration 3: Content Verifier final pass → residual table-topic-label blocker + maintainer one-line fix
+
+Content Verifier final dispatch (agent ID `a2fe5421d49bbb6fc`, 24 tool_use) found 1 residual misattribution: source-table topic label at line 379 still credited Utah State Extension with "pH ดิน" coverage. Verifier classification ambiguity — response said "🔴 BLOCKER" but Step 10 NDJSON entry classified as `medium_issues: 1` (the body content was correct after iteration-2 repair; only the source-table topic-coverage label was a residual issue). **Failure type:** `medium_residual_misattribution`.
+
+**Maintainer decision (option 1):** one-line topic-label fix on line 379 — `pH ดิน, การให้น้ำ, การเก็บเกี่ยว` → `การให้น้ำ, การเก็บเกี่ยว`.
+
+### Final verification (after iteration 3 fix)
+
+- **MDX safety:** pass
+- **Source-table integrity:** pass — 12 rows, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections, 11 source IDs match
+- **URL Verifier:** pass 12/12
+- **Build Verifier:** pass — 22 pages built (was 21 with morning-glory, +1 cilantro), Pagefind indexed
+- **Content Verifier — final-final pass** (agent ID `ae1e0fdfc8bb5b7ea`, tool_use 25): `verification_status: pass` — 0 blockers, 0 medium, 1 minor (stylistic note on line 258 cut-and-come-again co-attribution; pre-existing, defensible, not blocking). Self-consistency PASS. Independently re-verified all 4 repair sites against verbatim source text. NDJSON `decision: pass`, `intervention_type: maintainer_table_topic_label_fix`.
+- **Subagent-output-verify (content-verifier-final-final):** pass — all 3 expected files exist
+- **audit-crops.sh:** PASS — cilantro 3/3 structural gates; corpus 9 crops, 26 result rows pass, 0 fail-new, 1 known-exception (mango sidecar, pre-existing).
+
+### Pattern adherence
+
+This run is the third Phase 2 run requiring maintainer manual repair (after lettuce `e1aa5ab`, morning-glory `d763390`) and the **first to require multiple iterations** (3 halts, 3 maintainer interventions). Five `general-purpose` dispatches executed real tool calls — zero Category A failures, consistent with the Tier 1.4 baseline:
+- Researcher: 56 tool_use
+- Drafter: 18 tool_use
+- Content Verifier first: 32 tool_use
+- Content Verifier final (post 3-site repair): 24 tool_use
+- Content Verifier final-final (post table-label fix): 25 tool_use
+
+The Content Verifier surfaced real defects across two iterations (iteration 2: 3 body misattributions; iteration 3: 1 residual table-topic-label misattribution). All 4 issues independently verified by main-session spot-check before applying maintainer repairs. The verifier evidence-discipline mechanisms (Step 0 preamble, verbatim quotes, Step 9.5 self-consistency) worked as designed — surfaced real defects without producing hallucinations.
+
+### Pattern Win candidates (deferred — N=1 each)
+
+This run produced four observed failure-class candidates that could be promoted to Pattern Wins on a second occurrence:
+
+1. **Drafter body-claim-source-grounding rule (N=1).** Drafter prompt already says "Forbidden: cite a source for claims it does not substantiate" but the drafter still produced 3 body misattributions on cilantro. A second similar incident would justify a stronger §3 self-validation requirement (per-claim verbatim source quote + line-number anchor).
+
+2. **Drafter source-table-topic-label-grounding rule (N=1).** Source-table topic-coverage labels are not currently subject to the body-claim grounding rule. Drafter wrote "pH ดิน" in Utah State's topics column even though Utah State has no pH content. Pattern Win would extend the body-claim rule to topic labels.
+
+3. **URL Verifier retry-on-status-000-with-backoff (N=1).** Current `verify-urls.sh` does HEAD→GET fallback but not transient-network retry. The JIRCAS rate-limit halt cost 15 minutes. Patch candidate; not promoted today.
+
+4. **Reduce verifier severity-classification ambiguity (N=1).** Iteration-3 verifier response said "🔴 BLOCKER" while its NDJSON entry said `medium_issues: 1`. Verifier prompt could be tightened to enforce one classification across both response JSON and NDJSON. Not promoted today.
+
+A second occurrence of any one of these would justify promotion. Tracking via `docs/PIPELINE_FAILURES.md`.
+
+### Files changed
+
+- `src/content/crops/cilantro.mdx` (NEW, 50,716 bytes — includes 3 maintainer body repairs at lines 129/151/154 + 1 maintainer source-table topic-label fix at line 379)
+- `src/content/crops/cilantro.reasoning.json` (NEW, 4,667 bytes — includes maintainer §3 + §4 rationale updates)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (3 halt entries: URL-verifier transient, Content-verifier 3-blockers, Content-verifier residual-table-label — kept as historical record)
+- `.claude/logs/verifier-stats.json` (4 cilantro entries: url-verifier-halt, content-verifier-fail-3-blockers, content-verifier-final-fail-1-medium, content-verifier-final-final-pass)
+- `.claude/logs/subagent-dispatch.json` (drafter + 3 content-verifier dispatch verify entries)
+- `.claude/state/researcher-output/cilantro.json` (preserved researcher JSON)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive.
+
+### Commit message rationale
+
+Standard `[auto]` suffix omitted because this run required maintainer manual repair across two iterations (3 body edits + 2 sidecar rationale updates + 1 source-table topic-label fix). Commit subject reads `content(food-crops): add cilantro after content-fidelity repair` per maintainer's explicit instruction. Same `[auto]`-suffix-omission convention as lettuce `e1aa5ab` and morning-glory `d763390` commits.
+
+(Note: the actual frontmatter `category` is `culinary-herbs` matching sweet-basil and holy-basil. The commit message uses `food-crops` per maintainer's exact specified subject string. Future audits should resolve which category prefix is canonical for the commit-subject convention; both are accurate descriptions of cilantro at different abstraction levels.)
+
+---
+
 ## 2026-04-30 — Pipeline + maintainer repair: Added ผักบุ้ง (Morning Glory / Water Spinach) after seoDescription length repair (Phase 2 controlled run)
 
 **Type:** Content Addition (pipeline + maintainer repair — NOT fully automatic)
