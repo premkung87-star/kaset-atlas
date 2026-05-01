@@ -2,7 +2,7 @@
 
 > Living document. The kit evolves with the project. Update this file whenever a new pattern wins or an old approach is discarded.
 >
-> Last updated: 2026-04-29
+> Last updated: 2026-05-01
 
 ---
 
@@ -66,6 +66,12 @@ If an adopted pattern later fails on a new crop, log to §5 with the failure rea
 ---
 
 ## 4. Pattern Wins (chronological, append-only)
+
+### 2026-05-01 — Codex plugin integrated as gated review-only second opinion (trial v1)
+**Pattern:** Codex (`codex-cli` 0.128.0) is wired into Claude Code via the `codex-plugin-cc` plugin (v1.0.4) as a gated, review-only, second-opinion service. Default-allowed slash commands: `/codex:review` and `/codex:adversarial-review` (read-only by command contract; both have `disable-model-invocation: true`, so only the user can trigger them). Default-forbidden: `/codex:rescue` (write-capable; defaults to `--write` per the plugin's rescue agent definition). Every invocation requires a `.ai/codex/tasks/<date>-<slug>.md` brief on file beforehand and a `.ai/codex/reports/<date>-<slug>.md` capture afterward, plus a `TRIAL_LOG.md` outcome line. Codex's findings are adversarially re-verified by Claude Code (re-read every cited file:line, classify Critical / Important / Optional / Noise) with zero copy-paste of Codex wording into authored content; verbatim Codex stdout is preserved exactly once inside the required report-capture artifact, never lifted into pack edits, policy doc edits, audit-log prose, or commit messages.
+**Why it works:** Fresh-context adversarial framing catches author-bias on senior decisions — the same mechanism that earned the 2026-04-30 Content Verifier evidence-discipline Pattern Win below. Plugin transport (local `codex-cli` invoked by Claude Code) eliminates the human relay; the maintainer never copy-pastes between ChatGPT and Claude Code. Hard per-invocation budget (≤ 3 input files, ≤ 50 KB combined input, ≤ 80 lines / ≤ 4 KB output, ≤ 5 invocations per maintainer-day) keeps the cost surface bounded by the maintainer's pre-existing ChatGPT Plus subscription — no new paid-stack line item against CLAUDE.md §12. Integration is expendable: deleting `.ai/codex/` and uninstalling `codex-plugin-cc` is one cleanup commit with zero functional loss to Kaset Atlas — the auto-pipeline (`/add-crop`) continues unchanged.
+**Replaced:** N/A — net new tooling integration. (An earlier `.ai/codex/` v0 that assumed copy-paste relay between ChatGPT and Claude Code was retired pre-publication when `codex-plugin-cc` became available; v0 never operated in production, so it does not earn a §5 Discarded entry.)
+**Source:** `docs/AUDIT_LOG.md` 2026-05-01 entry "Codex intern integration via `codex-plugin-cc` (trial v1)" (commit `0109005`); `.ai/codex/` onboarding pack (commit `43f3ecc`); first task review captured at `.ai/codex/reports/2026-05-01-codex-trial-audit-entry.md` (commit `e9dce42`). Binding controls live in `.ai/codex/RULES.md` §B13 (rescue gating with TRIAL_LOG.md approval requirement), §B14 (secret-trigger with documentation carve-out), and §B17 (absolute write boundary outside `.ai/codex/` even with rescue approval).
 
 ### 2026-04-30 — General-purpose dispatch only for pipeline subagents (Tier 1.4)
 **Pattern:** All `/add-crop` pipeline subagent dispatches (Researcher, Drafter, Content Verifier) MUST use `subagent_type: general-purpose` with the role's prompt text embedded in the message. The dedicated `subagent_type: researcher` / `drafter` / `content-verifier` paths are forbidden.
@@ -390,6 +396,8 @@ Do **not** rewrite past entries. The log is append-only for traceability. If a p
 ---
 
 ## Last Updated
+
+2026-05-01 (Codex trial v1) — Codex plugin (`codex-plugin-cc` v1.0.4 / `codex-cli` 0.128.0) integrated as gated review-only second opinion. New §4 Pattern Win recording the integration decision, gating model (RULES.md §B13/§B14/§B17), per-invocation hard budget, and trial expiry plan. Source: `docs/AUDIT_LOG.md` 2026-05-01 entry; commits `43f3ecc` (onboarding pack), `0109005` (audit decision), `e9dce42` (T1 review paperwork) on `chore/codex-intern-trial`.
 
 2026-04-30 (tomato live test) — Tomato shipped via auto-pipeline (commit `64fc52d`); 5-crop corpus baseline now in `docs/BENCHMARK_BASELINE.md`. Pattern Win added: §4 "General-purpose dispatch only for pipeline subagents (Tier 1.4)" — empirically validated by the Option 1 controlled diagnostic against five prior Category A failures.
 
