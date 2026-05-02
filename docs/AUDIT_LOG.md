@@ -4,6 +4,64 @@
 
 ---
 
+## 2026-05-02 — Phase 8 Foundation: Source-Verified LLM Wiki + Autonomy Lanes
+
+**Type:** Foundation / Architectural (additive only — no runtime pipeline changes)
+**Scope:** Knowledge layer schema, wiki verifier v1, autonomy lane policy, per-run handoff format, crop queue scaffolding.
+**Risk classification:** 🟡 Yellow (touches operating policy; zero runtime/agent/build/deploy changes).
+
+### Why
+
+Pre-Phase-8 reality: every `/add-crop` run forced the maintainer to relay 7–8 screenshots into ChatGPT mid-run to make decisions that should have been codified rules. Does not scale to 500 crops. Phase 8 replaces those decision points with written policy and lays the data foundation (Source-Verified LLM Wiki) that V2 automation will sit on.
+
+### What was added
+
+- `wiki/README.md`, `wiki/SCHEMA.md` — wiki layer documentation and schema (v1).
+- `wiki/_template/source.md`, `wiki/_template/topic.md` — copy-and-fill templates.
+- `wiki/sources/mango/*.md` — 11 backfilled source cards transcribed from the existing published `mango.mdx` source table.
+- `wiki/topics/mango.md` — topic page with 11 claim cards transcoded from `mango.reasoning.json`. Confirms the schema round-trips against real production data without mutating the existing crop content.
+- `scripts/verify-wiki.sh` — read-only verifier (frontmatter, enum values, id uniqueness, claim→source linkage, confidence rules, orphan detection). Pure bash + sed + awk; no new dependencies.
+- `docs/AUTONOMY_LANES.md` — authoritative green / yellow / red lane policy.
+- `docs/HANDOFF_FORMAT.md` — per-run `handoff.md` template.
+- `.claude/queue/crops.yaml` — crop queue schema (one entry: `mango` marked `done`).
+- `.claude/runs/.gitkeep` — reserves location for future per-run artifacts (subdirectories gitignored).
+
+### What was edited (additive only)
+
+- `.gitignore` — ignores `.claude/runs/*` except `.gitkeep`.
+- `README.md` — adds wiki/ to the project structure tree and introduces Phase 8 layers.
+- `CLAUDE.md` — adds §13 referencing the new wiki + lane policy.
+
+### What was deliberately NOT touched
+
+- Existing crop MDX files and reasoning sidecars (no migration of pre-mango crops in this phase).
+- Existing agent prompts under `.claude/agents/`.
+- Existing slash commands under `.claude/commands/`.
+- Existing verifier scripts (`verify-urls.sh`, `verify-source-table.sh`, etc.).
+- `astro.config.mjs`, `package.json`, `tsconfig.json`, `tailwind.config.ts` — zero dependency changes.
+- `pawee/`, `karpathy/`, `src/`.
+
+### Verification
+
+- `scripts/verify-wiki.sh` against the new tree: `verification_status: pass`, 11 source cards seen, 1 topic page seen, 0 errors, 0 warnings.
+- Working tree was clean at run start (`aee79af`); changes are 100% additive.
+- No commits, no pushes, no Codex consultation, no review-gate enabled.
+
+### Bottleneck-removal target
+
+Old loop: 7–8 mid-run human relays per crop (Researcher → Drafter → URL Verifier → Build Verifier → Content Verifier → auto-fix → commit/push → audit).
+
+After Phase 8: lane policy is codified, so a green or yellow run produces a single `handoff.md` artifact at end-of-run. The maintainer reads one file once and runs `git push`. Auto-push remains deferred to Phase 9.
+
+Net target: 0 mid-run rounds, 1 end-of-run review per crop.
+
+### Next phase (not in scope of this entry)
+
+- Phase 8.7+ (separate task): wire `/add-crop` to write `.claude/runs/<run_id>/handoff.md` per run.
+- Phase 9 (separate task + audit-log entry): activate auto-push when verifier pass-rate ≥ 95% over the trailing 20 runs.
+
+---
+
 ## 2026-05-02 — Auto Pipeline: Added ขิง (Ginger) via general-purpose dispatch (Phase 2 with two maintainer-only repairs)
 
 **Type:** Content Addition (auto, with two surgical maintainer repairs)

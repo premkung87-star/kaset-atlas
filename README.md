@@ -102,7 +102,9 @@ claude
 kaset-atlas/
 ├── .claude/
 │   ├── agents/             # Agent definitions
-│   └── commands/           # Slash commands
+│   ├── commands/           # Slash commands
+│   ├── queue/              # Crop queue (Phase 8)
+│   └── runs/               # Per-run artifacts (gitignored)
 ├── src/
 │   ├── content/
 │   │   ├── crops/          # crop profiles (MDX)
@@ -112,17 +114,30 @@ kaset-atlas/
 │   ├── layouts/
 │   ├── pages/
 │   └── styles/
+├── wiki/                   # Source-Verified Knowledge Layer (Phase 8)
+│   ├── SCHEMA.md
+│   ├── sources/<topic>/    # source cards
+│   └── topics/             # topic pages with claim cards
 ├── scripts/
-│   └── verify-urls.sh      # Pre-publish URL HTTP check
+│   ├── verify-urls.sh      # Pre-publish URL HTTP check
+│   └── verify-wiki.sh      # Wiki schema + cross-reference check
 ├── public/
 ├── docs/
 │   ├── METHODOLOGY.md
 │   ├── SOURCE_POLICY.md
 │   ├── SAFETY_POLICY.md
 │   ├── AUTOMATION_PIPELINE.md
+│   ├── AUTONOMY_LANES.md   # Green/yellow/red lane policy (Phase 8)
+│   ├── HANDOFF_FORMAT.md   # Per-run handoff template (Phase 8)
 │   └── AUDIT_LOG.md
 └── README.md
 ```
+
+## Source-Verified Knowledge Layer (Phase 8)
+
+The `wiki/` tree is the structured knowledge layer that sits underneath the rendered crop profiles. Source cards (`wiki/sources/<topic>/<id>.md`) and topic pages (`wiki/topics/<slug>.md`) carry claim-level citations with confidence rules verified by `scripts/verify-wiki.sh`. See `wiki/README.md` and `wiki/SCHEMA.md`.
+
+The autonomy lane policy in `docs/AUTONOMY_LANES.md` and the per-run handoff format in `docs/HANDOFF_FORMAT.md` together codify the green / yellow / red decision rules that let `/add-crop` run end-to-end without mid-run human intervention.
 
 ## License
 

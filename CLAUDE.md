@@ -200,3 +200,15 @@ Before proposing any new tool or service, verify it is not already included in t
 - New paid service: explicit maintainer approval (per Rule 7 + Forbidden Actions)
 - Free / open-source addition: 🟡 risk note, proceed with diff shown
 - Enabling features inside the existing paid stack (e.g., turning on Vercel Analytics): 🟢, just enable
+
+## 13. Phase 8 Knowledge + Autonomy Foundation (added 2026-05-02)
+
+The Source-Verified LLM Wiki and the green/yellow/red autonomy lanes were established 2026-05-02. They are referenced by `/add-crop` and by future automation work.
+
+- **Wiki schema:** `wiki/SCHEMA.md`. Source cards live under `wiki/sources/<topic>/<id>.md`; topic pages with claim cards live under `wiki/topics/<slug>.md`. The wiki is data, not Astro-rendered pages, in V1.
+- **Wiki verifier:** `scripts/verify-wiki.sh` — read-only schema + cross-reference check. JSON output, exit 0 = pass.
+- **Lane policy:** `docs/AUTONOMY_LANES.md` — codifies the conditions under which Claude Code may continue a `/add-crop` run without human input (green + yellow), and the conditions that force a halt with a complete handoff (red). This is the authoritative source on autonomy behavior.
+- **Handoff format:** `docs/HANDOFF_FORMAT.md` — per-run `handoff.md` template, written to `.claude/runs/<run_id>/`.
+- **Crop queue:** `.claude/queue/crops.yaml` — schema only in v1, no runner yet.
+
+Changes to `docs/AUTONOMY_LANES.md` are 🔴 risk per §6 and require explicit maintainer approval. Adding source cards or topic pages to the wiki is 🟢. Modifying `scripts/verify-wiki.sh` or `wiki/SCHEMA.md` is 🟡.
