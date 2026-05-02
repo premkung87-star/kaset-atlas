@@ -6,6 +6,71 @@
 
 ---
 
+## 2026-05-02 — Ginger / ขิง: Build Verifier — `seoDescription` exceeds 160-character schema cap
+
+**Stage:** build-verifier (Stage 4)
+**Run ID:** `08e17ba2-2db7-4d97-b7c6-d97d7761c16d`
+**Failure type:** `generation-contract` (Category C — drafter emitted frontmatter that violates `src/content/config.ts` `seoDescription: z.string().max(160)`)
+**Crop input:** ขิง / ginger / *Zingiber officinale*
+**Dispatch mode:** general-purpose-only (Tier 1.4) — researcher 47 tool_use, drafter 63 tool_use; both confirmed real execution by `subagent-output-verify.sh`
+
+### What happened
+
+Stages 1–3 + Stage 2 deterministic gates all PASS:
+
+- Researcher: 12 sources (8 Thai + 4 international), 11 high-confidence, all URLs HTTP-verified, `minimum_sources_met: true`
+- Drafter: `draft_complete`, `self_validation_passed: true`, 13 sections written, sidecar emitted
+- `check-mdx-safety.sh`: pass (0 unsafe patterns)
+- `subagent-output-verify.sh` (drafter): pass (2/2 files exist with mtime > run start, 63 tool_calls)
+- `verify-source-table.sh`: pass (12 rows, 12 unique URLs, 0 issues)
+- `verify-claim-grounding.sh`: pass (11 sections, 12 IDs cross-match MDX)
+- `verify-urls.sh` (Stage 3): pass (12/12 URLs reachable)
+
+**Stage 4 build (`./scripts/verify-build.sh`) failed:**
+
+```
+[InvalidContentEntryDataError] crops → ginger data does not match collection schema.
+
+  seoDescription**: **seoDescription: String must contain at most 160 character(s)
+  Location: src/content/crops/ginger.mdx:0:0
+```
+
+### Root cause
+
+`src/content/crops/ginger.mdx:66` contains:
+
+```yaml
+seoDescription: "คู่มือปลูกขิงภาษาไทย รวบรวมจากกรมวิชาการเกษตร กรมส่งเสริมการเกษตร และมหาวิทยาลัยฮาวาย/ฟลอริดา ครอบคลุมการเตรียมดิน โรคเหี่ยวแบคทีเรีย เทคโนโลยีหัวพันธุ์ปลอดโรค การเก็บเกี่ยวขิงอ่อนและขิงแก่"
+```
+
+Measured length: **551 bytes / ~184 unicode characters** (Astro's Zod `max(160)` measures Unicode code units, equivalent to JS `String.length`). Limit is **160**. Drafter exceeded by ~24 characters.
+
+### Why drafter's self-validation didn't catch it
+
+The drafter's checklist enforces `summary` (max 280) but does not include a programmatic length check on `seoDescription`. The canonical drafter prompt also does not list `seoDescription` in its required-frontmatter enumeration — it lists `title`, `titleEn`, `scientificName`, `category`, `summary`, etc. The `seoDescription` field is added by the drafter for SEO/JSON-LD but never length-validated before save.
+
+This mirrors a class of generation-contract failures where Astro's content schema enforces caps that the drafter prompt does not explicitly list with their numeric ceilings. Currently caught only at Stage 4 build, not at Stage 2 self-validation or any deterministic pre-build gate.
+
+### Halt action taken
+
+Per Phase 2 expectations ("halt on any gate failure", "maintainer-only content repair"):
+- HALTED — no auto-fix attempted
+- `pipeline-current.json` preserved at `.claude/state/pipeline-current.json` (resume contract)
+- Archive copy + build log preserved at `.claude/state/halted/2026-05-02-ginger-seo-description-overflow/`
+- Run logged to `.claude/logs/verifier-stats.json` with `manual_intervention_required=true`, `failure_type=generation-contract`, `intervention_type=content-edit-pending`
+- Drafted MDX + sidecar left in working tree for maintainer inspection (uncommitted)
+
+### Maintainer options to resume
+
+1. **Trim seoDescription to ≤160 chars** in `src/content/crops/ginger.mdx:66` (e.g., drop "และมหาวิทยาลัยฮาวาย/ฟลอริดา" → keep "รวบรวมจากกรมวิชาการเกษตร กรมส่งเสริมการเกษตร FAO และมหาวิทยาลัยสหรัฐฯ" — verify with `awk 'length' | wc -m`), then re-run Stage 4 onward via `/add-crop ขิง / ginger / Zingiber officinale` (the slash command will read `pipeline-current.json` and resume).
+2. **Loosen the schema cap** in `src/content/config.ts` if 160 is too strict for Thai (Thai prose runs ~30 % more characters than English equivalent for same meaning). Existing crops were authored under the 160 limit, so widening would be a one-time policy change — note this is a 🔴 schema change requiring approval per CLAUDE.md §6.
+
+### Promotion candidate (informational, not auto-applied)
+
+A new pre-build deterministic gate `verify-frontmatter-caps.sh` could enforce all numeric caps from `src/content/config.ts` (`summary` ≤280, `seoDescription` ≤160, etc.) at Stage 2 before invoking the build. This would catch this failure class earlier without burning a build cycle. Defer to maintainer / `head-audit` for promotion review.
+
+---
+
 ## 2026-05-01 — Cilantro / ผักชี: Content Verifier final pass — residual Utah-State pH attribution in source-table topic label (post-repair)
 
 **Stage:** content-verifier (final pass after maintainer 3-site repair)

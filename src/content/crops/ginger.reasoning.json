@@ -1,0 +1,118 @@
+{
+  "crop_slug": "ginger",
+  "drafted_at": "2026-05-02T00:00:00Z",
+  "model": "claude-sonnet-4-6",
+  "section_confidence": {
+    "1_thailand_applicability": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doae-esc-ginger-guide",
+        "doae-agriman-ginger-2566",
+        "doa-oard2-rokhi-2022"
+      ],
+      "rationale": "Three Thai government sources converge: DOAE ESC names the five primary Thai production provinces (Chiang Rai/Phayao/Loei/Phetchabun/Si Sa Ket), DOAE Agriman supplies multi-year national production statistics 2563-2565, and DOA OARD2 documents the bacterial-wilt-driven 'soil sequence problem' that defines the Thai applicability story."
+    },
+    "2_climate": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doae-esc-ginger-guide",
+        "ctahr-cfs-gin-3a",
+        "doa-oard2-rokhi-2022",
+        "ifas-ep638-ginger-galangal-turmeric"
+      ],
+      "rationale": "DOAE ESC supplies the Thai 80-100 inch rainfall figure and 0-1500m elevation envelope, CTAHR confirms similar 125-250 inches in Hilo, DOA OARD2 specifies February-April planting window, and UF/IFAS adds shade requirement (25-40%) for hot-summer adaptation."
+    },
+    "3_soil": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doae-esc-ginger-guide",
+        "ctahr-cfs-gin-3a",
+        "doa-oard2-rokhi-2022",
+        "doa-hort-fertilizer-2556"
+      ],
+      "rationale": "DOAE ESC sets the Thai pH 6.0-6.5 standard, CTAHR confirms 5.5-6.5, DOA OARD2 specifies the urea+lime soil-disinfection protocol (80:800 kg/rai), and the Chiang Rai fertilizer trial gives actual soil-test values (pH 5.9, OM 3.95%, P 14, K 296 mg/kg) — four-source convergence."
+    },
+    "4_water": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "opsmoac-ginger-techniques",
+        "doa-oard2-rokhi-2022",
+        "doa-hort-fertilizer-2556"
+      ],
+      "rationale": "OPSMOAC Samut Sakhon documents the 2-3x daily watering practice for small farmers, DOA OARD2 emphasizes the 5-7 day waterlogging-disease cascade that defines water-management risk, and the Chiang Rai trial confirms the 1-month pre-harvest dry-down protocol."
+    },
+    "5_planting": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doa-oard2-rokhi-2022",
+        "doae-esc-ginger-guide",
+        "opsmoac-ginger-techniques",
+        "doa-hort-harvestage-2558",
+        "kukr-ginger-tissue-culture-1997"
+      ],
+      "rationale": "DOA OARD2 supplies seed-rhizome cutting (2-3 inches, 3-4 eyes), Bacillus subtilis BS-DOA 24 dip protocol (50g/20L, 30 min), and 25-30 cm in-row spacing; DOAE ESC defines mature seed selection (10-20 months); OPSMOAC documents the practical 8-10 cm planting hole; the harvest-age trial confirms tissue-culture G0 protocol; KU thesis 1997 is the foundational tissue-culture reference."
+    },
+    "6_care": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doa-hort-fertilizer-2556",
+        "doa-oard2-rokhi-2022",
+        "opsmoac-ginger-techniques"
+      ],
+      "rationale": "Chiang Rai trial (3-year RCB experiment) provides definitive NPK rates with statistically-significant 8,947 kg/rai yield and 46% fertilizer-cost reduction; DOA OARD2 supplies sanitation/quarantine protocol; OPSMOAC supplies weeding intervals (1, 2, 3 months). High confidence — multiple Thai government experimental sources."
+    },
+    "7_pests_diseases": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doa-oard2-rokhi-2022",
+        "ctahr-scm-8-bacterial-wilt-greenhouse",
+        "ctahr-cfs-gin-3a",
+        "ifas-ep638-ginger-galangal-turmeric"
+      ],
+      "rationale": "DOA OARD2 is the canonical Thai source on Ralstonia solanacearum management for ginger; CTAHR SCM-8 supplies the famous 1993 45% statewide loss figure that anchors disease severity; CTAHR CFS-GIN-3A enumerates Hawaiian-context disease/pest list; UF/IFAS adds Pythium/Phytophthora and rotation interval (3-5 yr). Multi-source convergence on the dominant disease story."
+    },
+    "8_harvest": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "fao-postharvest-ginger-2002",
+        "opsmoac-ginger-techniques",
+        "doa-hort-fertilizer-2556",
+        "ctahr-cfs-gin-3a",
+        "doae-agriman-ginger-2566"
+      ],
+      "rationale": "FAO 2002 supplies the canonical timing matrix (5 mo fresh / 5-7 mo preserve / 8-9 mo dried/oil) and post-harvest curing/drying protocol; OPSMOAC adds the Thai practical 4-6 month young-ginger window (every 12-15 days); Chiang Rai trial confirms 11-month mature harvest; CTAHR confirms 3-5 day curing; DOAE Agriman supplies actual 2565 monthly market prices."
+    },
+    "9_economics": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doae-agriman-ginger-2566",
+        "doa-hort-competitive-loei",
+        "doa-hort-fertilizer-2556"
+      ],
+      "rationale": "DOAE Agriman provides the official cost breakdown (45,700 baht/rai, 6,000 kg yield, 14,300 baht profit) and three years of national production statistics; Loei competitive analysis supplies the TCM Question Mark positioning and value-chain critique; Chiang Rai fertilizer trial demonstrates that better fertilizer technology can add 13,103-20,233 baht/rai. All three are Thai government sources with explicit numbers."
+    },
+    "10_thailand_notes": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "doae-esc-ginger-guide",
+        "doa-hort-fertilizer-2556",
+        "doa-hort-competitive-loei",
+        "doae-agriman-ginger-2566"
+      ],
+      "rationale": "DOAE ESC names the five primary provinces; Chiang Rai trial documents Northern (highland) production; Loei competitive analysis documents the Northeast (Phu Ruea/Na Haeo) specifics; DOAE Agriman supplies national 2565 export 98,806 tonnes / 1,980.5 MB import figures. All four are Thai government sources giving the regional and market story."
+    },
+    "11_foreign_knowledge": {
+      "rating": "high",
+      "supporting_source_ids": [
+        "ctahr-cfs-gin-3a",
+        "ctahr-scm-8-bacterial-wilt-greenhouse",
+        "ifas-ep638-ginger-galangal-turmeric",
+        "fao-postharvest-ginger-2002",
+        "kukr-ginger-tissue-culture-1997"
+      ],
+      "rationale": "CTAHR CFS-GIN-3A supplies Hawaiian production figures (40,000 lb/acre); SCM-8 supplies non-circulating hydroponic system specs; UF/IFAS supplies Florida shade/photoperiod data; FAO supplies world production trajectory and trade flows; KU 1997 thesis represents the foundational Thai academic linkage. Five sources, all high confidence; explicit Thailand-applicability note included for each."
+    }
+  },
+  "overall_confidence": "high",
+  "overall_rationale": "All eleven sections rest on at least three independently converging high-confidence sources, with the bacterial-wilt management story (sections 1, 5, 7) anchored by both Thai DOA primary research and CTAHR Hawaii's well-documented 1993 outbreak. Economic data is unusually well-sourced for a Thai crop profile because DOAE Agriman publishes a complete cost-revenue breakdown with multi-year statistics. The only reservation: market price figures and competitive position carry inherent volatility, but the underlying methodology and source traceability are high-quality."
+}

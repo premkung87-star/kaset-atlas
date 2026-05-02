@@ -4,6 +4,89 @@
 
 ---
 
+## 2026-05-02 — Auto Pipeline: Added ขิง (Ginger) via general-purpose dispatch (Phase 2 with two maintainer-only repairs)
+
+**Type:** Content Addition (auto, with two surgical maintainer repairs)
+**Crop:** ขิง (Ginger) — `ginger`
+**Category:** culinary-herbs
+**Scientific:** *Zingiber officinale* Roscoe (Zingiberaceae)
+
+**Run IDs:**
+- Initial pipeline + Stage-4 halt: `08e17ba2-2db7-4d97-b7c6-d97d7761c16d`
+- Post-seoDescription-fix Content Verifier: `f3a80de9-9a2b-451a-bd4b-16a1f6d13143`
+- Post-§11-fix fresh-context re-verify: `df9c3a17-c1f4-4e8a-9b1f-fresh-context-reverify`
+
+**Phase:** 2 (controlled run; "halt on any gate failure" + "maintainer-only content repair" + "log all halts to PIPELINE_FAILURES.md")
+
+### Pipeline run (all subagent stages via `general-purpose` dispatch per Tier 1.4)
+
+- **Researcher** (47 tool_use, sonnet via general-purpose): 12 sources (8 Thai + 4 international), all `url_verified:true`, 11 high-confidence + 1 medium. Strong overlap with the fingerroot Zingiberaceae sibling research approach. Sources span DOA OARD2 (Ralstonia/bacterial-wilt management), DOAE Agriman (export statistics + cost breakdown), DOA Hort (G0 disease-free harvest age + Chiang Rai fertilizer trial), DOAE ESC (extension planting guide), KU thesis (Pandey 1997 tissue culture), DOA Hort (Loei competitiveness analysis), opsmoac Samut Sakhon (extension techniques), FAO Post-harvest Compendium (Plotto 2002), CTAHR CFS-GIN-3A (Hawaiian production), CTAHR SCM-8 (greenhouse bacterial-wilt-free system, Hepperly et al. 2004), and UF/IFAS EP638 (Florida ginger/galangal/turmeric).
+- **Drafter** (63 tool_use): 59,896-byte MDX (412 lines, 13 sections + intro + footnote) + 7,297-byte reasoning sidecar. Self-validation passed including emoji-prefix source-table check, MDX-safety grep, all-13-sections check.
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime > run start, sizes ≥ 1 KB, tool_calls=63
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 12 unique source IDs in sidecar exactly matching 12 MDX URLs
+- **URL Verifier (`v3-soft200-aware`):** pass 12/12
+
+### Halt #1: Build Verifier (Stage 4) — `seoDescription` overflow
+
+- **Failure:** `[InvalidContentEntryDataError] crops → ginger data does not match collection schema. seoDescription**: String must contain at most 160 character(s)`
+- **Root cause:** drafter wrote `seoDescription` at 189 unicode chars (Astro `z.string().max(160)` cap); drafter prompt's required-frontmatter checklist enumerates `summary` (≤280) but does not explicitly list `seoDescription` (≤160) with its numeric ceiling.
+- **Halt action:** logged to `docs/PIPELINE_FAILURES.md`, archived state to `.claude/state/halted/2026-05-02-ginger-seo-description-overflow/`, preserved `pipeline-current.json` for resume, NO auto-fix per Phase 2 maintainer-only protocol.
+- **Maintainer repair #1 (smallest possible):** single-line edit at `src/content/crops/ginger.mdx:66` — replaced 189-char `seoDescription` with 115-char alternative supplied by maintainer. Body content unchanged. Sources unchanged.
+- **Re-run after repair:** Build Verifier pass (24 pages, +1 for ginger), MDX safety pass, source-table pass, claim-grounding pass.
+
+### Stage 5: Content Verifier (post-seoDescription repair, fresh context)
+
+- **Verifier:** general-purpose dispatch, 27 tool_use, fresh-context isolation
+- **Decision:** `pass-with-medium` — 0 blockers, **1 medium content-fidelity finding**, 1 minor copy-edit suggestion
+- **Medium finding (real, not hallucinated):** §11 line 357 — MDX claim `"ใช้ปุ๋ยสูตร 1:2:2 (เช่น 10-20-20) ในอัตรา 300-500 ปอนด์/เอเคอร์เป็นปุ๋ยรองพื้น (CTAHR CFS-GIN-3A)"` merged two distinct fertilizer recommendations from CFS-GIN-3A:
+  - source line 107: `"Commercial growers use a low-nitrogen fertilizer with a ratio of 1:2:2 (i.e., 10-20-20)."` (no rate given)
+  - source line 122-123: `"Nitrogen is supplied as a complete fertilizer (NPK) in the ratio of 1:3:1 (i.e., 10-30-10) or 1:1:1 (i.e., 14-14-14) at 300-500 lb (136-227 kg) per-acre."` (rate belongs here, different ratio)
+  Drafter conflated the two — attached the 300-500 lb/acre rate and "preplant" (`เป็นปุ๋ยรองพื้น`) framing to the wrong ratio. Subtle but clearly traceable misattribution within a single source.
+- **Auto-fix DISABLED per Phase 2;** verifier surfaced finding to maintainer.
+
+### Maintainer repair #2: §11 line 357 fertilizer-rate misattribution
+
+- **Decision:** Option 1 — smallest content-fidelity repair, no source changes, no schema changes, no pipeline changes.
+- **Edit (single phrase):** removed `"ในอัตรา 300-500 ปอนด์/เอเคอร์เป็นปุ๋ยรองพื้น"`; replaced with verbatim-faithful paraphrase `"ใช้ปุ๋ยสูตรไนโตรเจนต่ำ อัตราส่วน 1:2:2 (เช่น 10-20-20) ตามแนวปฏิบัติของผู้ปลูกเชิงพาณิชย์ (CTAHR CFS-GIN-3A)"`. Maps directly onto CFS-GIN-3A line 106-107.
+- **Sidecar untouched:** §11 rationale references 40,000 lb/acre yield (still correct in body), not the fertilizer rate; alignment preserved.
+
+### Final Content Verifier (post-§11 repair, fresh context)
+
+- **Verifier:** general-purpose dispatch, 28 tool_use, fresh-context isolation, primary-source re-fetch via `pdftotext -layout` on CFS-GIN-3A PDF
+- **Decision:** `pass` — 0 blockers, 0 medium, 1 minor informational
+- **§11 fix verified clean:** quoted CFS-GIN-3A line 106-107 verbatim, confirmed MDX line 357 now matches; the 300-500 lb/acre rate and basal-fertilizer claim are correctly removed; no new misattribution introduced.
+- **Spot-checked five other primary sources** (CTAHR SCM-8, OARD2 ขิง, DOAE Agriman ginger, FAO Compendium, UF/IFAS EP638) — all numerical and qualitative claims match source verbatim.
+- **All 12 URLs return HTTP 200** with browser UA on doa.go.th (UA filter; URL Verifier already accommodates this).
+- **Minor informational (not a gate failure):** §11 unit conversion 18,144 kg/acre → 7,257 kg/rai is rounded ~1.2% high (correct using 1 rai = 1600 m² / 1 acre = 4046.86 m² → 7,174 kg/rai). Within typical derived-conversion tolerance; primary figure (40,000 lb/acre = 18,144 kg/acre) verbatim from source; no agronomic impact. Maintainer discretion at next routine update.
+- **Sidecar consistency:** all 11 sections rated `high` with `supporting_source_ids` matching the §12 source table; cross-references intact post-fix.
+
+### audit-crops.sh result
+
+- 11 crops audited (cassava, cilantro, cucumber, fingerroot, **ginger** (new), holy-basil, lettuce, mango (known exception), morning-glory, sweet-basil, tomato)
+- Per-gate pass rate: check-mdx-safety 11/11, verify-source-table 11/11, verify-claim-grounding 10/11 (1 known mango exception, unchanged)
+- Audit status: **PASS**, 0 new failures.
+
+### Pattern Win candidate flagged (NOT implemented in this commit)
+
+**Frontmatter schema-cap awareness — N=2** after morning-glory and ginger. Both crops halted at Stage 4 because frontmatter fields exceeded `src/content/config.ts` Zod caps that the drafter prompt does not explicitly enumerate with their numeric limits (drafter checklist mentions `summary` ≤280 but not `seoDescription` ≤160).
+
+Proposed promotion (defer to head-audit / Foreman per CLAUDE.md §6 🔴 pipeline change): add `verify-frontmatter-caps.sh` as a deterministic Stage-2 pre-build gate that reads cap declarations from `src/content/config.ts` and validates every frontmatter field length against them. Would catch this entire failure class before the build is invoked, saving one full build cycle per occurrence and surfacing the violation at the verification layer where it belongs.
+
+Per maintainer instruction, **NOT implemented in this commit** — only the surgical content repairs are in scope. Promotion candidacy logged here for `head-audit` / future PROMOTION REPORT.
+
+### Files committed
+
+- `src/content/crops/ginger.mdx` (new, 412 lines, 59.7 KB)
+- `src/content/crops/ginger.reasoning.json` (new, 7.3 KB)
+- `docs/AUDIT_LOG.md` (this entry)
+- `docs/PIPELINE_FAILURES.md` (Stage-4 seoDescription halt narrative)
+- `.claude/logs/verifier-stats.json` (3 NDJSON lines: halt + post-seoDescription-fix verifier + post-§11-fix verifier)
+- `.claude/logs/subagent-dispatch.json` (Day-1 instrumentation entries from drafter + verifier dispatches)
+
+---
+
 ## 2026-05-02 — Auto Pipeline: Added กระชาย (Fingerroot) via general-purpose dispatch (Phase 2 controlled run)
 
 **Type:** Content Addition (auto)
