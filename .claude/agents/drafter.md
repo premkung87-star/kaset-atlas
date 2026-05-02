@@ -82,6 +82,8 @@ All required fields per `src/content/config.ts` schema:
 - publishedAt: today's date
 - confidenceOverall (high/medium/low)
 - draft: false
+- seoTitle (optional, no schema cap; Google truncates around 60 chars in SERPs — author concise)
+- seoDescription (optional, **max 160 unicode chars** — Astro schema enforces this; if exceeded, build halts at Stage 4. N=2 incidents to date: morning-glory 2026-04-30, ginger 2026-05-02)
 
 #### Body requirements (12 sections)
 
@@ -158,6 +160,45 @@ grep -nE '[<>][a-z0-9]' src/content/crops/<english-slug>.mdx
 - Any output → MDX safety FAIL. Each matching line is a bare-comparison or accidental raw HTML. Fix it (add a space, use unicode `≤`/`≥`, or rewrite as Thai prose), then re-run the grep. Do not return `self_validation_passed: true` until the grep is empty.
 
 Edge case: if the slug or any frontmatter line legitimately contains `>0` (it should not — frontmatter values shouldn't have inequality strings), inspect the false positive and decide. The body text is what matters; in well-authored profiles this grep returns zero matches.
+
+#### Frontmatter schema-cap rules (CRITICAL — prevents Stage-4 build halt)
+
+Two frontmatter fields have hard `z.string().max(...)` caps in `src/content/config.ts`. Astro rejects the build (`InvalidContentEntryDataError`) when either is exceeded, halting the pipeline at Stage 4 — wasted build cycle and a maintainer-only repair to resume.
+
+| Field | Cap | Required | Notes |
+|---|---|---|---|
+| `summary` | ≤ 280 unicode chars | required | The 1-2 sentence summary rendered on category index pages. No schema-enforced lower bound, but author 1-2 sentences. |
+| `seoDescription` | ≤ 160 unicode chars | optional | The `<meta name="description">` tag + AI search snippet. Thai prose is verbose (~3 bytes/char in UTF-8 plus typically more characters needed than English for the same meaning), so this cap is easy to exceed. **N=2 documented incidents**: morning-glory (2026-04-30), ginger (2026-05-02). |
+
+`seoTitle` is uncapped by the schema but Google truncates SERP titles around 60 chars — author concisely, no enforcement here.
+
+**Mandatory pre-save bash check.** Before returning `draft_complete`, run this on the file you wrote (parallel to the MDX safety check above — same enforcement model):
+
+```bash
+python3 - <<'PY'
+import re, sys
+caps = {'summary': 280, 'seoDescription': 160}
+with open('src/content/crops/<english-slug>.mdx', encoding='utf-8') as f:
+    fm = f.read().split('---', 2)[1]
+fail = False
+for field, cap in caps.items():
+    m = re.search(rf'^{field}:\s*"([^"]*)"', fm, re.M)
+    if not m:
+        if field == 'summary':
+            print(f"{field}: MISSING (required)"); fail = True
+        else:
+            print(f"{field}: not present (optional — OK)")
+        continue
+    n = len(m.group(1))
+    status = "OK" if n <= cap else f"OVER by {n-cap}"
+    print(f"{field}: {n}/{cap} chars [{status}]")
+    if n > cap: fail = True
+sys.exit(1 if fail else 0)
+PY
+```
+
+- Exit 0 → frontmatter caps PASS, proceed to save and return.
+- Exit 1 → frontmatter caps FAIL. Trim the offending field (Thai is verbose — drop a clause, swap a long word for a shorter synonym, or remove decorative phrases like "ครอบคลุม..." that pad without adding meaning), then re-run the check. Do not return `self_validation_passed: true` until exit 0.
 
 #### Required components
 
@@ -244,6 +285,7 @@ Before saving, verify:
 - [ ] `lastUpdated` and `publishedAt` set to today
 - [ ] MDX safety bash check returns empty (no `[<>][a-z0-9]` matches in body)
 - [ ] No bare `<digit` or `<lowercase` patterns; inequalities use `< X` / `> X` (with space) or unicode `≤` / `≥`
+- [ ] Frontmatter schema-cap bash check returns exit 0 (`summary` ≤ 280 unicode chars, `seoDescription` ≤ 160 unicode chars) — same enforcement model as the MDX safety check; over-cap fields halt the pipeline at Stage 4 Build Verifier (N=2 incidents: morning-glory, ginger)
 - [ ] Reasoning sidecar `<slug>.reasoning.json` exists and is valid JSON (`jq empty <slug>.reasoning.json`)
 - [ ] If existing crops manifest contained sibling crops, the body text references them where natural (e.g., comparison to closely-related species)
 - [ ] Bilingual fields populated for AI-citable structured data: `titleEn`, `scientificName`, `aliases` (the layout consumes these for JSON-LD `alternateName` and `keywords`)
@@ -286,6 +328,7 @@ Return JSON:
 - ❌ Embedding `{frontmatter.X.toLocaleDateString(...)}` or any `{frontmatter.X.method()}` calls in the MDX body. The crop layout (`src/pages/crops/[...slug].astro`) already renders date/contributor/reviewer/confidence metadata using `crop.data.*` (which IS coerced to Date by the schema). MDX-body access to `frontmatter.X` returns the raw string, not the parsed Date — `.toLocaleDateString` will throw at render time and break the build. Reference: WORKFLOW_KIT.md §4 Pattern Win 2026-04-29.
 - ❌ Citing a source for claims the source does not actually substantiate. Before writing a claim with a citation, the drafter must have actually fetched and read the source. If a source's title and content don't match (rare but real — happened with FAO y5548e on 2026-04-29 cassava run), use the actual title and only cite for what the source actually covers. Reference: WORKFLOW_KIT.md §5 Discarded "Citation by topic-keyword without document fetch".
 - ❌ Source-table confidence cells without an emoji prefix — bare `สูง` / `ปานกลาง` / `ต่ำ` / `ไม่แน่ชัด` or bare `High` / `Medium` / `Low` / `Uncertain` are invalid. The cell value MUST match the regex `🟢|🟡|🟠|⚪|High|Medium|Low|Uncertain` per `scripts/verify-source-table.sh`. Reference: 2026-04-30 tomato Stage 2 halt (PIPELINE_FAILURES.md).
+- ❌ `seoDescription` exceeding 160 unicode chars or `summary` exceeding 280 unicode chars — Astro Zod schema (`src/content/config.ts`) rejects with `InvalidContentEntryDataError` and the pipeline halts at Stage 4 Build Verifier. **N=2 documented incidents**: morning-glory (2026-04-30), ginger (2026-05-02 — see `docs/PIPELINE_FAILURES.md` 2026-05-02 entry). The mandatory frontmatter schema-cap bash check (above) MUST exit 0 before claiming `self_validation_passed: true`.
 
 ## Failure Mode
 
