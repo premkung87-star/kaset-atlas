@@ -1,0 +1,16 @@
+# Per-run artifact directory.
+#
+# Each crop run writes here as `.claude/runs/<run_id>/`:
+#   - manifest.json       — canonical run record
+#   - researcher.json     — agent output
+#   - drafter.json        — agent output
+#   - verifier.json       — content-verifier output
+#   - dispatches.jsonl    — subagent dispatch verifications
+#   - decisions.jsonl     — yellow-lane auto-decisions applied
+#   - handoff.md          — single human-readable summary
+#
+# Schema: docs/HANDOFF_FORMAT.md
+# Lane policy: docs/AUTONOMY_LANES.md
+#
+# Per-run subdirectories are gitignored. This .gitkeep reserves the
+# location and is the only file in this directory that gets committed.

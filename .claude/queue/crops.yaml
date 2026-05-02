@@ -1,0 +1,39 @@
+# Kaset Atlas Crop Queue (v1)
+# ============================================================
+# Phase 8 v1, 2026-05-02. Schema only — no runner today.
+#
+# A future `/queue-run <N>` slash command will pop up to N pending
+# entries and dispatch /add-crop on each in sequence. Phase 8 declares
+# the schema; the runner ships in a separate task.
+#
+# Status enum: pending | in-progress | done | halted | skipped
+#
+# Editing rules:
+#   - This is a hand-curated queue. Do not auto-mutate without an
+#     explicit pipeline change that documents the mutation.
+#   - One entry per crop slug. Duplicate slugs fail the future runner.
+#   - `slug` must match what `/add-crop` would create
+#     (kebab-case English; Thai-only crops still resolve to a Latin
+#     slug per docs/METHODOLOGY.md).
+#   - `priority` is integer; lower runs first; ties broken by `queued_at`.
+#   - `notes` is free-form, ≤200 chars.
+# ============================================================
+
+crops:
+  # ---- Already-published example (do not re-run) ----
+  - slug: mango
+    thai: "มะม่วง"
+    category: fruit-trees
+    status: done
+    queued_at: 2026-04-30
+    priority: 100
+    notes: "Backfilled into wiki/sources/mango/ + wiki/topics/mango.md as Phase 8 sample."
+
+  # ---- Add new entries below; first runner pop = lowest priority ----
+  # - slug: durian
+  #   thai: "ทุเรียน"
+  #   category: fruit-trees
+  #   status: pending
+  #   queued_at: 2026-05-02
+  #   priority: 10
+  #   notes: "Priority for ASEAN export coverage."

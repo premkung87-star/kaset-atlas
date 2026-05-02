@@ -44,3 +44,7 @@ public/pagefind/
 .claude/state/pipeline-current.json
 .claude/state/*.tmp
 .claude/state/halted/
+
+# Per-run artifacts (Phase 8) — local only; .gitkeep is the only committed file
+.claude/runs/*
+!.claude/runs/.gitkeep
