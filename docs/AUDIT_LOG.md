@@ -4,6 +4,52 @@
 
 ---
 
+## 2026-05-02 — Auto Pipeline: Added กระชาย (Fingerroot) via general-purpose dispatch (Phase 2 controlled run)
+
+**Type:** Content Addition (auto)
+**Crop:** กระชาย (Fingerroot) — `fingerroot`
+**Category:** culinary-herbs
+**Scientific:** *Boesenbergia rotunda* (L.) Mansf. (Zingiberaceae) — older synonym *B. pandurata*
+**Strict species disambiguation:** profile is restricted to *B. rotunda* (yellow/white fingerroot — เหลือง/ขาว). กระชายดำ (*Kaempferia parviflora*) is a different genus and species and is explicitly out of scope; the Researcher rejected three กระชายดำ-only sources (KUKR record, krachai-dum DOA-Hort PDF, agricman.doae.go.th 2012 black-fingerroot guide).
+
+**Run ID:** `34e3b3ce-21e6-41b2-bd82-fcdf4007b11a`
+**Phase:** 2 (controlled run; cilantro halt-state archived to `.claude/state/halted/cilantro-2026-05-01T07-24Z.json` before this run started)
+
+### Pipeline run (all subagent stages via `general-purpose` dispatch per Tier 1.4)
+
+- **Researcher** (agent ID `aa7bf479a868a4aaf`): 12 sources (9 Thai + 3 international), `minimum_sources_met: true`, 7 high-confidence + 5 medium. Tool calls: 61, duration 9m07s. All URLs HTTP+WebFetch verified with crop-specific body-content confirmation; กระชายดำ disambiguation explicitly applied. Cornerstone cultivation source: `doaenews.doae.go.th/archives/10833` (DOAE official extension news with full operational specifics — tillage 25-30 cm, 3-5 buds per seed-rhizome, 30-min fungicide soak, 400 kg/rai planting material, lime 200-300 kg/rai, harvest 5-6 vs 8-9 months for peak compounds).
+- **Drafter** (agent ID `af62a338478dda9f5`): 42,415-byte MDX (332 lines, 13 sections) + 6,292-byte reasoning sidecar. Tool calls: 25, duration 6m05s. Self-validation passed including emoji-prefix source-table check, MDX-safety grep, schema-cap (summary 171/280 chars, well under).
+- **MDX safety:** pass — 0 unsafe `[<>][a-z0-9]` patterns
+- **Subagent-output-verify (drafter):** pass — both files exist, mtime after dispatch start, sizes ≥ 1 KB, tool_calls=25
+- **Source-table integrity:** pass — 12 data rows, 4 header columns, 12 unique URLs, 0 issues
+- **Claim-grounding sidecar:** pass — 11 sections all with `supporting_source_ids`, 10 unique source IDs in sidecar (subset of 12 MDX URLs — KU CLGC and doctor.or.th cited inline / further-reading only, allowed under v1 schema; same pattern as cucumber + cilantro)
+- **URL Verifier (`v3-soft200-aware`):** pass 12/12, no soft-200 errors, no 000-status retries needed
+- **Build Verifier:** pass — 23 pages built (was 22 with 9 crops, +1 for fingerroot), Pagefind indexed
+- **Content Verifier** (general-purpose, agent ID `a4a5109afef8aafbc`): `verification_status: fixed` — 0 blockers, 1 medium auto-fixed, 3 minor advisory, ready_for_publish:true. Tool calls: 28, duration 5m54s. Self-consistency PASS (4/4 findings retained, 0 hallucinations, 100% URL/line/section traceability). 38/38 spot-checked claims verified verbatim against re-fetched sources.
+- **Auto-fixes applied (1):** §13 source-table topic-label corrected on `opsmoac-chachoengsao-fingerroot-benefits` row at line 313 — changed from `สรรพคุณดั้งเดิม, การแยกพันธุ์เหลือง vs ดำ` to `สรรพคุณดั้งเดิม, คำเตือนผู้มีโรคประจำตัวก่อนใช้`. The chachoengsao source contains the chronic-illness-warning content but does NOT perform the yellow-vs-black variety disambiguation. **Same anti-pattern as cilantro 2026-04-30 source-table topic-label overclaim, caught and corrected on first pass this time** rather than escalating to maintainer repair. Pre-fix mdx size 42,415 bytes → post-fix 42,441 bytes (+26 bytes string substitution); mtime advanced 1777682437 → 1777682874 confirms fix wrote to disk.
+- **Re-run after fix (decision matrix B + fix-line, maintainer-approved):** subagent-output-verify pass (3/3 files), URL Verifier pass (12/12), source-table pass, claim-grounding pass, MDX safety pass. Content Verifier NOT re-dispatched (pragmatic acceptance — auto-fix was a deterministic 26-byte topic-label substitution that did not touch any body claim, URL, or frontmatter; verifier already audited the post-fix state inside its own dispatch with self-consistency PASS).
+- **Subagent-output-verify (content-verifier):** pass — all 3 expected files exist (mdx 42441, sidecar 6292, verifier-stats 11041), tool_calls=28, mtime checks confirm post-fix updates
+
+### Pattern adherence
+
+This run continues the Tier 1.4 Pattern Win streak: Researcher 61 tool_use, Drafter 25, Content Verifier 28 — three real general-purpose dispatches, zero Category A failures. Verifier-stats.json now records 7 successful general-purpose end-to-end runs (cucumber, tomato, holy-basil, sweet-basil, cassava, mango, fingerroot) vs 5 documented Category A failures on the deprecated dedicated subagent paths.
+
+The cilantro source-table topic-label anti-pattern (which required 3 maintainer-repair iterations on 2026-04-30 → 2026-05-01) was caught by the Content Verifier on its FIRST pass for fingerroot and auto-fixed without escalation. This validates the post-cilantro evidence-discipline upgrades to the verifier prompt and the deterministic source-table verifier gate.
+
+### Files changed
+- `src/content/crops/fingerroot.mdx` (NEW, 42,441 bytes post-fix)
+- `src/content/crops/fingerroot.reasoning.json` (NEW, 6,292 bytes)
+- `docs/AUDIT_LOG.md` (this entry)
+- `.claude/logs/verifier-stats.json` (fingerroot `fixed` entry, run_id `34e3b3ce-...`; line corrected post-run with maintainer approval — verifier wrote NDJSON before its auto-fix logic ran, original line showed `decision:"pass"` / `auto_fixes_applied:0`, corrected to `decision:"fixed"` / `auto_fixes_applied:1` per actual outcome)
+- `.claude/logs/subagent-dispatch.json` (drafter + content-verifier dispatch verify entries)
+- `.claude/state/researcher-output/fingerroot.json` (preserved researcher JSON)
+
+### Push status
+
+**NOT PUSHED** — held for maintainer review per directive.
+
+---
+
 ## 2026-05-01 — Codex intern integration via `codex-plugin-cc` (trial v1)
 
 **Type:** Architecture / Tooling integration
