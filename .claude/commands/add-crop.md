@@ -84,6 +84,80 @@ On halt mid-pipeline, leave the checkpoint in place. On resume (`/add-crop` re-i
 
 After successful push, delete the checkpoint file (clean state for next run).
 
+## Halt protocol (Phase 9.1 — added 2026-05-03)
+
+Every halt point in this orchestrator (pre-flight, Stage 1–5, Content
+Verifier blockers, subagent-output-verify failures, safety-limit
+trips) MUST write a red-path handoff to
+`.claude/runs/<RUN_ID>/handoff.md` per `docs/HANDOFF_FORMAT.md`
+**before** writing to `docs/PIPELINE_FAILURES.md` and exiting. This
+contract retroactively governs every existing halt point listed
+below.
+
+The handoff is a **per-run snapshot**; `PIPELINE_FAILURES.md` keeps
+its **cumulative** role. Both are written. Phase 9.1 only emits red
+and green handoffs — yellow logic ships in Phase 9.2.
+
+`RUN_ID` may be unset if a pre-flight step before step 11 (run-id
+capture) is the failing step; the helper handles that by minting a
+synthetic id so the handoff still writes.
+
+```bash
+# Reusable red-path handoff writer.
+# Caller signature: write_red_handoff <crop_input> <stage> <reason> <suggested_fix>
+# - <crop_input>     the original $1 of /add-crop (Thai or English crop name)
+# - <stage>          short stage label (e.g. "Pre-flight step 10")
+# - <reason>         one-line failure reason
+# - <suggested_fix>  one concrete next action for the maintainer
+write_red_handoff() {
+  local crop="$1" stage="$2" reason="$3" suggested_fix="$4"
+  : "${RUN_ID:=halt-$(date +%s)}"
+  : "${RUN_STARTED_AT:=$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
+  local run_ended_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  local run_dir=".claude/runs/$RUN_ID"
+  mkdir -p "$run_dir"
+  cat > "$run_dir/handoff.md" <<EOF
+# Handoff for ${crop:-<crop>} — run $RUN_ID
+
+**Status:** red
+**Crop input:** ${crop:-<unknown>}
+**Lane decided at:** $stage
+**Started at:** $RUN_STARTED_AT
+**Ended at:** $run_ended_at
+
+## Stage outcomes
+
+| Stage | Outcome | Detail |
+|---|---|---|
+| $stage | red | $reason |
+
+## Auto-decisions applied (yellow only)
+
+(none — Phase 9.1 has no yellow logic)
+
+## Decisions needed (red only)
+
+1. $reason — $suggested_fix
+
+## Files changed
+
+(none — pipeline halted before commit)
+
+## Suggested next action
+
+$suggested_fix
+
+## Run telemetry
+
+- run_id: $RUN_ID
+- See \`docs/PIPELINE_FAILURES.md\` for the cumulative failure log entry.
+EOF
+}
+```
+
+After writing, the orchestrator emits one line to `Stage 8: Report`
+with the `.claude/runs/<RUN_ID>/handoff.md` path and exits non-zero.
+
 ## Stage 1: Researcher
 
 ```
@@ -280,6 +354,102 @@ Append to top of `docs/AUDIT_LOG.md`:
 - `.claude/logs/verifier-stats.json`
 ```
 
+## Stage 6.5: Write run handoff (Phase 9.1 — added 2026-05-03)
+
+After the audit log entry, write the per-run handoff artifact to
+`.claude/runs/$RUN_ID/` per `docs/HANDOFF_FORMAT.md`. This is the
+single artifact the maintainer reads per crop. Phase 9.1 emits a
+green handoff at end-of-run; the Halt protocol above emits red
+handoffs at every halt point. Yellow logic ships in Phase 9.2.
+
+Auto-push at Stage 7 still happens in Phase 9.1 (removed in Phase
+9.3); the handoff is informational today and load-bearing once
+Phase 9.3 lands.
+
+```bash
+RUN_DIR=".claude/runs/$RUN_ID"
+mkdir -p "$RUN_DIR"
+RUN_ENDED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+# Substitute the bracketed placeholders with values resolved during
+# the run (slug, Thai name, English name, source counts, etc.).
+cat > "$RUN_DIR/handoff.md" <<EOF
+# Handoff for <Thai> (<English>) — run $RUN_ID
+
+**Status:** green
+**Crop slug:** <slug>
+**Lane decided at:** end-of-run
+**Started at:** $RUN_STARTED_AT
+**Ended at:** $RUN_ENDED_AT
+
+## Stage outcomes
+
+| Stage | Outcome | Detail |
+|---|---|---|
+| Pre-flight | green | clean tree, on main, no HALT |
+| Researcher | green | <N> sources (<X> Thai + <Y> intl, <Z> high-confidence) |
+| Drafter | green | 13 sections, sidecar pass, source-table pass |
+| URL Verifier | green | <n>/<n> URLs alive |
+| Build Verifier | green | <pages> pages built |
+| Content Verifier | green | 0 blockers, <m> medium, <μ> minor |
+| Subagent-output-verify | green | per-stage pass |
+
+## Auto-decisions applied (yellow only)
+
+(none — Phase 9.1 has no yellow logic; reserved for Phase 9.2)
+
+## Decisions needed (red only)
+
+(none)
+
+## Files changed
+
+- src/content/crops/<slug>.mdx
+- src/content/crops/<slug>.reasoning.json
+- docs/AUDIT_LOG.md
+- .claude/logs/verifier-stats.json
+
+## Suggested next action
+
+Pipeline auto-pushed in Phase 9.1. Verify the production URL once
+the Vercel deploy completes: \`https://kasetatlas.com/crops/<slug>\`.
+Phase 9.3 will remove auto-push and require a manual \`git push\`.
+
+## Run telemetry
+
+- run_id: $RUN_ID
+- See \`.claude/logs/verifier-stats.json\` for the trailing-window pass-rate.
+EOF
+
+# Companion machine-readable manifest (consumed by future tooling;
+# Phase 9.1 just writes it — no consumer yet).
+cat > "$RUN_DIR/manifest.json" <<EOF
+{
+  "run_id": "$RUN_ID",
+  "crop_input": "$1",
+  "slug": "<slug>",
+  "lane": "green",
+  "started_at": "$RUN_STARTED_AT",
+  "ended_at": "$RUN_ENDED_AT",
+  "stage_outcomes": {
+    "preflight": "green",
+    "researcher": "green",
+    "drafter": "green",
+    "url_verifier": "green",
+    "build_verifier": "green",
+    "content_verifier": "green",
+    "subagent_output_verify": "green"
+  },
+  "files_changed": [
+    "src/content/crops/<slug>.mdx",
+    "src/content/crops/<slug>.reasoning.json",
+    "docs/AUDIT_LOG.md",
+    ".claude/logs/verifier-stats.json"
+  ]
+}
+EOF
+```
+
 ## Stage 7: Commit + push
 
 ```bash
@@ -315,6 +485,7 @@ After successful push:
 
 Print summary:
 - **Status:** published | halted
+- **Handoff:** `.claude/runs/<RUN_ID>/handoff.md` (read this — single artifact per run, Phase 9.1)
 - **Crop:** <Thai> (<English>) — `<slug>`
 - **Category:** <category>
 - **Sources:** <N> total, <Z> high-confidence
@@ -335,6 +506,7 @@ Print summary:
 - Using `contributor: "Prem Pawee"` — must be `"AI Pipeline (auto)"`
 - Skipping the Build Verifier (Stage 4) — non-negotiable
 - Using `subagent_type: researcher` / `drafter` / `content-verifier` instead of `general-purpose` (Tier 1.4). Five documented Category A `tool-execution` failures across durian, mango ×3, and tomato resume #2 vs zero on `general-purpose` — the dedicated paths render `<function_calls>` blocks as text without invoking the harness, producing `tool_use: 0` despite long plausible-looking responses. The 2026-04-30 tomato Option 1 controlled diagnostic confirmed `general-purpose` dispatch executes tool calls correctly with the same role prompts.
+- Skipping Stage 6.5 (handoff write) — non-negotiable per Phase 9.1. Every successful run writes a green handoff; every halt point writes a red handoff per the Halt protocol above.
 
 ## Safety limits
 
