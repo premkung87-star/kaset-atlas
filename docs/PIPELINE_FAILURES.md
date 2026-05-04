@@ -997,3 +997,19 @@ Out-of-band re-verification with `curl -L -r 0-0 -A "Mozilla/5.0"` (range reques
 **Action taken:** [auto-retry|halted]
 **Resolution:** [pending|resolved on YYYY-MM-DD]
 ```
+
+## 2026-05-04 — Stage 5 Content Verifier halt: lemongrass misattribution (Production Validation Run #1)
+
+**Run ID:** b4ae12f6-57dc-48fe-b433-37e865907692
+**Stage:** Content Verifier (Stage 5)
+**Failure type:** generation-contract (Category C — drafter cited a source for a claim the source does not substantiate)
+**Lane:** red
+**Manual intervention required:** content-edit (replace or drop the misattributed province list in §1 and §9)
+
+Pipeline ran clean through Stages 1-4. Stage 5 Content Verifier (fresh context) caught a real misattribution: the Drafter cited a บ้านและสวน article (`gardenandfarm.baanlaesuan.com/301680/garden-farm/lemongrass`) for "เกษตรกรในจังหวัดราชบุรี กาญจนบุรี และนครปฐม ปลูกตะไคร้เชิงพาณิชย์" in §1 (line 89) and §9 (line 312). The actual source documents lemongrass cultivation in Narathiwat Province (Mae Dong Subdistrict, Waeng District), not the three Central-region provinces named in the MDX.
+
+Verifier evidence-discipline: PASSED. Verbatim file quote + verbatim source excerpt + discrepancy statement all present. Self-consistency: PASS.
+
+Fix applied: NONE (auto-fix disabled for blockers per AUTONOMY_LANES.md). Halt at Stage 5; red handoff written to `.claude/runs/b4ae12f6-57dc-48fe-b433-37e865907692/handoff.md`. No commit, no push.
+
+**This is the autonomy stack working as designed.** First production validation run after Phase 9.2; verifier honestly rejected a misattribution that would have published incorrect content. Maintainer applies fix, re-runs.
