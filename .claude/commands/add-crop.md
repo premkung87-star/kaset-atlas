@@ -158,6 +158,68 @@ EOF
 After writing, the orchestrator emits one line to `Stage 8: Report`
 with the `.claude/runs/<RUN_ID>/handoff.md` path and exits non-zero.
 
+## Lane state accumulator (Phase 9.2 — added 2026-05-04)
+
+Yellow lane support: certain non-perfect conditions are codified in
+`docs/AUTONOMY_LANES.md` as "continue with note" rather than halt.
+The orchestrator accumulates yellow notes per run, surfaces them in
+the Stage 6.5 handoff, and gates Stage 7 push for non-green runs.
+If ≥3 unrelated yellow notes accumulate in a single run, the
+pipeline escalates to a red halt before commit ("Yellow accumulation
+rule").
+
+```bash
+# Per-run yellow notes file. One JSON line per yellow condition.
+# Stored under .claude/runs/<RUN_ID>/lane-notes.jsonl (gitignored).
+LANE_NOTES_FILE=".claude/runs/$RUN_ID/lane-notes.jsonl"
+
+# Append a yellow note. Args: <stage> <code> <description>
+add_yellow_note() {
+  local stage="$1" code="$2" description="$3"
+  : "${RUN_ID:=halt-$(date +%s)}"
+  mkdir -p ".claude/runs/$RUN_ID"
+  local ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '{"ts":"%s","stage":"%s","code":"%s","description":"%s"}\n' \
+    "$ts" "$stage" "$code" "$description" \
+    >> "$LANE_NOTES_FILE"
+}
+
+# Count accumulated yellow notes. Empty/missing file → 0.
+accumulated_yellow_count() {
+  [ -f "$LANE_NOTES_FILE" ] || { echo 0; return; }
+  wc -l < "$LANE_NOTES_FILE" | tr -d ' '
+}
+
+# Lane status: green if zero notes, yellow otherwise.
+# Red is decided independently by halt points (Halt protocol).
+current_lane_status() {
+  if [ "$(accumulated_yellow_count)" -gt 0 ]; then
+    echo "yellow"
+  else
+    echo "green"
+  fi
+}
+
+# If ≥3 yellow notes accumulated, escalate to red and halt.
+# Caller passes the original $1 of /add-crop.
+escalate_if_yellow_threshold_hit() {
+  local crop_input="$1"
+  local count
+  count="$(accumulated_yellow_count)"
+  if [ "$count" -ge 3 ]; then
+    local notes
+    notes=$(tr '\n' ';' < "$LANE_NOTES_FILE" | sed 's/;$//')
+    write_red_handoff \
+      "$crop_input" \
+      "lane-escalation" \
+      "yellow accumulation threshold hit: $count notes — $notes" \
+      "Each yellow note is individually safe per docs/AUTONOMY_LANES.md, but the cluster suggests a systemic issue. Review .claude/runs/$RUN_ID/lane-notes.jsonl, fix the root cause, then re-run /add-crop."
+    echo "halt: yellow accumulation ≥ 3 — red handoff written"
+    exit 1
+  fi
+}
+```
+
 ## Stage 1: Researcher
 
 ```
@@ -177,6 +239,17 @@ Wait for JSON. Validate per `docs/AUTOMATION_PIPELINE.md`:
 
 On fail: log to `PIPELINE_FAILURES.md` (stage=researcher), halt.
 On pass: update state checkpoint with `stage_completed=researcher`.
+
+**Yellow-lane detection (Phase 9.2):** when validation passes,
+inspect just-met thresholds and accumulate yellow notes per
+`docs/AUTONOMY_LANES.md`:
+
+```bash
+[ "$thai_sources_count"    -eq 6 ] && add_yellow_note researcher just-met-thai            "thai_sources_count exactly 6 (project minimum per AUTONOMY_LANES.md)"
+[ "$high_confidence_count" -eq 4 ] && add_yellow_note researcher just-met-high-confidence "high_confidence_count exactly 4 (project minimum per AUTONOMY_LANES.md)"
+```
+
+These are continue-with-note conditions, not halt conditions.
 
 ## Stage 2: Drafter
 
@@ -221,6 +294,21 @@ Wait for JSON. Validate:
   Markdown links, stray body URLs, or below the SOURCE_POLICY minimum
   of 9 sources). This is a deterministic structural gate that runs
   before URL Verifier so a broken table doesn't waste network calls.
+
+  **Yellow-lane detection (Phase 9.2):** parse `data_rows` and
+  `min_required` from the verifier JSON. If equal, the source table
+  just meets the project minimum — continue-with-note per
+  `docs/AUTONOMY_LANES.md`:
+
+  ```bash
+  vst_json=$(./scripts/verify-source-table.sh src/content/crops/<slug>.mdx)
+  data_rows=$(printf '%s' "$vst_json"     | sed -nE 's/.*"data_rows": *([0-9]+).*/\1/p'    | head -1)
+  min_required=$(printf '%s' "$vst_json"  | sed -nE 's/.*"min_required": *([0-9]+).*/\1/p' | head -1)
+  if [ "${data_rows:-0}" -eq "${min_required:-9}" ]; then
+    add_yellow_note drafter just-met-source-table-min \
+      "source table at exactly $data_rows rows (project minimum per AUTONOMY_LANES.md)"
+  fi
+  ```
 - **Claim-grounding sidecar check (Day-2 instrumentation, v1):**
   ```bash
   ./scripts/verify-claim-grounding.sh \
@@ -292,8 +380,30 @@ Decision matrix from verifier output:
 |---|---|
 | `ready_for_publish: true`, blockers: 0 | Proceed to commit |
 | `blockers: 1+` | Halt, log all blockers, exit |
-| `medium_issues: 1-3`, `auto_fixes_applied` | Re-run URL Verifier + Build Verifier + Content Verifier (1 retry max). If still pass, proceed |
+| `medium_issues: 1-3`, `auto_fixes_applied` | Re-run URL Verifier + Build Verifier + Content Verifier (1 retry max). If still pass, **continue as YELLOW** (Phase 9.2) |
 | `medium_issues: 4+` | Halt, log, escalate |
+
+**Yellow-lane detection (Phase 9.2):** the `medium_issues 1-3` retry
+path is a yellow-lane condition. After the retry passes, accumulate
+notes per `docs/AUTONOMY_LANES.md`:
+
+```bash
+# medium-with-autofix yellow note
+if [ "${medium_issues:-0}" -ge 1 ] && [ "${medium_issues:-0}" -le 3 ] && [ "${auto_fixes_applied:-0}" -gt 0 ]; then
+  add_yellow_note content-verifier auto-fix-applied \
+    "verifier reported $medium_issues medium issues; $auto_fixes_applied auto-fix(es) applied successfully"
+fi
+
+# Non-trivial diff yellow note (>10 lines per AUTONOMY_LANES.md)
+diff_lines=$(git diff --shortstat src/content/crops/<slug>.mdx 2>/dev/null \
+              | grep -oE '[0-9]+ insertion|[0-9]+ deletion' \
+              | grep -oE '[0-9]+' \
+              | awk '{s+=$1} END {print s+0}')
+if [ "${diff_lines:-0}" -gt 10 ]; then
+  add_yellow_note content-verifier auto-fix-non-trivial-diff \
+    "verifier auto-fix changed $diff_lines lines (>10 line threshold per AUTONOMY_LANES.md)"
+fi
+```
 
 **Subagent output verification (Day-1 instrumentation):**
 
@@ -327,6 +437,17 @@ joined to its dispatch entry in `.claude/logs/subagent-dispatch.json`.
 
 After verifier passes: update checkpoint with `stage_completed=content-verifier`.
 
+**Yellow accumulation gate (Phase 9.2):** before proceeding to
+audit-log + handoff + commit, check whether yellow notes have
+crossed the threshold. ≥3 unrelated yellows → red halt.
+
+```bash
+escalate_if_yellow_threshold_hit "$1"
+# If accumulated yellow count ≥ 3, this writes a red handoff and
+# exits non-zero. Otherwise, control returns and we proceed to
+# Stage 6.
+```
+
 ## Stage 6: Audit log entry
 
 Append to top of `docs/AUDIT_LOG.md`:
@@ -354,29 +475,48 @@ Append to top of `docs/AUDIT_LOG.md`:
 - `.claude/logs/verifier-stats.json`
 ```
 
-## Stage 6.5: Write run handoff (Phase 9.1 — added 2026-05-03)
+## Stage 6.5: Write run handoff (Phase 9.1, lane-aware in Phase 9.2)
 
 After the audit log entry, write the per-run handoff artifact to
 `.claude/runs/$RUN_ID/` per `docs/HANDOFF_FORMAT.md`. This is the
-single artifact the maintainer reads per crop. Phase 9.1 emits a
-green handoff at end-of-run; the Halt protocol above emits red
-handoffs at every halt point. Yellow logic ships in Phase 9.2.
+single artifact the maintainer reads per crop. Phase 9.1 introduced
+the writer; Phase 9.2 makes it lane-aware (green vs yellow); the
+Halt protocol still emits red handoffs at every halt point.
 
-Auto-push at Stage 7 still happens in Phase 9.1 (removed in Phase
-9.3); the handoff is informational today and load-bearing once
-Phase 9.3 lands.
+Auto-push at Stage 7 happens for **green** runs only (Phase 9.2).
+Yellow runs commit but stop before push — Phase 9.3 will remove
+auto-push entirely.
 
 ```bash
 RUN_DIR=".claude/runs/$RUN_ID"
 mkdir -p "$RUN_DIR"
 RUN_ENDED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
+# Lane status comes from the accumulator (Phase 9.2).
+LANE="$(current_lane_status)"
+
+# Format yellow notes for the handoff body.
+if [ "$(accumulated_yellow_count)" -gt 0 ]; then
+  YELLOW_DECISIONS=$(
+    while IFS= read -r line; do
+      yn_stage=$(printf '%s' "$line" | sed -nE 's/.*"stage":"([^"]*)".*/\1/p')
+      yn_code=$(printf '%s'  "$line" | sed -nE 's/.*"code":"([^"]*)".*/\1/p')
+      yn_desc=$(printf '%s'  "$line" | sed -nE 's/.*"description":"([^"]*)".*/\1/p')
+      printf -- "- [%s] %s — %s (auth: docs/AUTONOMY_LANES.md)\n" "$yn_stage" "$yn_code" "$yn_desc"
+    done < "$LANE_NOTES_FILE"
+  )
+  SUGGESTED_NEXT_ACTION="YELLOW lane — human review required before push. Read this handoff, run \\\`git show HEAD\\\` to inspect the local commit, then either \\\`git push origin main\\\` (approve) or \\\`git reset --hard HEAD~1\\\` (reject)."
+else
+  YELLOW_DECISIONS="(none — clean green run, no yellow conditions detected)"
+  SUGGESTED_NEXT_ACTION="Pipeline auto-pushed in Phase 9.2 green-lane mode. Verify the production URL once the Vercel deploy completes: \\\`https://kasetatlas.com/crops/<slug>\\\`. Phase 9.3 will remove auto-push entirely."
+fi
+
 # Substitute the bracketed placeholders with values resolved during
 # the run (slug, Thai name, English name, source counts, etc.).
 cat > "$RUN_DIR/handoff.md" <<EOF
 # Handoff for <Thai> (<English>) — run $RUN_ID
 
-**Status:** green
+**Status:** $LANE
 **Crop slug:** <slug>
 **Lane decided at:** end-of-run
 **Started at:** $RUN_STARTED_AT
@@ -396,7 +536,7 @@ cat > "$RUN_DIR/handoff.md" <<EOF
 
 ## Auto-decisions applied (yellow only)
 
-(none — Phase 9.1 has no yellow logic; reserved for Phase 9.2)
+$YELLOW_DECISIONS
 
 ## Decisions needed (red only)
 
@@ -411,24 +551,23 @@ cat > "$RUN_DIR/handoff.md" <<EOF
 
 ## Suggested next action
 
-Pipeline auto-pushed in Phase 9.1. Verify the production URL once
-the Vercel deploy completes: \`https://kasetatlas.com/crops/<slug>\`.
-Phase 9.3 will remove auto-push and require a manual \`git push\`.
+$SUGGESTED_NEXT_ACTION
 
 ## Run telemetry
 
 - run_id: $RUN_ID
+- yellow_notes_count: $(accumulated_yellow_count)
 - See \`.claude/logs/verifier-stats.json\` for the trailing-window pass-rate.
 EOF
 
-# Companion machine-readable manifest (consumed by future tooling;
-# Phase 9.1 just writes it — no consumer yet).
+# Companion machine-readable manifest (consumed by future tooling).
 cat > "$RUN_DIR/manifest.json" <<EOF
 {
   "run_id": "$RUN_ID",
   "crop_input": "$1",
   "slug": "<slug>",
-  "lane": "green",
+  "lane": "$LANE",
+  "yellow_notes_count": $(accumulated_yellow_count),
   "started_at": "$RUN_STARTED_AT",
   "ended_at": "$RUN_ENDED_AT",
   "stage_outcomes": {
@@ -474,6 +613,26 @@ See docs/AUDIT_LOG.md for run details.
 EOF
 )"
 
+# Phase 9.2 yellow-lane push guard.
+# Yellow runs commit (so the maintainer can review with `git show
+# HEAD`) but must NOT auto-push. Green runs push as before.
+# AUTONOMY_LANES.md authorizes auto-push for green-lane runs only;
+# Phase 9.3 will remove auto-push for green too and require the
+# maintainer's explicit push.
+if [ "$(current_lane_status)" = "yellow" ]; then
+  echo "=============================================================="
+  echo "YELLOW lane complete — human review required before push."
+  echo ""
+  echo "See .claude/runs/$RUN_ID/handoff.md"
+  echo ""
+  echo "Local commit was made ($(git rev-parse --short HEAD)). To publish:"
+  echo "  1. Review the handoff and the commit:  git show HEAD"
+  echo "  2. Approve and push:                   git push origin main"
+  echo "  3. Reject and discard:                 git reset --hard HEAD~1"
+  echo "=============================================================="
+  exit 0
+fi
+
 git push origin main
 ```
 
@@ -507,6 +666,8 @@ Print summary:
 - Skipping the Build Verifier (Stage 4) — non-negotiable
 - Using `subagent_type: researcher` / `drafter` / `content-verifier` instead of `general-purpose` (Tier 1.4). Five documented Category A `tool-execution` failures across durian, mango ×3, and tomato resume #2 vs zero on `general-purpose` — the dedicated paths render `<function_calls>` blocks as text without invoking the harness, producing `tool_use: 0` despite long plausible-looking responses. The 2026-04-30 tomato Option 1 controlled diagnostic confirmed `general-purpose` dispatch executes tool calls correctly with the same role prompts.
 - Skipping Stage 6.5 (handoff write) — non-negotiable per Phase 9.1. Every successful run writes a green handoff; every halt point writes a red handoff per the Halt protocol above.
+- Skipping yellow-note accumulation — non-negotiable per Phase 9.2. Every codified yellow condition in `docs/AUTONOMY_LANES.md` must be detected and accumulated; lane status drives the Stage 7 push guard.
+- Auto-pushing yellow-lane runs — non-negotiable per Phase 9.2. Yellow runs commit (so the maintainer can review with `git show HEAD`) but must NOT auto-push. Green runs continue to auto-push until Phase 9.3 removes that behavior entirely.
 
 ## Safety limits
 
